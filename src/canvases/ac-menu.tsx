@@ -90,7 +90,34 @@ function Menu() {
   return (
     <React.Fragment>
       <div className="fixed top-[40%] -translate-y-[50%] left-0">
-        <div className="w-sm h-20 bg-linear-to-b from-red-950 to-red-700"></div>
+        <div className="w-100 h-20 bg-linear-to-b from-red-950/80 to-red-700/80 relative overflow-clip">
+          <div className="h-10 aspect-square rotate-45 bg-black/80 outline-2 outline-white right-12 translate-y-[50%] z-2 absolute" />
+          <div className="absolute h-full w-[1.5px] bg-white/80 right-[calc(48px+(39px/2))]" />
+          <div className="absolute bg-linear-to-r from-white/20 to-white h-[1px] w-[60%] right-0 top-[calc(50%-40px/4)]" />
+          <div className="absolute bg-linear-to-r from-white/20 to-white h-[1px] w-[60%] right-0 top-[calc(50%+40px/4)]" />
+          <div className="absolute bg-linear-to-r from-white/20 to-white h-[1px] w-[calc((48px+39px/2)*2)] right-0 top-[calc(50%+40px/4)] -rotate-30 -translate-x-[28px] translate-y-[14px]" />
+          <div className="absolute bg-linear-to-r from-white/20 to-white h-[1px] w-[calc((48px+39px/2)*2)] right-0 top-[calc(50%-40px/4)] rotate-30 -translate-x-[28px] -translate-y-[14px]" />
+          <div className="absolute bg-linear-to-r from-white/20 to-white h-[1px] w-[calc((48px+39px/2)*2)] right-0 top-[calc(50%-40px/4)] rotate-42 -translate-x-[51px] -translate-y-[25px]" />
+        </div>
+      </div>
+      <div className="fixed top-[40%] -translate-y-[calc(50%+136px)] left-60">
+        <span className="uppercase text-4xl font-light leading-none">
+          Sequence 5
+        </span>
+      </div>
+      <div className="fixed top-[40%] -translate-y-[calc(50%+80px)] left-60">
+        <span className="bg-stone-950/83 text-white uppercase text-6xl pt-2 px-2 font-light leading-none">
+          memory 7
+        </span>
+      </div>
+
+      <div className="h-20 fixed top-[40%] -translate-y-[50%] left-[414px] flex flex-col gap-1">
+        <span className="bg-stone-950/83 text-white uppercase text-2xl pt-2 px-2 font-light leading-none">
+          rodriguo pazzi
+        </span>
+        <span className="bg-stone-700/80 text-white uppercase text-2xl pt-2 px-2 font-light leading-none w-fit">
+          venice, 1482
+        </span>
       </div>
 
       <div className="fixed left-[50%] -translate-x-[50%] bottom-12 w-[80vw] min-w-[200px] max-w-3xl bg-gray-100/90 px-4 py-2">
