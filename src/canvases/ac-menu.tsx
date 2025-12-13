@@ -142,12 +142,11 @@ export function AcMenu() {
     <React.Fragment>
       <Canvas
         camera={{ position: [0, 0, 20], fov: 75, near: 0.1, far: 1000 }}
-        style={{ width: "100vw", height: "100vh" }}
+        style={{ width: "100vw", height: "100vh", position: "fixed", inset: 0 }}
       >
         <color attach="background" args={[0xe3dfde]} />
         <fog attach="fog" args={[0xe3dfde, 10, 60]} />
 
-        {/* Environment for PBR materials */}
         <Environment preset="apartment" />
 
         <Scene />
