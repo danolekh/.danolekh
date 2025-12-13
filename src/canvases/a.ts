@@ -52,7 +52,6 @@ scene.add(starMesh);
 const dummy = new THREE.Object3D();
 let grayIdx = 0;
 let redIdx = 0;
-let starIdx = 0;
 
 // Collect outline transforms instead of creating individual objects
 const whiteOutlineMatrices: THREE.Matrix4[] = [];
@@ -83,21 +82,6 @@ const addCell = (
     grayMesh.setMatrixAt(grayIdx, dummy.matrix);
     grayIdx++;
   }
-};
-
-const addStar = (
-  x: number,
-  y: number,
-  z: number,
-  size: number,
-  rot: number,
-) => {
-  dummy.position.set(x, y, z);
-  dummy.rotation.set(0, 0, THREE.MathUtils.degToRad(rot));
-  dummy.scale.set(size, size * 1.5, 1);
-  dummy.updateMatrix();
-
-  starMesh.setMatrixAt(starIdx++, dummy.matrix);
 };
 
 // Create merged outlines from collected matrices
@@ -220,49 +204,6 @@ const buildScene = () => {
     }
   };
 
-  // const stars = () => {
-  //   const seedGrid = (
-  //     x: number,
-  //     y: number,
-  //     size: number,
-  //     rotate: number = 10,
-  //   ) => {
-  //     for (let i = 0; i <= 1; ++i) {
-  //       addStar(extrapolate(i, 2, x, x + 12), y, -1, size, rotate);
-  //     }
-
-  //     for (let i = 0; i <= 1; ++i) {
-  //       addStar(extrapolate(i, 2, x, x + 12) + 5, y, -5, size, rotate);
-  //     }
-  //   };
-
-  //   seedGrid(0, -10, 10, 0);
-  //   seedGrid(0, 0, 10, 0);
-  //   seedGrid(0, 10, 10, 0);
-
-  //   seedGrid(12, -11, 7, -5);
-  //   seedGrid(11, 3, 5, -5);
-  //   seedGrid(14, -4, 7, -5);
-  //   seedGrid(13, 12, 9, -5);
-
-  //   seedGrid(21, -6, 8, -10);
-  //   seedGrid(27, -14, 4, -10);
-  //   seedGrid(25, 12, 4, -10);
-
-  //   seedGrid(-12, -11, 7, 5);
-  //   seedGrid(-11, 3, 5, 5);
-  //   seedGrid(-14, -4, 7, 5);
-  //   seedGrid(-13, 12, 9, 5);
-
-  //   seedGrid(-24, -7, 8, 5);
-  //   seedGrid(-25, -14, 4, 5);
-  //   seedGrid(-25, 8, 13, 5);
-
-  //   addStar(-7, 5, -1, 30, 0);
-  //   addStar(-12, 3, -2, 25, 0);
-  // };
-
-  // stars();
   chain1();
   chain2();
   redChain();
