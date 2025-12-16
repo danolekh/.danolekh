@@ -1,408 +1,449 @@
 import * as React from "react";
-import { useLayoutEffect, useRef, useMemo, useState, useEffect } from "react";
-import { Canvas, useThree, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, extend, useThree } from "@react-three/fiber";
 import { Environment } from "@react-three/drei";
 import * as THREE from "three";
-import { LineSegments2 } from "three/examples/jsm/lines/webgpu/LineSegments2.js";
-import { LineMaterial } from "three/examples/jsm/Addons.js";
-import { LineSegmentsGeometry } from "three/examples/jsm/Addons.js";
+
+import { LineSegments2 } from "three/examples/jsm/lines/LineSegments2.js";
+import { LineMaterial } from "three/examples/jsm/lines/LineMaterial.js";
+import { LineSegmentsGeometry } from "three/examples/jsm/lines/LineSegmentsGeometry.js";
+
 import { redMaterial, grayMaterial } from "./materials";
 import { cellGeometry, cellEdgesGeometry } from "./geometries";
+import { createStore, useStore } from "@/lib/create-store";
+import { cn } from "@/lib/utils";
 
-const RED_CELL_COUNT = 8;
-const CELL_SIZE = 2;
-const SELECTION_Y_OFFSET = CELL_SIZE * 1.5;
-const SELECTION_ROTATION_OFFSET = 45;
+extend({ LineSegments2, LineMaterial, LineSegmentsGeometry });
 
-const extrapolate = (
-  i: number,
-  total: number,
-  start: number,
-  end: number,
-): number => {
-  const delta = (end - start) / total;
-  return start + delta * i;
+const DATA = [
+  {
+    label: "IDENTITY",
+    entity: "DAN OLEKH",
+    detail: "KYIV, UA",
+  },
+  {
+    label: "SEQUENCE 03",
+    entity: "QUEXTRO",
+    detail: "FOUNDING ENG.",
+  },
+  {
+    label: "PROTOCOL",
+    entity: "full-stack",
+    detail: "typescript",
+  },
+  {
+    label: "TRAINING",
+    entity: "KNU SHEVCHENKO",
+    detail: "2022 — 2026",
+  },
+  {
+    label: "UPLINK",
+    entity: "@danolekh",
+    detail: "ENCRYPTED",
+  },
+  {
+    label: "LOGS",
+    entity: "THOUGHTS",
+    detail: "SYNCING...",
+  },
+  {
+    label: "AUDIO",
+    entity: "SPOTIFY",
+    detail: "IDLE",
+  },
+];
+
+const TITLES = [
+  "About Me",
+  "Experience",
+  "Skills",
+  "Education",
+  "Contact",
+  "Blog",
+  "Music",
+];
+
+type CellState = {
+  selectedCell: number;
+  activeCell: number | null;
 };
 
-interface SceneProps {
-  selectedIndex: number;
+const cellStore = createStore<CellState>({
+  selectedCell: 0,
+  activeCell: null,
+});
+
+type CellData = {
+  x: number;
+  y: number;
+  z: number;
+  size: number;
+  rotationDeg: number;
+  isRed: boolean;
+};
+
+const dummy = new THREE.Object3D();
+
+const getMatrix = (data: CellData) => {
+  dummy.position.set(data.x, data.y, data.z);
+  dummy.rotation.set(0, 0, 0);
+  dummy.rotateZ(THREE.MathUtils.degToRad(data.rotationDeg));
+  dummy.scale.set(data.size, data.size, 0.1);
+  dummy.updateMatrix();
+  return dummy.matrix.clone();
+};
+const createMergedLineGeometry = (matrices: THREE.Matrix4[]) => {
+  const basePositions = cellEdgesGeometry.attributes.position
+    .array as Float32Array;
+  const positionsPerOutline = basePositions.length;
+  const mergedPositions = new Float32Array(
+    matrices.length * positionsPerOutline,
+  );
+  const v = new THREE.Vector3();
+  let offset = 0;
+
+  for (const matrix of matrices) {
+    for (let i = 0; i < positionsPerOutline; i += 3) {
+      v.set(basePositions[i], basePositions[i + 1], basePositions[i + 2]);
+      v.applyMatrix4(matrix);
+      mergedPositions[offset++] = v.x;
+      mergedPositions[offset++] = v.y;
+      mergedPositions[offset++] = v.z;
+    }
+  }
+
+  const geometry = new LineSegmentsGeometry();
+  geometry.setPositions(mergedPositions);
+  return geometry;
+};
+
+function BackgroundChain() {
+  const { size } = useThree();
+
+  const { grayMatrices, lineGeometry } = (() => {
+    const matrices: THREE.Matrix4[] = [];
+    const addFn = (c: CellData) => matrices.push(getMatrix(c));
+    const items1 = 20;
+    for (let i = 0; i <= items1; ++i) {
+      const t = i / items1;
+      addFn({
+        x: THREE.MathUtils.lerp(-3, 2, t),
+        y: 1.5 - 0.2 * Math.sin((i * 3.14) / items1) * 3,
+        z: THREE.MathUtils.lerp(1, 2, t),
+        size: 2,
+        rotationDeg: THREE.MathUtils.lerp(150, 240, t),
+        isRed: false,
+      });
+    }
+
+    // Chain 2
+    const items2 = 40;
+    for (let i = 0; i <= items2; ++i) {
+      const t = i / items2;
+      addFn({
+        x: THREE.MathUtils.lerp(-20, -3.5, t),
+        y: THREE.MathUtils.lerp(-12, 1.7, t),
+        z: THREE.MathUtils.lerp(0, 0.5, t),
+        size: THREE.MathUtils.lerp(4, 2, t),
+        rotationDeg: THREE.MathUtils.lerp(-40, 140, t),
+        isRed: false,
+      });
+    }
+    const items3 = 10;
+    for (let i = 0; i <= items3; ++i) {
+      const t = i / items3;
+      addFn({
+        x: THREE.MathUtils.lerp(-20, -18, t),
+        y: THREE.MathUtils.lerp(-12, -11, t),
+        z: THREE.MathUtils.lerp(0, -1, t),
+        size: THREE.MathUtils.lerp(4, 5, t),
+        rotationDeg: THREE.MathUtils.lerp(-40, -120, t),
+        isRed: false,
+      });
+    }
+
+    // Chain 3
+    const f = (x: number) => Math.pow(x, 2) / 20 - 1 * x;
+    const items4 = 36;
+    for (let i = 0; i < items4; ++i) {
+      const t = i / items4;
+      addFn({
+        x: THREE.MathUtils.lerp(11, 23, t),
+        y: 1.5 + Math.min(f(i) / 3, 0.4 * i),
+        z: THREE.MathUtils.lerp(3, 4, t),
+        size: 2,
+        rotationDeg: THREE.MathUtils.lerp(240, 440, t),
+        isRed: false,
+      });
+    }
+
+    const geo = createMergedLineGeometry(matrices);
+    return { grayMatrices: matrices, lineGeometry: geo };
+  })();
+
+  const meshRef = React.useRef<THREE.InstancedMesh>(null);
+
+  React.useEffect(() => {
+    if (!meshRef.current) return;
+    grayMatrices.forEach((mat, i) => {
+      meshRef.current!.setMatrixAt(i, mat);
+    });
+    meshRef.current.instanceMatrix.needsUpdate = true;
+  }, [grayMatrices]);
+
+  return (
+    <React.Fragment>
+      <instancedMesh
+        ref={meshRef}
+        key={grayMatrices.length}
+        args={[cellGeometry, grayMaterial, grayMatrices.length]}
+      />
+      <lineSegments2 geometry={lineGeometry}>
+        <lineMaterial
+          color={0xffffff}
+          linewidth={1.2}
+          worldUnits={false}
+          resolution={[size.width, size.height]}
+          alphaToCoverage={true}
+        />
+      </lineSegments2>
+    </React.Fragment>
+  );
 }
 
-function Scene({ selectedIndex }: SceneProps) {
-  const grayMeshRef = useRef<THREE.InstancedMesh>(null);
-  const redMeshRef = useRef<THREE.InstancedMesh>(null);
-  const { scene } = useThree();
+const SELECTION_ANIMATION_DURATION = 300;
+const ACTIVE_ANIMATION_DURATION = 700;
+const COUNT = DATA.length;
 
-  // Store base matrices for red cells (for animation back to original position)
-  const redCellBaseMatrices = useRef<THREE.Matrix4[]>([]);
+function RedCells() {
+  const meshRef = React.useRef<THREE.InstancedMesh>(null);
 
-  // Animation state per red cell (current animated values)
-  const redCellAnimState = useRef<{ yOffset: number; rotOffset: number }[]>(
-    Array(RED_CELL_COUNT)
-      .fill(null)
-      .map(() => ({ yOffset: 0, rotOffset: 0 })),
+  const [{ selectedCell, activeCell }, setState] = useStore(cellStore);
+
+  const stateRef = React.useRef<{
+    selectionChangedAt: number;
+    activeCellChangedAt: number;
+    currentPositions: CellData[];
+  }>({
+    selectionChangedAt: 0,
+    activeCellChangedAt: 0,
+    // mutable
+    currentPositions: Array.from({ length: COUNT }).map((_, i) => {
+      const t = i / COUNT;
+      return {
+        x: THREE.MathUtils.lerp(3, 10, t),
+        y: 1.5,
+        z: THREE.MathUtils.lerp(2.1, 2.5, t),
+        size: 2,
+        rotationDeg: 240,
+        isRed: true,
+      };
+    }),
+  });
+
+  const initialPositions = React.useMemo(
+    () =>
+      Array.from({ length: COUNT }).map((_, i) => {
+        const t = i / COUNT;
+        return {
+          x: THREE.MathUtils.lerp(3, 10, t),
+          y: 1.5,
+          z: THREE.MathUtils.lerp(2.1, 2.5, t),
+          size: 2,
+          rotationDeg: 240,
+          isRed: true,
+        };
+      }),
+    [],
   );
 
-  // Ref for red outlines to update in animation loop
-  const redOutlinesRef = useRef<LineSegments2 | null>(null);
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const now = performance.now();
 
-  // Dummy object for matrix calculations
-  const dummy = useMemo(() => new THREE.Object3D(), []);
-
-  // Build the scene and create outlines
-  const { whiteOutlines, redOutlines, redOutlineBasePositions } =
-    useMemo(() => {
-      const whiteOutlineMatrices: THREE.Matrix4[] = [];
-      const redOutlineMatrices: THREE.Matrix4[] = [];
-
-      let grayIdx = 0;
-      let redIdx = 0;
-
-      // Clear previous base matrices
-      redCellBaseMatrices.current = [];
-
-      // Helper function to add a cell instance
-      const addCell = (
-        x: number,
-        y: number,
-        z: number,
-        size: number,
-        rotationDeg: number,
-        isRed: boolean = false,
-      ) => {
-        dummy.position.set(x, y, z);
-        dummy.rotation.set(0, 0, 0);
-        dummy.rotateZ(THREE.MathUtils.degToRad(rotationDeg));
-        dummy.scale.set(size, size, 0.1);
-        dummy.updateMatrix();
-
-        const matrix = dummy.matrix.clone();
-
-        if (isRed) {
-          if (redMeshRef.current && redIdx < 1000) {
-            redMeshRef.current.setMatrixAt(redIdx, dummy.matrix);
-            redOutlineMatrices.push(matrix);
-            // Store base matrix for animation
-            redCellBaseMatrices.current.push(matrix.clone());
-            redIdx++;
-          }
-        } else {
-          if (grayMeshRef.current && grayIdx < 1000) {
-            grayMeshRef.current.setMatrixAt(grayIdx, dummy.matrix);
-            whiteOutlineMatrices.push(matrix);
-            grayIdx++;
-          }
+      if (activeCell === null) {
+        if (e.key === "ArrowLeft") {
+          setState((prev) => ({
+            selectedCell:
+              prev.selectedCell !== 0 ? prev.selectedCell - 1 : DATA.length - 1,
+          }));
+          stateRef.current.selectionChangedAt = now;
         }
-      };
-
-      // Helper function to create merged outlines
-      const createMergedOutlines = (
-        matrices: THREE.Matrix4[],
-        color: number,
-      ): LineSegments2 => {
-        const basePositions = cellEdgesGeometry.attributes.position
-          .array as Float32Array;
-        const positionsPerOutline = basePositions.length;
-
-        const mergedPositions = new Float32Array(
-          matrices.length * positionsPerOutline,
-        );
-
-        const v = new THREE.Vector3();
-        let offset = 0;
-
-        for (const matrix of matrices) {
-          for (let i = 0; i < positionsPerOutline; i += 3) {
-            v.set(basePositions[i], basePositions[i + 1], basePositions[i + 2]);
-            v.applyMatrix4(matrix);
-            mergedPositions[offset++] = v.x;
-            mergedPositions[offset++] = v.y;
-            mergedPositions[offset++] = v.z;
-          }
+        if (e.key === "ArrowRight") {
+          setState((prev) => ({
+            selectedCell: (prev.selectedCell + 1) % DATA.length,
+          }));
+          stateRef.current.selectionChangedAt = now;
         }
-
-        const geometry = new LineSegmentsGeometry();
-        geometry.setPositions(mergedPositions);
-
-        const lineResolution = new THREE.Vector2(
-          window.innerWidth,
-          window.innerHeight,
-        );
-
-        const material = new LineMaterial({
-          color,
-          linewidth: 1.2,
-          worldUnits: false,
-          resolution: lineResolution,
-          alphaToCoverage: true,
-        });
-
-        return new LineSegments2(geometry, material);
-      };
-
-      // Build scene with all chains
-      const buildScene = () => {
-        const chain1 = () => {
-          const offset = 150;
-          const deltaY = -0.2;
-          const items1 = 20;
-
-          for (let i = 0; i <= items1; ++i) {
-            addCell(
-              extrapolate(i, items1, -3, 2),
-              1.5 + deltaY * Math.sin((i * 3.14) / items1) * 3,
-              extrapolate(i, items1, 1, 2),
-              2,
-              extrapolate(i, items1, offset, 240),
-              false,
-            );
-          }
-        };
-
-        const chain2 = () => {
-          const items2 = 40;
-
-          for (let i = 0; i <= items2; ++i) {
-            addCell(
-              extrapolate(i, items2, -20, -3.5),
-              extrapolate(i, items2, -12, 1.7),
-              extrapolate(i, items2, 0, 0.5),
-              extrapolate(i, items2, 4, 2),
-              extrapolate(i, items2, -40, 140),
-              false,
-            );
-          }
-
-          const items3 = 10;
-          for (let i = 0; i <= items3; ++i) {
-            addCell(
-              extrapolate(i, items3, -20, -18),
-              extrapolate(i, items3, -12, -11),
-              extrapolate(i, items3, 0, -1),
-              extrapolate(i, items3, 4, 5),
-              extrapolate(i, items3, -40, -120),
-              false,
-            );
-          }
-        };
-
-        const redChain = () => {
-          const items = 7;
-          for (let i = 0; i <= items; ++i) {
-            addCell(
-              extrapolate(i, items, 3, 10),
-              1.5,
-              extrapolate(i, items, 2, 2.5),
-              2,
-              240,
-              true,
-            );
-          }
-        };
-
-        const chain3 = () => {
-          const f = (x: number) => Math.pow(x, 2) / 20 - 1 * x;
-
-          const items = 36;
-          for (let i = 0; i < items; ++i) {
-            addCell(
-              extrapolate(i, items, 11, 23),
-              1.5 + Math.min(f(i) / 3, 0.4 * i),
-              extrapolate(i, items, 3, 4),
-              2,
-              extrapolate(i, items, 240, 440),
-              false,
-            );
-          }
-        };
-
-        chain1();
-        chain2();
-        redChain();
-        chain3();
-      };
-
-      buildScene();
-
-      // Update instance counts
-      if (grayMeshRef.current) {
-        grayMeshRef.current.instanceMatrix.needsUpdate = true;
       }
-      if (redMeshRef.current) {
-        redMeshRef.current.instanceMatrix.needsUpdate = true;
+      if (activeCell === null) {
+        if (e.key === "Enter") {
+          setState({ activeCell: selectedCell });
+          stateRef.current.activeCellChangedAt = now;
+        }
       }
-
-      // Create merged outlines
-      const whiteOutlines = createMergedOutlines(
-        whiteOutlineMatrices,
-        0xffffff,
-      );
-      const redOutlines = createMergedOutlines(redOutlineMatrices, 0xbd4540);
-
-      // Store base positions for red outlines (for animation)
-      const basePositions = cellEdgesGeometry.attributes.position
-        .array as Float32Array;
-
-      return {
-        whiteOutlines,
-        redOutlines,
-        redOutlineBasePositions: basePositions,
-      };
-    }, [dummy]);
-
-  // Store red outlines ref for animation
-  useLayoutEffect(() => {
-    redOutlinesRef.current = redOutlines;
-  }, [redOutlines]);
-
-  // Add outlines to scene
-  useLayoutEffect(() => {
-    if (scene) {
-      scene.add(whiteOutlines);
-      scene.add(redOutlines);
-
-      return () => {
-        scene.remove(whiteOutlines);
-        scene.remove(redOutlines);
-      };
-    }
-  }, [whiteOutlines, redOutlines, scene]);
-
-  // Initialize first cell as selected
-  useLayoutEffect(() => {
-    // Set initial animation state for first cell
-    redCellAnimState.current[0] = {
-      yOffset: SELECTION_Y_OFFSET,
-      rotOffset: SELECTION_ROTATION_OFFSET,
+      if (activeCell !== null) {
+        if (e.key === "Escape") {
+          setState({ activeCell: null });
+          stateRef.current.activeCellChangedAt = now;
+        }
+      }
     };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [activeCell, selectedCell, setState]);
 
-    // Update the matrix for the first cell
-    if (redMeshRef.current && redCellBaseMatrices.current.length > 0) {
-      const baseMatrix = redCellBaseMatrices.current[0];
-      dummy.matrix.copy(baseMatrix);
-      dummy.matrix.decompose(dummy.position, dummy.quaternion, dummy.scale);
-      dummy.position.y += SELECTION_Y_OFFSET;
-      dummy.rotateZ(THREE.MathUtils.degToRad(SELECTION_ROTATION_OFFSET));
-      dummy.updateMatrix();
-      redMeshRef.current.setMatrixAt(0, dummy.matrix);
-      redMeshRef.current.instanceMatrix.needsUpdate = true;
+  useFrame(() => {
+    if (!meshRef.current) return;
 
-      // Also update outline for first cell
-      updateRedOutlines();
-    }
-  }, [dummy]);
+    const time = performance.now();
 
-  // Helper to update red outlines based on current cell matrices
-  const updateRedOutlines = () => {
-    if (!redOutlinesRef.current || !redOutlineBasePositions) return;
+    const { selectionChangedAt, activeCellChangedAt, currentPositions } =
+      stateRef.current;
 
-    const basePositions = redOutlineBasePositions;
-    const positionsPerCell = basePositions.length;
-    const totalPositions = RED_CELL_COUNT * positionsPerCell;
-    const newPositions = new Float32Array(totalPositions);
+    const selectionElapsed = time - selectionChangedAt;
+    const activeElapsed = time - activeCellChangedAt;
 
-    const v = new THREE.Vector3();
+    const animation =
+      selectionChangedAt > activeCellChangedAt
+        ? "selection"
+        : activeElapsed > ACTIVE_ANIMATION_DURATION
+          ? "stale"
+          : "active";
 
-    for (let cellIdx = 0; cellIdx < RED_CELL_COUNT; cellIdx++) {
-      const baseMatrix = redCellBaseMatrices.current[cellIdx];
-      if (!baseMatrix) continue;
+    const DURATION =
+      animation === "active"
+        ? ACTIVE_ANIMATION_DURATION
+        : SELECTION_ANIMATION_DURATION;
 
-      const { yOffset, rotOffset } = redCellAnimState.current[cellIdx];
+    let t =
+      animation === "active"
+        ? Math.min(activeElapsed / DURATION, 1)
+        : Math.min(selectionElapsed / DURATION, 1);
 
-      // Build animated matrix
-      dummy.matrix.copy(baseMatrix);
-      dummy.matrix.decompose(dummy.position, dummy.quaternion, dummy.scale);
-      dummy.position.y += yOffset;
-      dummy.rotateZ(THREE.MathUtils.degToRad(rotOffset));
-      dummy.updateMatrix();
+    t *= t;
 
-      // Transform outline positions
-      const cellOffset = cellIdx * positionsPerCell;
-      for (let i = 0; i < positionsPerCell; i += 3) {
-        v.set(basePositions[i], basePositions[i + 1], basePositions[i + 2]);
-        v.applyMatrix4(dummy.matrix);
-        newPositions[cellOffset + i] = v.x;
-        newPositions[cellOffset + i + 1] = v.y;
-        newPositions[cellOffset + i + 2] = v.z;
-      }
-    }
+    for (let i = 0; i < COUNT; ++i) {
+      const initPos = initialPositions[i];
+      const currentPos = currentPositions[i];
 
-    redOutlinesRef.current.geometry.setPositions(newPositions);
-  };
+      const isSelected = selectedCell === i;
+      const isActive = activeCell === i;
 
-  // Animation loop
-  useFrame((_, delta) => {
-    if (!redMeshRef.current || redCellBaseMatrices.current.length === 0) return;
+      const targetY = isActive ? 0 : isSelected ? initPos.y + 2.5 : initPos.y;
+      const targetX = isActive ? -8 : initPos.x;
+      const targetZ = isActive ? 8 : initPos.z;
+      const targetRot = isActive
+        ? 0
+        : isSelected
+          ? initPos.rotationDeg
+          : initPos.rotationDeg;
 
-    const lerpFactor = 1 - Math.pow(0.001, delta); // Smooth lerp
+      const movingForward = targetZ > initPos.z;
+      const zt = movingForward
+        ? Math.max(0, (t - 0.1) / 0.9)
+        : Math.min(1, t / 0.3);
 
-    let needsOutlineUpdate = false;
-
-    for (let i = 0; i < RED_CELL_COUNT; i++) {
-      const isSelected = i === selectedIndex;
-      const targetY = isSelected ? SELECTION_Y_OFFSET : 0;
-      const targetRot = isSelected ? SELECTION_ROTATION_OFFSET : 0;
-
-      const currentState = redCellAnimState.current[i];
-      const prevY = currentState.yOffset;
-      const prevRot = currentState.rotOffset;
-
-      // Lerp current values toward targets
-      currentState.yOffset = THREE.MathUtils.lerp(
-        currentState.yOffset,
-        targetY,
-        lerpFactor,
-      );
-      currentState.rotOffset = THREE.MathUtils.lerp(
-        currentState.rotOffset,
+      currentPos.x = THREE.MathUtils.lerp(currentPos.x, targetX, t);
+      currentPos.y = isActive
+        ? THREE.MathUtils.lerp(currentPos.y, targetY, t)
+        : THREE.MathUtils.lerp(currentPos.y, targetY, t);
+      currentPos.z = THREE.MathUtils.lerp(currentPos.z, targetZ, zt);
+      currentPos.rotationDeg = THREE.MathUtils.lerp(
+        currentPos.rotationDeg,
         targetRot,
-        lerpFactor,
+        t,
       );
 
-      // Check if values changed significantly
-      if (
-        Math.abs(currentState.yOffset - prevY) > 0.0001 ||
-        Math.abs(currentState.rotOffset - prevRot) > 0.0001
-      ) {
-        needsOutlineUpdate = true;
+      dummy.position.set(currentPos.x, currentPos.y, currentPos.z);
+      dummy.rotation.set(0, 0, 0);
+      dummy.rotateZ(THREE.MathUtils.degToRad(currentPos.rotationDeg));
+      dummy.scale.set(initPos.size, initPos.size, initPos.size);
+      dummy.updateMatrix();
 
-        // Rebuild matrix from base + offsets
-        const baseMatrix = redCellBaseMatrices.current[i];
-        dummy.matrix.copy(baseMatrix);
-        dummy.matrix.decompose(dummy.position, dummy.quaternion, dummy.scale);
-        dummy.position.y += currentState.yOffset;
-        dummy.rotateZ(THREE.MathUtils.degToRad(currentState.rotOffset));
-        dummy.updateMatrix();
-
-        redMeshRef.current.setMatrixAt(i, dummy.matrix);
-      }
+      meshRef.current.setMatrixAt(i, dummy.matrix);
     }
 
-    if (needsOutlineUpdate) {
-      redMeshRef.current.instanceMatrix.needsUpdate = true;
-      updateRedOutlines();
-    }
+    meshRef.current.instanceMatrix.needsUpdate = true;
   });
 
   return (
-    <>
-      <instancedMesh
-        ref={grayMeshRef}
-        args={[cellGeometry, grayMaterial, 1000]}
-      />
-      <instancedMesh
-        ref={redMeshRef}
-        args={[cellGeometry, redMaterial, 1000]}
-      />
-    </>
+    <instancedMesh ref={meshRef} args={[cellGeometry, redMaterial, COUNT]} />
+  );
+}
+
+function ThreeScene() {
+  return (
+    <Canvas
+      camera={{ position: [0, 0, 20], fov: 75 }}
+      style={{
+        position: "fixed",
+        height: "100vh",
+        width: "100vw",
+        inset: 0,
+        zIndex: -1,
+      }}
+      gl={{ antialias: true }}
+      className="fixed inset-0 h-screen w-screen"
+    >
+      <fog attach={"fog"} args={[0xe3dfde, 10, 60]} />
+      <Environment preset="city" />
+      <BackgroundChain />
+      <RedCells />
+    </Canvas>
+  );
+}
+
+export function AcMenu() {
+  return (
+    <React.Fragment>
+      <HTMLMenu />
+      <ThreeScene />
+    </React.Fragment>
   );
 }
 
 function HTMLMenu() {
+  const [{ activeCell, selectedCell }] = useStore(cellStore);
+  const hasActiveCell = activeCell !== null;
+
+  const createCircularArray = (currentIndex: number, siblings: number = 2) => {
+    const min = 0;
+    const max = DATA.length - 1;
+
+    return [
+      ...Array.from({ length: siblings })
+        .fill(null)
+        .map((_, i) => {
+          const n = currentIndex - (siblings - i);
+          if (n >= min) return n;
+          else return max + n + 1;
+        }),
+      currentIndex,
+      ...Array.from({ length: siblings })
+        .fill(null)
+        .map((_, i) => {
+          const n = currentIndex + (1 + i);
+          if (n <= max) return n;
+          else return (n % max) - 1;
+        }),
+    ];
+  };
+
+  const selectedIndexArray = createCircularArray(selectedCell);
+
+  const currentData = DATA[selectedCell];
+
   return (
-    <>
+    <React.Fragment>
       <div className="fixed top-[40%] -translate-y-[50%] left-0">
-        <div className="w-100 h-20 bg-linear-to-b from-red-950/80 to-red-700/80 relative overflow-clip">
+        <div
+          className={cn(
+            "w-100 h-20 will-change-[width] duration-300 bg-linear-to-b from-red-950/80 to-red-700/80 relative overflow-clip",
+            {
+              "w-0": hasActiveCell,
+            },
+          )}
+        >
           <div className="h-10 aspect-square rotate-45 bg-black/80 outline-2 outline-white right-12 translate-y-[50%] z-2 absolute" />
           <div className="absolute h-full w-[1.5px] bg-white/80 right-[calc(48px+(39px/2))]" />
           <div className="absolute bg-linear-to-r from-white/20 to-white h-[1px] w-[60%] right-0 top-[calc(50%-40px/4)]" />
@@ -412,23 +453,69 @@ function HTMLMenu() {
           <div className="absolute bg-linear-to-r from-white/20 to-white h-[1px] w-[calc((48px+39px/2)*2)] right-0 top-[calc(50%-40px/4)] rotate-42 -translate-x-[51px] -translate-y-[25px]" />
         </div>
       </div>
-      <div className="fixed top-[40%] -translate-y-[calc(50%+136px)] left-60">
-        <span className="uppercase text-4xl font-light leading-none">
-          Sequence 5
-        </span>
+      <div
+        className={
+          "fixed top-[40%] -translate-y-[calc(50%+136px)] left-60 overflow-clip"
+        }
+      >
+        <div
+          className={cn(
+            "grid overflow-clip transition-[transform,translate] duration-300",
+            {
+              "-translate-y-full": hasActiveCell,
+            },
+          )}
+        >
+          {selectedIndexArray.map((num, i) => {
+            const difference = 2 - i;
+
+            return (
+              <span
+                key={num}
+                className="col-start-1 row-start-1 uppercase text-4xl font-light leading-none transition-[transform] duration-300 will-change-[translate]"
+                style={{
+                  transform: `translateY(${100 * difference}%)`,
+                }}
+              >
+                {TITLES[num]}
+              </span>
+            );
+          })}
+        </div>
       </div>
-      <div className="fixed top-[40%] -translate-y-[calc(50%+80px)] left-60">
-        <span className="bg-stone-950/83 text-white uppercase text-6xl pt-2 px-2 font-light leading-none">
-          memory 7
+      <div className="fixed top-[40%] -translate-y-[calc(50%+80px)] left-60 overflow-clip">
+        <span
+          className={cn(
+            "bg-stone-950/83 text-white uppercase text-6xl pt-2 px-2 font-light leading-none block transition-[transform,translate,background-color] duration-300",
+            {
+              "-translate-y-full bg-transparent": hasActiveCell,
+            },
+          )}
+        >
+          {currentData.label}
         </span>
       </div>
 
-      <div className="h-20 fixed top-[40%] -translate-y-[50%] left-[414px] flex flex-col gap-1">
-        <span className="bg-stone-950/83 text-white uppercase text-2xl pt-2 px-2 font-light leading-none">
-          rodriguo pazzi
+      <div className="h-20 fixed top-[40%] -translate-y-[50%] left-[414px] flex flex-col gap-1 overflow-clip">
+        <span
+          className={cn(
+            "bg-stone-950/83 text-white uppercase text-2xl pt-2 px-2 font-light leading-none block transition-[transform,translate,background-color] duration-300",
+            {
+              "-translate-y-full bg-transparent": hasActiveCell,
+            },
+          )}
+        >
+          {currentData.entity}
         </span>
-        <span className="bg-stone-700/80 text-white uppercase text-2xl pt-2 px-2 font-light leading-none w-fit">
-          venice, 1482
+        <span
+          className={cn(
+            "bg-stone-700/80 text-white uppercase text-2xl pt-2 px-2 font-light leading-none w-fit block transition-[transform,translate,background-color] transition-trans duration-300",
+            {
+              "translate-y-[calc(120%+4px)] bg-transparent": hasActiveCell,
+            },
+          )}
+        >
+          {currentData.detail}
         </span>
       </div>
 
@@ -445,41 +532,6 @@ function HTMLMenu() {
           </div>
         </div>
       </div>
-    </>
-  );
-}
-
-export function AcMenu() {
-  const [selectedIndex, setSelectedIndex] = useState<number>(0);
-
-  // Keyboard event handler
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") {
-        setSelectedIndex(
-          (prev) => (prev - 1 + RED_CELL_COUNT) % RED_CELL_COUNT,
-        );
-      } else if (e.key === "ArrowRight") {
-        setSelectedIndex((prev) => (prev + 1) % RED_CELL_COUNT);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
-
-  return (
-    <>
-      <Canvas
-        camera={{ position: [0, 0, 20], fov: 75, near: 0.1, far: 1000 }}
-        style={{ width: "100vw", height: "100vh" }}
-      >
-        <color attach="background" args={[0xe3dfde]} />
-        <fog attach="fog" args={[0xe3dfde, 10, 60]} />
-        <Environment preset="apartment" />
-        <Scene selectedIndex={selectedIndex} />
-      </Canvas>
-      <HTMLMenu />
-    </>
+    </React.Fragment>
   );
 }

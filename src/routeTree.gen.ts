@@ -9,10 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ScratchpadRouteImport } from './routes/scratchpad'
 import { Route as ResumeRouteImport } from './routes/resume'
 import { Route as AcRouteImport } from './routes/ac'
 import { Route as IndexRouteImport } from './routes/index'
 
+const ScratchpadRoute = ScratchpadRouteImport.update({
+  id: '/scratchpad',
+  path: '/scratchpad',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResumeRoute = ResumeRouteImport.update({
   id: '/resume',
   path: '/resume',
@@ -33,34 +39,45 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/ac': typeof AcRoute
   '/resume': typeof ResumeRoute
+  '/scratchpad': typeof ScratchpadRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/ac': typeof AcRoute
   '/resume': typeof ResumeRoute
+  '/scratchpad': typeof ScratchpadRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/ac': typeof AcRoute
   '/resume': typeof ResumeRoute
+  '/scratchpad': typeof ScratchpadRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/ac' | '/resume'
+  fullPaths: '/' | '/ac' | '/resume' | '/scratchpad'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/ac' | '/resume'
-  id: '__root__' | '/' | '/ac' | '/resume'
+  to: '/' | '/ac' | '/resume' | '/scratchpad'
+  id: '__root__' | '/' | '/ac' | '/resume' | '/scratchpad'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AcRoute: typeof AcRoute
   ResumeRoute: typeof ResumeRoute
+  ScratchpadRoute: typeof ScratchpadRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/scratchpad': {
+      id: '/scratchpad'
+      path: '/scratchpad'
+      fullPath: '/scratchpad'
+      preLoaderRoute: typeof ScratchpadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/resume': {
       id: '/resume'
       path: '/resume'
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AcRoute: AcRoute,
   ResumeRoute: ResumeRoute,
+  ScratchpadRoute: ScratchpadRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

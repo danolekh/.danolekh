@@ -51,6 +51,7 @@ const cellOutlineGeometry = new LineSegmentsGeometry().fromEdgesGeometry(
 
 const starGeometry = new THREE.PlaneGeometry(1, 1);
 const unitQuadGeometry = new THREE.PlaneGeometry(1, 1);
+
 export {
   cellGeometry,
   cellEdgesGeometry,
