@@ -260,7 +260,7 @@ const DATA = [
               className="flex items-center justify-between p-4 bg-stone-900 hover:bg-red-950/30 border border-stone-800 hover:border-red-500 group"
             >
               <span className="text-stone-400 group-hover:text-red-400 font-mono text-sm">
-                Telegram
+                TELEGRAM
               </span>
               <span className="text-white text-sm">Dan</span>
             </a>
