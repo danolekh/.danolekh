@@ -284,7 +284,7 @@ const DATA = [
     entity: "SPOTIFY",
     detail: "IDLE",
     component: () => (
-      <div className="max-w-2xl h-full flex items-center justify-center">
+      <div className="h-full flex items-center justify-center">
         <div className="text-center space-y-4 opacity-50">
           <div className="flex items-center justify-center gap-1 h-12">
             <div className="w-1 h-full bg-red-500 animate-[pulse_1s_ease-in-out_infinite]" />
