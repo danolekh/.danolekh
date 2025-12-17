@@ -140,7 +140,7 @@ const DATA = [
 
         <AnimusSection title="Deployed Units">
           <ProjectCard
-            href="https://www.sportmagaz.com"
+            href="https://www.sportmagaz.com.ua"
             title="SportMagaz"
             jobRole="Freelance"
             description="Full e-commerce platform built from scratch (no CMS). Custom admin panel for 2000+ products."
