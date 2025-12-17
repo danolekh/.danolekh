@@ -15,6 +15,7 @@ import { cellGeometry, cellEdgesGeometry } from "./-geometries";
 import { createStore, useStore } from "@/lib/create-store";
 import { cn } from "@/lib/utils";
 import { AnimusSection, DataRow, ProjectCard, TechTag } from "./-animus";
+import { Kbd, KbdGroup } from "@/components/ui/kbd";
 
 export const Route = createFileRoute("/")({ component: App, ssr: false });
 
@@ -535,7 +536,7 @@ function RedCells() {
         }
       }
       if (activeCell !== null) {
-        if (e.key === "Escape") {
+        if (e.key === "Escape" || e.key === "Backspace") {
           setState({ activeCell: null });
           stateRef.current.activeCellChangedAt = now;
         }
@@ -770,9 +771,27 @@ function HTMLMenu() {
             <span className="text-lg uppercase">dna menu</span>
           </div>
           <div className="flex items-center gap-6">
-            <span>Left</span>
-            <span>Right</span>
-            <span>Select</span>
+            {!hasActiveCell ? (
+              <div className="flex items-center gap-1 cursor-pointer">
+                <Kbd>↵</Kbd>
+                <span>Select</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1 cursor-pointer">
+                <KbdGroup>
+                  <Kbd>⎋</Kbd>/<Kbd>⌫</Kbd>
+                </KbdGroup>
+                <span>Deselect</span>
+              </div>
+            )}
+            <div className="flex items-center gap-1 cursor-pointer">
+              <Kbd>←</Kbd>
+              <span>Left</span>
+            </div>
+            <div className="flex items-center gap-1 cursor-pointer">
+              <Kbd>→</Kbd>
+              <span>Right</span>
+            </div>
           </div>
         </div>
       </div>
