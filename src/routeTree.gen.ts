@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ScratchpadRouteImport } from './routes/scratchpad'
 import { Route as ResumeRouteImport } from './routes/resume'
-import { Route as AcRouteImport } from './routes/ac'
 import { Route as IndexRouteImport } from './routes/index'
 
 const ScratchpadRoute = ScratchpadRouteImport.update({
@@ -24,11 +23,6 @@ const ResumeRoute = ResumeRouteImport.update({
   path: '/resume',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AcRoute = AcRouteImport.update({
-  id: '/ac',
-  path: '/ac',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -37,34 +31,30 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/ac': typeof AcRoute
   '/resume': typeof ResumeRoute
   '/scratchpad': typeof ScratchpadRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/ac': typeof AcRoute
   '/resume': typeof ResumeRoute
   '/scratchpad': typeof ScratchpadRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/ac': typeof AcRoute
   '/resume': typeof ResumeRoute
   '/scratchpad': typeof ScratchpadRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/ac' | '/resume' | '/scratchpad'
+  fullPaths: '/' | '/resume' | '/scratchpad'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/ac' | '/resume' | '/scratchpad'
-  id: '__root__' | '/' | '/ac' | '/resume' | '/scratchpad'
+  to: '/' | '/resume' | '/scratchpad'
+  id: '__root__' | '/' | '/resume' | '/scratchpad'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AcRoute: typeof AcRoute
   ResumeRoute: typeof ResumeRoute
   ScratchpadRoute: typeof ScratchpadRoute
 }
@@ -85,13 +75,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResumeRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/ac': {
-      id: '/ac'
-      path: '/ac'
-      fullPath: '/ac'
-      preLoaderRoute: typeof AcRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -104,7 +87,6 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AcRoute: AcRoute,
   ResumeRoute: ResumeRoute,
   ScratchpadRoute: ScratchpadRoute,
 }
