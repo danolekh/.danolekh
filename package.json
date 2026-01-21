@@ -8,9 +8,15 @@
     "preview": "vite preview",
     "deploy": "pnpm run build && wrangler deploy",
     "cf-typegen": "wrangler types",
-    "test": "vitest run"
+    "test": "vitest run",
+    "check-types": "tsc --noEmit",
+    "db:studio": "drizzle-kit studio",
+    "db:migrate": "drizzle-kit migrate",
+    "db:generate": "drizzle-kit generate",
+    "db:seed": "bun run src/lib/db/seed.ts"
   },
   "dependencies": {
+    "@libsql/client": "^0.17.0",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.4.2",
     "@tailwindcss/vite": "^4.0.6",
@@ -23,6 +29,8 @@
     "@types/three": "^0.182.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "drizzle-orm": "1.0.0-beta.11-05230d9",
+    "effect": "^3.19.14",
     "lucide-react": "^0.544.0",
     "nitro": "latest",
     "react": "^19.2.3",
@@ -42,11 +50,13 @@
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "@vitejs/plugin-react": "^5.0.4",
+    "drizzle-kit": "1.0.0-beta.11-05230d9",
+    "drizzle-seeder": "^0.2.1",
     "jsdom": "^27.0.0",
     "typescript": "^5.7.2",
     "vite": "^7.1.7",
     "vitest": "^3.0.5",
     "web-vitals": "^5.1.0",
-    "wrangler": "^4.55.0"
+    "wrangler": "^4.59.3"
   }
 }

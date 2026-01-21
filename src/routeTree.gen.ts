@@ -11,7 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ScratchpadRouteImport } from './routes/scratchpad'
 import { Route as ResumeRouteImport } from './routes/resume'
+import { Route as FeedRouteImport } from './routes/feed'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiBooksRouteImport } from './routes/api/books'
 
 const ScratchpadRoute = ScratchpadRouteImport.update({
   id: '/scratchpad',
@@ -23,40 +25,58 @@ const ResumeRoute = ResumeRouteImport.update({
   path: '/resume',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FeedRoute = FeedRouteImport.update({
+  id: '/feed',
+  path: '/feed',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiBooksRoute = ApiBooksRouteImport.update({
+  id: '/api/books',
+  path: '/api/books',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/feed': typeof FeedRoute
   '/resume': typeof ResumeRoute
   '/scratchpad': typeof ScratchpadRoute
+  '/api/books': typeof ApiBooksRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/feed': typeof FeedRoute
   '/resume': typeof ResumeRoute
   '/scratchpad': typeof ScratchpadRoute
+  '/api/books': typeof ApiBooksRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/feed': typeof FeedRoute
   '/resume': typeof ResumeRoute
   '/scratchpad': typeof ScratchpadRoute
+  '/api/books': typeof ApiBooksRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/resume' | '/scratchpad'
+  fullPaths: '/' | '/feed' | '/resume' | '/scratchpad' | '/api/books'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/resume' | '/scratchpad'
-  id: '__root__' | '/' | '/resume' | '/scratchpad'
+  to: '/' | '/feed' | '/resume' | '/scratchpad' | '/api/books'
+  id: '__root__' | '/' | '/feed' | '/resume' | '/scratchpad' | '/api/books'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  FeedRoute: typeof FeedRoute
   ResumeRoute: typeof ResumeRoute
   ScratchpadRoute: typeof ScratchpadRoute
+  ApiBooksRoute: typeof ApiBooksRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -75,6 +95,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResumeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/feed': {
+      id: '/feed'
+      path: '/feed'
+      fullPath: '/feed'
+      preLoaderRoute: typeof FeedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -82,13 +109,22 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/books': {
+      id: '/api/books'
+      path: '/api/books'
+      fullPath: '/api/books'
+      preLoaderRoute: typeof ApiBooksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  FeedRoute: FeedRoute,
   ResumeRoute: ResumeRoute,
   ScratchpadRoute: ScratchpadRoute,
+  ApiBooksRoute: ApiBooksRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
