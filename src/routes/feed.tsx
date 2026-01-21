@@ -52,9 +52,7 @@ const getFeedItems = createServerFn({ method: "GET" }).handler(async () => {
     })),
   ];
 
-  feedItems.sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-  );
+  feedItems.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
   return feedItems;
 });
@@ -91,11 +89,7 @@ function FeedPage() {
   );
 }
 
-function ReviewCard({
-  review,
-}: {
-  review: Omit<Review, "bookId"> & { book: Book };
-}) {
+function ReviewCard({ review }: { review: Omit<Review, "bookId"> & { book: Book } }) {
   return (
     <div className="bg-stone-900/50 border-l-4 border-red-600 p-6">
       <div className="flex gap-4">
@@ -109,12 +103,8 @@ function ReviewCard({
         <div className="flex-1">
           <div className="flex items-start justify-between">
             <div>
-              <h3 className="text-lg font-medium text-white">
-                {review.book.title}
-              </h3>
-              {review.book.author && (
-                <p className="text-stone-400 text-sm">{review.book.author}</p>
-              )}
+              <h3 className="text-lg font-medium text-white">{review.book.title}</h3>
+              {review.book.author && <p className="text-stone-400 text-sm">{review.book.author}</p>}
             </div>
           </div>
 
@@ -123,23 +113,17 @@ function ReviewCard({
               {[1, 2, 3, 4, 5].map((star) => (
                 <span
                   key={star}
-                  className={
-                    star <= review.rating! ? "text-red-500" : "text-stone-600"
-                  }
+                  className={star <= review.rating! ? "text-red-500" : "text-stone-600"}
                 >
                   *
                 </span>
               ))}
-              <span className="text-stone-400 text-sm ml-2">
-                {review.rating}/5
-              </span>
+              <span className="text-stone-400 text-sm ml-2">{review.rating}/5</span>
             </div>
           )}
 
           {review.body && (
-            <p className="text-stone-300 mt-3 text-sm leading-relaxed">
-              {review.body}
-            </p>
+            <p className="text-stone-300 mt-3 text-sm leading-relaxed">{review.body}</p>
           )}
 
           <time className="text-stone-500 text-xs font-mono mt-4 block">
@@ -157,9 +141,7 @@ function NoteCard({ note }: { note: any }) {
       <div className="flex items-start justify-between mb-3">
         <div>
           <h3 className="text-lg font-medium text-white">{note.book.title}</h3>
-          {note.book.author && (
-            <p className="text-stone-400 text-sm">{note.book.author}</p>
-          )}
+          {note.book.author && <p className="text-stone-400 text-sm">{note.book.author}</p>}
         </div>
         {(note.chapter || note.location) && (
           <span className="text-xs font-mono text-amber-400/70">
@@ -177,9 +159,7 @@ function NoteCard({ note }: { note: any }) {
       )}
 
       {note.noteContent && (
-        <p className="text-stone-300 text-sm leading-relaxed">
-          {note.noteContent}
-        </p>
+        <p className="text-stone-300 text-sm leading-relaxed">{note.noteContent}</p>
       )}
 
       <time className="text-stone-500 text-xs font-mono mt-4 block">

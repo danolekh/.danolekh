@@ -45,17 +45,9 @@ const generateUnitCellGeometry = () => {
 
 const cellGeometry = generateUnitCellGeometry();
 const cellEdgesGeometry = new THREE.EdgesGeometry(cellGeometry, 15);
-const cellOutlineGeometry = new LineSegmentsGeometry().fromEdgesGeometry(
-  cellEdgesGeometry,
-);
+const cellOutlineGeometry = new LineSegmentsGeometry().fromEdgesGeometry(cellEdgesGeometry);
 
 const starGeometry = new THREE.PlaneGeometry(1, 1);
 const unitQuadGeometry = new THREE.PlaneGeometry(1, 1);
 
-export {
-  cellGeometry,
-  cellEdgesGeometry,
-  cellOutlineGeometry,
-  starGeometry,
-  unitQuadGeometry,
-};
+export { cellGeometry, cellEdgesGeometry, cellOutlineGeometry, starGeometry, unitQuadGeometry };

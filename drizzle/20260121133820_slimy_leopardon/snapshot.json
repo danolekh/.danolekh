@@ -2,9 +2,7 @@
   "version": "7",
   "dialect": "sqlite",
   "id": "ea6b45fc-460f-4591-b3fc-34ae927f92dd",
-  "prevIds": [
-    "00000000-0000-0000-0000-000000000000"
-  ],
+  "prevIds": ["00000000-0000-0000-0000-000000000000"],
   "ddl": [
     {
       "name": "books",
@@ -179,13 +177,9 @@
       "table": "reviews"
     },
     {
-      "columns": [
-        "book_id"
-      ],
+      "columns": ["book_id"],
       "tableTo": "books",
-      "columnsTo": [
-        "id"
-      ],
+      "columnsTo": ["id"],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
       "nameExplicit": false,
@@ -194,13 +188,9 @@
       "table": "notes"
     },
     {
-      "columns": [
-        "book_id"
-      ],
+      "columns": ["book_id"],
       "tableTo": "books",
-      "columnsTo": [
-        "id"
-      ],
+      "columnsTo": ["id"],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
       "nameExplicit": false,
@@ -209,37 +199,28 @@
       "table": "reviews"
     },
     {
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "nameExplicit": false,
       "name": "books_pk",
       "table": "books",
       "entityType": "pks"
     },
     {
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "nameExplicit": false,
       "name": "notes_pk",
       "table": "notes",
       "entityType": "pks"
     },
     {
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "nameExplicit": false,
       "name": "reviews_pk",
       "table": "reviews",
       "entityType": "pks"
     },
     {
-      "columns": [
-        "title",
-        "author"
-      ],
+      "columns": ["title", "author"],
       "nameExplicit": false,
       "name": "books_title_author_unique",
       "entityType": "uniques",

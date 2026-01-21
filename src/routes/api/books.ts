@@ -11,13 +11,10 @@ export const Route = createFileRoute("/api/books")({
       POST: async ({ request }) => {
         const authHeader = request.headers.get("Authorization");
         if (!authHeader?.startsWith("Bearer ")) {
-          return new Response(
-            JSON.stringify({ error: "Missing bearer token" }),
-            {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            },
-          );
+          return new Response(JSON.stringify({ error: "Missing bearer token" }), {
+            status: 401,
+            headers: { "Content-Type": "application/json" },
+          });
         }
 
         const token = authHeader.slice(7);

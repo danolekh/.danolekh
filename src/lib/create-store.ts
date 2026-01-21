@@ -13,8 +13,7 @@ function createStore<T extends object>(initialState: T): Store<T> {
   return {
     getState: () => state,
     setState: (partial) => {
-      const newPartial =
-        typeof partial === "function" ? partial(state) : partial;
+      const newPartial = typeof partial === "function" ? partial(state) : partial;
       state = { ...state, ...newPartial };
       listeners.forEach((listener) => {
         listener();
@@ -27,14 +26,8 @@ function createStore<T extends object>(initialState: T): Store<T> {
   };
 }
 
-function useStore<T extends object>(
-  store: Store<T>,
-): [T, Store<T>["setState"]] {
-  const state = useSyncExternalStore(
-    store.subscribe,
-    store.getState,
-    store.getState,
-  );
+function useStore<T extends object>(store: Store<T>): [T, Store<T>["setState"]] {
+  const state = useSyncExternalStore(store.subscribe, store.getState, store.getState);
   return [state, store.setState];
 }
 

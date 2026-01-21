@@ -1,6 +1,6 @@
 import * as schema from "./schema";
 
-import { generate, seed, reset } from "drizzle-seeder/sqlite-core";
+import { generate, seed } from "drizzle-seeder/sqlite-core";
 import { db } from ".";
 
 const BOOK_COUNT = 30;
@@ -30,8 +30,7 @@ const generator = generate(schema, {
           const bookIndex = Math.floor(ctx.index / AVG_REVIEWS_PER_BOOK);
           return ctx.ref.books[bookIndex % BOOK_COUNT]!.id((v) => v);
         },
-        rating: (ctx) =>
-          ctx.faker.number.float({ min: 1, max: 5, fractionDigits: 1 }),
+        rating: (ctx) => ctx.faker.number.float({ min: 1, max: 5, fractionDigits: 1 }),
         body: (ctx) => ctx.faker.lorem.paragraph(),
       },
     },
