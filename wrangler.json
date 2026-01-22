@@ -14,6 +14,21 @@
       "database_id": "cd63ecfa-4674-4511-bbc3-99c470fb2a65"
     }
   ],
+  "queues": {
+    "producers": [
+      {
+        "binding": "INDEX_BOOK_QUEUE",
+        "queue": "index-book-queue"
+      }
+    ],
+    "consumers": [
+      {
+        "queue": "index-book-queue",
+        "max_retries": 3,
+        "dead_letter_queue": "index-book-dlq"
+      }
+    ]
+  },
   "observability": {
     "enabled": false,
     "head_sampling_rate": 1,
