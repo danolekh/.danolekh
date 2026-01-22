@@ -49,6 +49,8 @@ const generator = generate(schema, {
   },
 });
 
+// await reset(db as any, schema);
+
 await seed(db as any, generator);
 
 console.log("Seeding complete!");

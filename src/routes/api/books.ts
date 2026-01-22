@@ -79,15 +79,15 @@ export const Route = createFileRoute("/api/books")({
           await db.insert(reviews).values({
             bookId: bookId,
             rating: reviewEvent.rating,
-            body: reviewEvent.content,
+            body: reviewEvent.body,
             createdAt: now,
           });
         } else {
           const noteEvent = event as NoteEvent;
           await db.insert(notes).values({
             bookId,
-            referenceText: noteEvent.selectionText,
-            body: noteEvent.noteContent,
+            referenceText: noteEvent.referenceText,
+            body: noteEvent.body,
             createdAt: now,
           });
         }

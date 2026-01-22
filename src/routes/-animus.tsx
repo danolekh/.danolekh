@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { ExternalLinkIcon } from "lucide-react";
+import { IconExternalLink } from "@tabler/icons-react";
 
 export const AnimusSection = ({
   title,
@@ -20,7 +20,9 @@ export const AnimusSection = ({
 
 export const DataRow = ({ label, value }: { label: string; value: string }) => (
   <div className="flex justify-between items-baseline border-b border-white/10 py-2 font-mono text-sm">
-    <span className="text-stone-400 uppercase tracking-wider text-xs">{label}</span>
+    <span className="text-stone-400 uppercase tracking-wider text-xs">
+      {label}
+    </span>
     <span className="text-white text-right">{value}</span>
   </div>
 );
@@ -50,15 +52,21 @@ export const ProjectCard = ({
         <a href={href} target="_blank" rel="noopener">
           <h3 className="text-xl text-white font-light uppercase tracking-wide flex items-center justify-center gap-2">
             {title}
-            <ExternalLinkIcon className="size-4" />
+            <IconExternalLink className="size-4" />
           </h3>
         </a>
       ) : (
-        <h3 className="text-xl text-white font-light uppercase tracking-wide">{title}</h3>
+        <h3 className="text-xl text-white font-light uppercase tracking-wide">
+          {title}
+        </h3>
       )}
-      <span className="text-xs text-red-500 border border-red-500/30 px-1 py-0.5">{jobRole}</span>
+      <span className="text-xs text-red-500 border border-red-500/30 px-1 py-0.5">
+        {jobRole}
+      </span>
     </div>
-    <p className="text-stone-400 text-sm mb-4 font-light leading-relaxed">{description}</p>
+    <p className="text-stone-400 text-sm mb-4 font-light leading-relaxed">
+      {description}
+    </p>
     <div className="flex flex-wrap">
       {stack.map((s) => (
         <TechTag key={s} label={s} />

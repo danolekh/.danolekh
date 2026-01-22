@@ -3,7 +3,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { desc, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { books, reviews, notes } from "@/lib/db/schema";
-import type { Book, Review } from "@/lib/db/schema";
+import type { Book, Note, Review } from "@/lib/db/schema";
+import { IconStar } from "@tabler/icons-react";
 
 const getFeedItems = createServerFn({ method: "GET" }).handler(async () => {
   const [reviewsData, notesData] = await Promise.all([
@@ -52,13 +53,16 @@ const getFeedItems = createServerFn({ method: "GET" }).handler(async () => {
     })),
   ];
 
-  feedItems.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  feedItems.sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
 
   return feedItems;
 });
 
 export const Route = createFileRoute("/feed")({
   component: FeedPage,
+  ssr: true,
   loader: () => getFeedItems(),
 });
 
@@ -89,10 +93,14 @@ function FeedPage() {
   );
 }
 
-function ReviewCard({ review }: { review: Omit<Review, "bookId"> & { book: Book } }) {
+function ReviewCard({
+  review,
+}: {
+  review: Omit<Review, "bookId"> & { book: Book };
+}) {
   return (
-    <div className="bg-stone-900/50 border-l-4 border-red-600 p-6">
-      <div className="flex gap-4">
+    <div className="p-4 space-y-4">
+      <div className="flex gap-2">
         {review.book.coverUrl && (
           <img
             src={review.book.coverUrl}
@@ -100,81 +108,104 @@ function ReviewCard({ review }: { review: Omit<Review, "bookId"> & { book: Book 
             className="w-16 h-24 object-cover rounded"
           />
         )}
-        <div className="flex-1">
-          <div className="flex items-start justify-between">
-            <div>
-              <h3 className="text-lg font-medium text-white">{review.book.title}</h3>
-              {review.book.author && <p className="text-stone-400 text-sm">{review.book.author}</p>}
-            </div>
+        <div className="h-24 flex flex-col">
+          <div className="flex-1">
+            <h3 className="text-lg font-medium">{review.book.title}</h3>
+            <p className="text-muted-foreground text-sm">
+              {review.book.author}
+            </p>
           </div>
-
           {review.rating !== null && (
-            <div className="flex items-center gap-1 mt-2">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <span
-                  key={star}
-                  className={star <= review.rating! ? "text-red-500" : "text-stone-600"}
-                >
-                  *
-                </span>
-              ))}
-              <span className="text-stone-400 text-sm ml-2">{review.rating}/5</span>
+            <div className="flex items-center gap-2">
+              <div className="gap-1 flex items-center">
+                {[1, 2, 3, 4, 5].map((star) => {
+                  const full = star <= Math.floor(review.rating!);
+
+                  if (full) {
+                    return (
+                      <IconStar
+                        key={star}
+                        className="size-4 text-foreground"
+                        fill={"currentColor"}
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      />
+                    );
+                  }
+
+                  const empty = Math.ceil(review.rating!) < star;
+
+                  if (empty) {
+                    return (
+                      <IconStar
+                        key={star}
+                        className="size-4 text-foreground"
+                        fill={"none"}
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      />
+                    );
+                  }
+
+                  const fillPercentage = (review.rating! - (star - 1)) * 100;
+
+                  return (
+                    <div key={star} className="relative size-4">
+                      <IconStar
+                        className="size-4 text-foreground"
+                        fill={"none"}
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      />
+
+                      <div
+                        className="absolute inset-0 overflow-hidden"
+                        style={{ width: `${fillPercentage}%` }}
+                      >
+                        <IconStar
+                          key={star}
+                          className="size-4 text-foreground"
+                          fill={"currentColor"}
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <span className="text-muted-foreground text-sm ml-1 mt-1">
+                {review.rating}/5
+              </span>
             </div>
           )}
-
-          {review.body && (
-            <p className="text-stone-300 mt-3 text-sm leading-relaxed">{review.body}</p>
-          )}
-
-          <time className="text-stone-500 text-xs font-mono mt-4 block">
-            {formatDate(review.createdAt)}
-          </time>
         </div>
       </div>
+      {<p className="mt-3 leading-relaxed">{review.body}</p>}
     </div>
   );
 }
 
-function NoteCard({ note }: { note: any }) {
+function NoteCard({ note }: { note: Omit<Note, "bookId"> & { book: Book } }) {
   return (
-    <div className="bg-stone-900/50 border-l-4 border-amber-600 p-6">
-      <div className="flex items-start justify-between mb-3">
-        <div>
-          <h3 className="text-lg font-medium text-white">{note.book.title}</h3>
-          {note.book.author && <p className="text-stone-400 text-sm">{note.book.author}</p>}
-        </div>
-        {(note.chapter || note.location) && (
-          <span className="text-xs font-mono text-amber-400/70">
-            {note.chapter && `Ch. ${note.chapter}`}
-            {note.chapter && note.location && " | "}
-            {note.location && `Loc. ${note.location}`}
-          </span>
+    <div className="p-4 space-y-4">
+      <div className="flex gap-2">
+        {note.book.coverUrl && (
+          <img
+            src={note.book.coverUrl}
+            alt={note.book.title}
+            className="w-16 h-24 object-cover rounded"
+          />
         )}
+        <div>
+          <h3 className="text-lg font-medium">{note.book.title}</h3>
+          <p className="text-muted-foreground text-sm">{note.book.author}</p>
+        </div>
       </div>
-
-      {note.selectionText && (
-        <blockquote className="border-l-2 border-amber-600/50 pl-4 py-2 my-3 italic text-stone-300 text-sm">
-          "{note.selectionText}"
-        </blockquote>
-      )}
-
-      {note.noteContent && (
-        <p className="text-stone-300 text-sm leading-relaxed">{note.noteContent}</p>
-      )}
-
-      <time className="text-stone-500 text-xs font-mono mt-4 block">
-        {formatDate(note.createdAt)}
-      </time>
+      <blockquote className="border-l-2 pl-4 italic">
+        {note.referenceText}
+      </blockquote>
+      <span>{note.body}</span>
     </div>
   );
-}
-
-function formatDate(date: Date): string {
-  return new Date(date).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
 }
