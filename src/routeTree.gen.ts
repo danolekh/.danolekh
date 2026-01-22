@@ -9,17 +9,11 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ScratchpadRouteImport } from './routes/scratchpad'
 import { Route as ResumeRouteImport } from './routes/resume'
 import { Route as FeedRouteImport } from './routes/feed'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiBooksRouteImport } from './routes/api/books'
 
-const ScratchpadRoute = ScratchpadRouteImport.update({
-  id: '/scratchpad',
-  path: '/scratchpad',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ResumeRoute = ResumeRouteImport.update({
   id: '/resume',
   path: '/resume',
@@ -45,14 +39,12 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/feed': typeof FeedRoute
   '/resume': typeof ResumeRoute
-  '/scratchpad': typeof ScratchpadRoute
   '/api/books': typeof ApiBooksRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/feed': typeof FeedRoute
   '/resume': typeof ResumeRoute
-  '/scratchpad': typeof ScratchpadRoute
   '/api/books': typeof ApiBooksRoute
 }
 export interface FileRoutesById {
@@ -60,34 +52,25 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/feed': typeof FeedRoute
   '/resume': typeof ResumeRoute
-  '/scratchpad': typeof ScratchpadRoute
   '/api/books': typeof ApiBooksRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/feed' | '/resume' | '/scratchpad' | '/api/books'
+  fullPaths: '/' | '/feed' | '/resume' | '/api/books'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/feed' | '/resume' | '/scratchpad' | '/api/books'
-  id: '__root__' | '/' | '/feed' | '/resume' | '/scratchpad' | '/api/books'
+  to: '/' | '/feed' | '/resume' | '/api/books'
+  id: '__root__' | '/' | '/feed' | '/resume' | '/api/books'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   FeedRoute: typeof FeedRoute
   ResumeRoute: typeof ResumeRoute
-  ScratchpadRoute: typeof ScratchpadRoute
   ApiBooksRoute: typeof ApiBooksRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/scratchpad': {
-      id: '/scratchpad'
-      path: '/scratchpad'
-      fullPath: '/scratchpad'
-      preLoaderRoute: typeof ScratchpadRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/resume': {
       id: '/resume'
       path: '/resume'
@@ -123,7 +106,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   FeedRoute: FeedRoute,
   ResumeRoute: ResumeRoute,
-  ScratchpadRoute: ScratchpadRoute,
   ApiBooksRoute: ApiBooksRoute,
 }
 export const routeTree = rootRouteImport

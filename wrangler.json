@@ -1,6 +1,9 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "tanstack-start-app",
+  "vars": {
+    "BOOK_API_TOKEN": "qFWu6t46LIfZckfKEaSffh4Y8HEDrk+fPsf7aJM0pzU="
+  },
   "compatibility_date": "2025-09-02",
   "compatibility_flags": ["nodejs_compat"],
   "main": "@tanstack/react-start/server-entry",
@@ -10,5 +13,20 @@
       "database_name": "danolekh-db",
       "database_id": "cd63ecfa-4674-4511-bbc3-99c470fb2a65"
     }
-  ]
+  ],
+  "observability": {
+    "enabled": false,
+    "head_sampling_rate": 1,
+    "logs": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "persist": true,
+      "invocation_logs": true
+    },
+    "traces": {
+      "enabled": false,
+      "persist": true,
+      "head_sampling_rate": 1
+    }
+  }
 }
