@@ -1,4 +1,10 @@
-import { sqliteTable, text, integer, real, unique } from "drizzle-orm/sqlite-core";
+import {
+  sqliteTable,
+  text,
+  integer,
+  real,
+  unique,
+} from "drizzle-orm/sqlite-core";
 
 export const books = sqliteTable(
   "books",
@@ -6,7 +12,6 @@ export const books = sqliteTable(
     id: integer().primaryKey(),
     title: text("title").notNull(),
     author: text("author").notNull(),
-    coverUrl: text("cover_url"),
     createdAt: integer("created_at", { mode: "timestamp" })
       .notNull()
       .$defaultFn(() => new Date()),

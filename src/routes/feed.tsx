@@ -5,6 +5,16 @@ import { db } from "@/lib/db";
 import { books, reviews, notes } from "@/lib/db/schema";
 import type { Book, Note, Review } from "@/lib/db/schema";
 import { IconStar } from "@tabler/icons-react";
+import { getBookCoverUrl } from "@/lib/utils";
+import { AnimatePresence, LayoutGroup, motion } from "motion/react";
+import {
+  Dialog,
+  DialogContentInline,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useSetAtom, atom, useAtomValue, useAtom } from "jotai";
 
 const getFeedItems = createServerFn({ method: "GET" }).handler(async () => {
   const [reviewsData, notesData] = await Promise.all([
@@ -66,30 +76,80 @@ export const Route = createFileRoute("/feed")({
   loader: () => getFeedItems(),
 });
 
+const dialogAtom = atom(false);
+const activeBookAtom = atom<
+  (Pick<Book, "id" | "title" | "author"> & { layoutId: string }) | null
+>(null);
+
 function FeedPage() {
   const feedItems = Route.useLoaderData();
 
   return (
-    <div className="min-h-screen p-8">
-      <div className="max-w-2xl mx-auto">
-        {feedItems.length === 0 && (
-          <div className="text-center py-12 text-muted-foreground">
-            <p className="text-lg">No activity yet</p>
-          </div>
-        )}
-        {feedItems.length > 0 && (
-          <div className="space-y-6">
-            {feedItems.map((item) =>
-              item.type === "review" ? (
-                <ReviewCard key={item.id} review={item} />
-              ) : (
-                <NoteCard key={item.id} note={item} />
-              ),
-            )}
-          </div>
-        )}
+    <LayoutGroup>
+      <div className="min-h-screen p-8">
+        <div className="max-w-2xl mx-auto">
+          {feedItems.length === 0 && (
+            <div className="text-center py-12 text-muted-foreground">
+              <p className="text-lg">No activity yet</p>
+            </div>
+          )}
+          {feedItems.length > 0 && (
+            <div className="space-y-6">
+              {feedItems.map((item) =>
+                item.type === "review" ? (
+                  <ReviewCard key={item.id} review={item} />
+                ) : (
+                  <NoteCard key={item.id} note={item} />
+                ),
+              )}
+            </div>
+          )}
+        </div>
+        <ActiveBookDialog />
       </div>
-    </div>
+    </LayoutGroup>
+  );
+}
+
+function ActiveBookDialog() {
+  const [open, setOpen] = useAtom(dialogAtom);
+  const activeBook = useAtomValue(activeBookAtom);
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <AnimatePresence>
+        {open && activeBook && (
+          <DialogContentInline>
+            <div className="flex gap-2">
+              <motion.div layoutId={activeBook.layoutId}>
+                <img
+                  src={getBookCoverUrl(activeBook.id, "M")}
+                  alt={activeBook.title}
+                  className="w-16 h-24 object-cover rounded"
+                />
+              </motion.div>
+              <DialogHeader>
+                <DialogTitle>{activeBook.title}</DialogTitle>
+                <DialogDescription>{activeBook.author}</DialogDescription>
+              </DialogHeader>
+            </div>
+            <div className="no-scrollbar -mx-4 max-h-[50vh] overflow-y-auto px-4">
+              {Array.from({ length: 10 }).map((_, index) => (
+                <p key={index} className="mb-4 leading-normal">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+                  eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+                  enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                  nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor
+                  in reprehenderit in voluptate velit esse cillum dolore eu fugiat
+                  nulla pariatur. Excepteur sint occaecat cupidatat non proident,
+                  sunt in culpa qui officia deserunt mollit anim id est laborum.
+                </p>
+              ))}
+            </div>
+          </DialogContentInline>
+        )}
+      </AnimatePresence>
+    </Dialog>
   );
 }
 
@@ -98,16 +158,32 @@ function ReviewCard({
 }: {
   review: Omit<Review, "bookId"> & { book: Book };
 }) {
+  const setActiveBook = useSetAtom(activeBookAtom);
+  const setOpen = useSetAtom(dialogAtom);
+
+  const layoutId = `review-${review.id}-book-cover-${review.book.id}`;
+
   return (
-    <div className="p-4 space-y-4">
+    <div
+      className="p-4 space-y-4"
+      onClick={() => {
+        setActiveBook({
+          layoutId,
+          author: review.book.author,
+          id: review.book.id,
+          title: review.book.title,
+        });
+        setOpen(true);
+      }}
+    >
       <div className="flex gap-2">
-        {review.book.coverUrl && (
+        <motion.div layoutId={layoutId}>
           <img
-            src={review.book.coverUrl}
+            src={getBookCoverUrl(8, "M")}
             alt={review.book.title}
             className="w-16 h-24 object-cover rounded"
           />
-        )}
+        </motion.div>
         <div className="h-24 flex flex-col">
           <div className="flex-1">
             <h3 className="text-lg font-medium">{review.book.title}</h3>
@@ -187,16 +263,32 @@ function ReviewCard({
 }
 
 function NoteCard({ note }: { note: Omit<Note, "bookId"> & { book: Book } }) {
+  const setActiveBook = useSetAtom(activeBookAtom);
+  const setOpen = useSetAtom(dialogAtom);
+
+  const layoutId = `note-${note.id}-book-cover-${note.book.id}`;
+
   return (
-    <div className="p-4 space-y-4">
+    <div
+      className="p-4 space-y-4"
+      onClick={() => {
+        setActiveBook({
+          author: note.book.author,
+          id: note.book.id,
+          title: note.book.title,
+          layoutId,
+        });
+        setOpen(true);
+      }}
+    >
       <div className="flex gap-2">
-        {note.book.coverUrl && (
+        <motion.div layoutId={layoutId}>
           <img
-            src={note.book.coverUrl}
+            src={getBookCoverUrl(8, "M")}
             alt={note.book.title}
             className="w-16 h-24 object-cover rounded"
           />
-        )}
+        </motion.div>
         <div>
           <h3 className="text-lg font-medium">{note.book.title}</h3>
           <p className="text-muted-foreground text-sm">{note.book.author}</p>

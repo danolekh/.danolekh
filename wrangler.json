@@ -2,16 +2,23 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "tanstack-start-app",
   "vars": {
-    "BOOK_API_TOKEN": "qFWu6t46LIfZckfKEaSffh4Y8HEDrk+fPsf7aJM0pzU="
+    "BOOK_API_TOKEN": "qFWu6t46LIfZckfKEaSffh4Y8HEDrk+fPsf7aJM0pzU=",
+    "R2_PUBLIC_URL": "https://r2.danolekh.com"
   },
   "compatibility_date": "2025-09-02",
   "compatibility_flags": ["nodejs_compat"],
-  "main": "@tanstack/react-start/server-entry",
+  "main": "src/entry.worker.ts",
   "d1_databases": [
     {
       "binding": "db",
       "database_name": "danolekh-db",
       "database_id": "cd63ecfa-4674-4511-bbc3-99c470fb2a65"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "bucket_name": "danolekh-bucket",
+      "binding": "r2"
     }
   ],
   "observability": {

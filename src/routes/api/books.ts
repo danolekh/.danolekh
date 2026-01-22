@@ -1,9 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Schema, Either } from "effect";
+import { Schema, Either, Effect, Layer } from "effect";
 import { db } from "@/lib/db";
 import { books, reviews, notes } from "@/lib/db/schema";
 import { env } from "cloudflare:workers";
+import { and, eq } from "drizzle-orm";
 import { EventSchema, type ReviewEvent, type NoteEvent } from "./-schema";
+import {
+  IndexBookWorkflow,
+  makeWorkflowLayer,
+  R2Service,
+  makeR2Service,
+} from "@/lib/workflow";
 
 export const Route = createFileRoute("/api/books")({
   server: {
@@ -58,26 +65,53 @@ export const Route = createFileRoute("/api/books")({
           const event = parseResult.right;
           const now = new Date();
 
-          const bookId = await db
-            .insert(books)
-            .values({
-              title: event.book.title,
-              author: event.book.author,
-              createdAt: now,
-              updatedAt: now,
-            })
-            .onConflictDoUpdate({
-              target: [books.title, books.author],
-              set: {
-                title: event.book.title,
-                author: event.book.author,
-                updatedAt: now,
-              },
-            })
-            .returning({
+          let bookId = await db
+            .select({
               id: books.id,
             })
-            .then((r) => r[0].id);
+            .from(books)
+            .where(
+              and(
+                eq(books.title, event.book.title),
+                eq(books.author, event.book.author),
+              ),
+            )
+            .then((r) => r.at(0)?.id);
+
+          if (!bookId) {
+            const [inserted] = await db
+              .insert(books)
+              .values({
+                title: event.book.title,
+                author: event.book.author,
+                createdAt: now,
+                updatedAt: now,
+              })
+              .returning({
+                id: books.id,
+              });
+            bookId = inserted.id;
+
+            // Trigger workflow (fire and forget - don't block response)
+            const workflowLayer = makeWorkflowLayer(env.db).pipe(
+              Layer.provideMerge(
+                Layer.succeed(
+                  R2Service,
+                  makeR2Service(env.r2 as any, (env as any).R2_PUBLIC_URL ?? ""),
+                ),
+              ),
+            );
+
+            Effect.runPromise(
+              IndexBookWorkflow.execute({
+                bookId,
+                title: event.book.title,
+                author: event.book.author,
+              }).pipe(Effect.provide(workflowLayer)),
+            ).catch((err) => {
+              console.error("Workflow failed:", err);
+            });
+          }
 
           if (event.type === "review") {
             const reviewEvent = event as ReviewEvent;
@@ -90,7 +124,7 @@ export const Route = createFileRoute("/api/books")({
           } else {
             const noteEvent = event as NoteEvent;
             await db.insert(notes).values({
-              bookId,
+              bookId: bookId,
               referenceText: noteEvent.referenceText,
               body: noteEvent.body,
               createdAt: now,
