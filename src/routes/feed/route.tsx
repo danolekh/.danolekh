@@ -29,7 +29,6 @@ const getFeedItems = createServerFn({ method: "GET" }).handler(
           limit: 3,
         },
       },
-      limit: 1,
     });
 
     return recentBooks;
