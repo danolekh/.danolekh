@@ -3,7 +3,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { db } from "@/lib/db";
 import type { Book, Note, Review } from "@/lib/db/schema";
 import { getBookCoverUrl } from "@/lib/utils";
-import { AnimatePresence, LayoutGroup, motion } from "motion/react";
+import { LayoutGroup, motion } from "motion/react";
 import { isReview, ReviewChunk } from "./_components/-review-chunk";
 import { NoteChunk } from "./_components/-note-chunk";
 import { createMeta } from "@/lib/seo";
@@ -13,26 +13,28 @@ type FeedBook = Book & {
   notes: Pick<Note, "id" | "body" | "createdAt" | "referenceText">[];
 };
 
-const getFeedItems = createServerFn({ method: "GET" }).handler(async (): Promise<FeedBook[]> => {
-  const recentBooks = await db.query.books.findMany({
-    orderBy: (books, { desc }) => desc(books.id),
-    with: {
-      notes: {
-        orderBy: (notes, { desc }) => desc(notes.createdAt),
-        columns: {
-          id: true,
-          body: true,
-          createdAt: true,
-          referenceText: true,
+const getFeedItems = createServerFn({ method: "GET" }).handler(
+  async (): Promise<FeedBook[]> => {
+    const recentBooks = await db.query.books.findMany({
+      orderBy: (books, { desc }) => desc(books.id),
+      with: {
+        notes: {
+          orderBy: (notes, { desc }) => desc(notes.createdAt),
+          columns: {
+            id: true,
+            body: true,
+            createdAt: true,
+            referenceText: true,
+          },
+          limit: 3,
         },
-        limit: 3,
       },
-    },
-    limit: 50,
-  });
+      limit: 1,
+    });
 
-  return recentBooks;
-});
+    return recentBooks;
+  },
+);
 
 export const Route = createFileRoute("/feed")({
   component: FeedPage,
@@ -66,9 +68,7 @@ function FeedPage() {
           )}
         </div>
       </div>
-      <AnimatePresence>
-        <Outlet />
-      </AnimatePresence>
+      <Outlet />
     </LayoutGroup>
   );
 }
@@ -96,6 +96,7 @@ function BookBlock({
         });
       }}
       layoutId={`${layoutId}-container`}
+      exit={{ opacity: 0 }}
     >
       <div className="flex gap-2">
         <motion.div layoutId={layoutId}>
@@ -106,23 +107,42 @@ function BookBlock({
           />
         </motion.div>
         <div>
-          <motion.h3 className="text-lg font-medium" layoutId={`${layoutId}-title`}>
+          <motion.h3
+            className="text-lg font-medium"
+            layoutId={`${layoutId}-title`}
+          >
             {book.title}
           </motion.h3>
-          <motion.p className="text-muted-foreground text-sm" layoutId={`${layoutId}-author`}>
+          <motion.p
+            className="text-muted-foreground text-sm"
+            layoutId={`${layoutId}-author`}
+          >
             {book.author}
           </motion.p>
         </div>
       </div>
       <div className="space-y-6">
         {feedChunks.map((chunk, index) => {
-          const chunkLayoutId = index < 3 ? `${layoutId}-chunk-${index}` : undefined;
+          const chunkLayoutId =
+            index < 3 ? `${layoutId}-chunk-${index}` : undefined;
 
           if (isReview(chunk)) {
-            return <ReviewChunk review={chunk} layoutId={chunkLayoutId} />;
+            return (
+              <ReviewChunk
+                review={chunk}
+                layoutId={chunkLayoutId}
+                key={`chunk-${chunk.id}-review`}
+              />
+            );
           }
 
-          return <NoteChunk note={chunk} layoutId={chunkLayoutId} />;
+          return (
+            <NoteChunk
+              note={chunk}
+              layoutId={chunkLayoutId}
+              key={`chunk-${chunk.id}-note`}
+            />
+          );
         })}
       </div>
     </motion.div>

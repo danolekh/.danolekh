@@ -1,4 +1,8 @@
-import { WorkflowEntrypoint, WorkflowStep, WorkflowEvent } from "cloudflare:workers";
+import {
+  WorkflowEntrypoint,
+  WorkflowStep,
+  WorkflowEvent,
+} from "cloudflare:workers";
 
 type Params = {
   bookId: number;
@@ -46,7 +50,9 @@ export class IndexBookWorkflow extends WorkflowEntrypoint<WorkflowEnv, Params> {
     if (!searchResult.coverId) {
       await step.do("update-status-not-found", async () => {
         await this.env.db
-          .prepare("UPDATE books SET cover_status = 'not_found', updated_at = ? WHERE id = ?")
+          .prepare(
+            "UPDATE books SET cover_status = 'not_found', updated_at = ? WHERE id = ?",
+          )
           .bind(Date.now(), bookId)
           .run();
       });
@@ -95,7 +101,9 @@ export class IndexBookWorkflow extends WorkflowEntrypoint<WorkflowEnv, Params> {
     // Step 4: Update book status to 'found'
     await step.do("update-status-found", async () => {
       await this.env.db
-        .prepare("UPDATE books SET cover_status = 'found', updated_at = ? WHERE id = ?")
+        .prepare(
+          "UPDATE books SET cover_status = 'found', updated_at = ? WHERE id = ?",
+        )
         .bind(Date.now(), bookId)
         .run();
     });

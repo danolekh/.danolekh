@@ -7,7 +7,8 @@ import { BookNotFound } from "./feed/b/$bookId/-not-found";
 
 export const Route = createFileRoute("/feed_/b/$bookId")({
   component: RouteComponent,
-  loader: async ({ params }) => getBookById({ data: { bookId: parseInt(params.bookId) } }),
+  loader: async ({ params }) =>
+    getBookById({ data: { bookId: parseInt(params.bookId) } }),
   notFoundComponent: BookNotFound,
   head: ({ loaderData }) => {
     if (!loaderData) return { meta: [], links: [] };

@@ -1,4 +1,6 @@
 import { siteConfig } from "./config";
+import { Book } from "./db/schema";
+import { getBookCoverUrl } from "./utils";
 
 type MetaTag = {
   charSet?: string;
@@ -58,22 +60,32 @@ export function createMeta(props: CreateMetaProps = {}): HeadConfig {
       { name: "twitter:image", content: image },
     ],
     links: [
-      { rel: "icon", href: "/favicon-32x32.png", type: "image/png", sizes: "32x32" },
-      { rel: "icon", href: "/favicon-16x16.png", type: "image/png", sizes: "16x16" },
-      { rel: "apple-touch-icon", href: "/apple-touch-icon.png", sizes: "180x180" },
+      {
+        rel: "icon",
+        href: "/favicon-32x32.png",
+        type: "image/png",
+        sizes: "32x32",
+      },
+      {
+        rel: "icon",
+        href: "/favicon-16x16.png",
+        type: "image/png",
+        sizes: "16x16",
+      },
+      {
+        rel: "apple-touch-icon",
+        href: "/apple-touch-icon.png",
+        sizes: "180x180",
+      },
       { rel: "canonical", href: url },
     ],
   };
 }
 
-type Book = {
-  id: number;
-  title: string;
-  author: string | null;
-};
-
-export function createBookMeta(book: Book): HeadConfig {
-  const title = book.author ? `${book.title} by ${book.author}` : book.title;
+export function createBookMeta(
+  book: Pick<Book, "id" | "title" | "author" | "coverStatus">,
+): HeadConfig {
+  const title = book.author ? `${book.title} - ${book.author}` : book.title;
   const description = `Notes and highlights from ${book.title}`;
   const bucketUrl = import.meta.env.VITE_BUCKET_PUBLIC_URL;
   const coverImage = `${bucketUrl}/books/${book.id}/covers/L.jpg`;
@@ -81,7 +93,7 @@ export function createBookMeta(book: Book): HeadConfig {
   return createMeta({
     title,
     description,
-    url: `${siteConfig.url}/feed/b/${book.id}`,
+    url: getBookCoverUrl(book, "L"),
     image: coverImage,
     type: "article",
   });
