@@ -1,16 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Schema, Either, Effect, Layer } from "effect";
+import { Schema, Either } from "effect";
 import { db } from "@/lib/db";
 import { books, reviews, notes } from "@/lib/db/schema";
 import { env } from "cloudflare:workers";
 import { and, eq } from "drizzle-orm";
 import { EventSchema, type ReviewEvent, type NoteEvent } from "./-schema";
-import {
-  IndexBookWorkflow,
-  makeWorkflowLayer,
-  R2Service,
-  makeR2Service,
-} from "@/lib/workflow";
 
 export const Route = createFileRoute("/api/books")({
   server: {
@@ -19,13 +13,10 @@ export const Route = createFileRoute("/api/books")({
         try {
           const authHeader = request.headers.get("Authorization");
           if (!authHeader?.startsWith("Bearer ")) {
-            return new Response(
-              JSON.stringify({ error: "Missing bearer token" }),
-              {
-                status: 401,
-                headers: { "Content-Type": "application/json" },
-              },
-            );
+            return new Response(JSON.stringify({ error: "Missing bearer token" }), {
+              status: 401,
+              headers: { "Content-Type": "application/json" },
+            });
           }
 
           const token = authHeader.slice(7);
@@ -70,12 +61,7 @@ export const Route = createFileRoute("/api/books")({
               id: books.id,
             })
             .from(books)
-            .where(
-              and(
-                eq(books.title, event.book.title),
-                eq(books.author, event.book.author),
-              ),
-            )
+            .where(and(eq(books.title, event.book.title), eq(books.author, event.book.author)))
             .then((r) => r.at(0)?.id);
 
           if (!bookId) {
@@ -84,6 +70,7 @@ export const Route = createFileRoute("/api/books")({
               .values({
                 title: event.book.title,
                 author: event.book.author,
+                coverStatus: "pending",
                 createdAt: now,
                 updatedAt: now,
               })
@@ -92,24 +79,13 @@ export const Route = createFileRoute("/api/books")({
               });
             bookId = inserted.id;
 
-            // Trigger workflow (fire and forget - don't block response)
-            const workflowLayer = makeWorkflowLayer(env.db).pipe(
-              Layer.provideMerge(
-                Layer.succeed(
-                  R2Service,
-                  makeR2Service(env.r2 as any, (env as any).R2_PUBLIC_URL ?? ""),
-                ),
-              ),
-            );
-
-            Effect.runPromise(
-              IndexBookWorkflow.execute({
+            // Trigger Cloudflare Workflow
+            await env.INDEX_BOOK_WORKFLOW.create({
+              params: {
                 bookId,
                 title: event.book.title,
                 author: event.book.author,
-              }).pipe(Effect.provide(workflowLayer)),
-            ).catch((err) => {
-              console.error("Workflow failed:", err);
+              },
             });
           }
 

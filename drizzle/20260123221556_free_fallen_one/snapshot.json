@@ -1,8 +1,8 @@
 {
   "version": "7",
   "dialect": "sqlite",
-  "id": "1c6c0e74-57ff-4822-ac91-d0b6c801ba06",
-  "prevIds": ["ea6b45fc-460f-4591-b3fc-34ae927f92dd"],
+  "id": "f309fe95-9c71-4db5-ae15-56447bb3ca9c",
+  "prevIds": ["1c6c0e74-57ff-4822-ac91-d0b6c801ba06"],
   "ddl": [
     {
       "name": "books",
@@ -43,6 +43,16 @@
       "default": null,
       "generated": null,
       "name": "author",
+      "entityType": "columns",
+      "table": "books"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": "'pending'",
+      "generated": null,
+      "name": "cover_status",
       "entityType": "columns",
       "table": "books"
     },

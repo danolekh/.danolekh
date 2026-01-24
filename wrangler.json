@@ -21,6 +21,13 @@
       "binding": "r2"
     }
   ],
+  "workflows": [
+    {
+      "name": "index-book-workflow",
+      "binding": "INDEX_BOOK_WORKFLOW",
+      "class_name": "IndexBookWorkflow"
+    }
+  ],
   "observability": {
     "enabled": false,
     "head_sampling_rate": 1,

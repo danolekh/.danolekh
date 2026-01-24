@@ -63,8 +63,8 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       drizzle-orm:
-        specifier: 1.0.0-beta.11-05230d9
-        version: 1.0.0-beta.11-05230d9(@cloudflare/workers-types@4.20260122.0)(@effect/sql@0.49.0(@effect/experimental@0.58.0(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@libsql/client@0.17.0)(@types/mssql@9.1.9)(better-sqlite3@12.6.2)(mssql@11.0.1)
+        specifier: 1.0.0-beta.12-a5629fb
+        version: 1.0.0-beta.12-a5629fb(@cloudflare/workers-types@4.20260122.0)(@effect/sql@0.49.0(@effect/experimental@0.58.0(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@libsql/client@0.17.0)(@types/mssql@9.1.9)(better-sqlite3@12.6.2)(mssql@11.0.1)
       effect:
         specifier: ^3.19.14
         version: 3.19.14
@@ -76,7 +76,7 @@ importers:
         version: 12.29.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       nitro:
         specifier: latest
-        version: 3.0.1-alpha.1(@azure/identity@4.13.0)(@libsql/client@0.17.0)(better-sqlite3@12.6.2)(drizzle-orm@1.0.0-beta.11-05230d9(@cloudflare/workers-types@4.20260122.0)(@effect/sql@0.49.0(@effect/experimental@0.58.0(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@libsql/client@0.17.0)(@types/mssql@9.1.9)(better-sqlite3@12.6.2)(mssql@11.0.1))(lru-cache@11.2.4)(rollup@4.53.3)(vite@7.2.6(@types/node@22.19.1)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0))
+        version: 3.0.1-alpha.1(@azure/identity@4.13.0)(@libsql/client@0.17.0)(better-sqlite3@12.6.2)(drizzle-orm@1.0.0-beta.12-a5629fb(@cloudflare/workers-types@4.20260122.0)(@effect/sql@0.49.0(@effect/experimental@0.58.0(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@libsql/client@0.17.0)(@types/mssql@9.1.9)(better-sqlite3@12.6.2)(mssql@11.0.1))(lru-cache@11.2.4)(rollup@4.53.3)(vite@7.2.6(@types/node@22.19.1)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0))
       react:
         specifier: ^19.2.3
         version: 19.2.3
@@ -124,11 +124,11 @@ importers:
         specifier: ^5.0.4
         version: 5.1.1(vite@7.2.6(@types/node@22.19.1)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0))
       drizzle-kit:
-        specifier: 1.0.0-beta.11-05230d9
-        version: 1.0.0-beta.11-05230d9
+        specifier: 1.0.0-beta.12-a5629fb
+        version: 1.0.0-beta.12-a5629fb
       drizzle-seeder:
         specifier: ^0.2.1
-        version: 0.2.1(@faker-js/faker@10.2.0)(drizzle-orm@1.0.0-beta.11-05230d9(@cloudflare/workers-types@4.20260122.0)(@effect/sql@0.49.0(@effect/experimental@0.58.0(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@libsql/client@0.17.0)(@types/mssql@9.1.9)(better-sqlite3@12.6.2)(mssql@11.0.1))(typescript@5.9.3)
+        version: 0.2.1(@faker-js/faker@10.2.0)(drizzle-orm@1.0.0-beta.12-a5629fb(@cloudflare/workers-types@4.20260122.0)(@effect/sql@0.49.0(@effect/experimental@0.58.0(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@libsql/client@0.17.0)(@types/mssql@9.1.9)(better-sqlite3@12.6.2)(mssql@11.0.1))(typescript@5.9.3)
       jsdom:
         specifier: ^27.0.0
         version: 27.2.0
@@ -138,6 +138,9 @@ importers:
       oxlint:
         specifier: ^1.41.0
         version: 1.41.0
+      sharp:
+        specifier: ^0.34.5
+        version: 0.34.5
       typescript:
         specifier: ^5.7.2
         version: 5.9.3
@@ -1415,8 +1418,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.9':
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
 
-  '@js-joda/core@5.6.5':
-    resolution: {integrity: sha512-3zwefSMwHpu8iVUW8YYz227sIv6UFqO31p1Bf1ZH/Vom7CmNyUsXjDBlnNzcuhmOL1XfxZ3nvND42kR23XlbcQ==}
+  '@js-joda/core@5.7.0':
+    resolution: {integrity: sha512-WBu4ULVVxySLLzK1Ppq+OdfP+adRS4ntmDQT915rzDJ++i95gc2jZkM5B6LWEAwN3lGXpfie3yPABozdD3K3Vg==}
 
   '@js-temporal/polyfill@0.5.1':
     resolution: {integrity: sha512-hloP58zRVCRSpgDxmqCWJNlizAlUgJFqG2ypq79DCvyv9tHjRYMDOcPFjzfl/A1/YxDvRCZz8wvZvmapQnKwFQ==}
@@ -2880,12 +2883,12 @@ packages:
     resolution: {integrity: sha512-JVUnt+DUIzu87TABbhPmNfVdBDt18BLOWjMUFJMSi/Qqg7NTYtabbvSNJGOJ7afbRuv9D/lngizHtP7QyLQ+9w==}
     engines: {node: '>=12'}
 
-  drizzle-kit@1.0.0-beta.11-05230d9:
-    resolution: {integrity: sha512-dIv1Ql5SOJsGE/6mzfUk2k8iQFQtP6Buq7JlRew/Mx1uOOkIgyPT6xAUsSbyXqjqiDQl9k2S7iXtKaOs3Cs4aw==}
+  drizzle-kit@1.0.0-beta.12-a5629fb:
+    resolution: {integrity: sha512-l+p4QOMvPGYBYEE9NBlU7diu+NSlxuOUwi0I7i01Uj1PpfU0NxhPzaks/9q1MDw4FAPP8vdD0dOhoqosKtRWWQ==}
     hasBin: true
 
-  drizzle-orm@1.0.0-beta.11-05230d9:
-    resolution: {integrity: sha512-y6i3AgHqeT5Eu/+7hsF1AWyPZQTxiBx1UOy4snEqljW7Fbpp/fO2zmWYFPvjngwOLq9prrbrn36AwCoTR+J2Bg==}
+  drizzle-orm@1.0.0-beta.12-a5629fb:
+    resolution: {integrity: sha512-wyOAgr9Cy9oEN6z5S0JGhfipLKbRRJtQKgbDO9SXGR9swMBbGNIlXkeMqPRrqYQ8k70mh+7ZJ/eVmJ2F7zR3Vg==}
     peerDependencies:
       '@aws-sdk/client-rds-data': '>=3'
       '@cloudflare/workers-types': '>=4'
@@ -6050,7 +6053,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@js-joda/core@5.6.5': {}
+  '@js-joda/core@5.7.0': {}
 
   '@js-temporal/polyfill@0.5.1':
     dependencies:
@@ -7422,11 +7425,11 @@ snapshots:
       whatwg-mimetype: 4.0.0
       whatwg-url: 15.1.0
 
-  db0@0.3.4(@libsql/client@0.17.0)(better-sqlite3@12.6.2)(drizzle-orm@1.0.0-beta.11-05230d9(@cloudflare/workers-types@4.20260122.0)(@effect/sql@0.49.0(@effect/experimental@0.58.0(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@libsql/client@0.17.0)(@types/mssql@9.1.9)(better-sqlite3@12.6.2)(mssql@11.0.1)):
+  db0@0.3.4(@libsql/client@0.17.0)(better-sqlite3@12.6.2)(drizzle-orm@1.0.0-beta.12-a5629fb(@cloudflare/workers-types@4.20260122.0)(@effect/sql@0.49.0(@effect/experimental@0.58.0(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@libsql/client@0.17.0)(@types/mssql@9.1.9)(better-sqlite3@12.6.2)(mssql@11.0.1)):
     optionalDependencies:
       '@libsql/client': 0.17.0
       better-sqlite3: 12.6.2
-      drizzle-orm: 1.0.0-beta.11-05230d9(@cloudflare/workers-types@4.20260122.0)(@effect/sql@0.49.0(@effect/experimental@0.58.0(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@libsql/client@0.17.0)(@types/mssql@9.1.9)(better-sqlite3@12.6.2)(mssql@11.0.1)
+      drizzle-orm: 1.0.0-beta.12-a5629fb(@cloudflare/workers-types@4.20260122.0)(@effect/sql@0.49.0(@effect/experimental@0.58.0(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@libsql/client@0.17.0)(@types/mssql@9.1.9)(better-sqlite3@12.6.2)(mssql@11.0.1)
 
   debug@4.4.3:
     dependencies:
@@ -7493,14 +7496,14 @@ snapshots:
 
   dotenv@17.2.3: {}
 
-  drizzle-kit@1.0.0-beta.11-05230d9:
+  drizzle-kit@1.0.0-beta.12-a5629fb:
     dependencies:
       '@drizzle-team/brocli': 0.11.0
       '@js-temporal/polyfill': 0.5.1
       esbuild: 0.25.12
       tsx: 4.21.0
 
-  drizzle-orm@1.0.0-beta.11-05230d9(@cloudflare/workers-types@4.20260122.0)(@effect/sql@0.49.0(@effect/experimental@0.58.0(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@libsql/client@0.17.0)(@types/mssql@9.1.9)(better-sqlite3@12.6.2)(mssql@11.0.1):
+  drizzle-orm@1.0.0-beta.12-a5629fb(@cloudflare/workers-types@4.20260122.0)(@effect/sql@0.49.0(@effect/experimental@0.58.0(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@libsql/client@0.17.0)(@types/mssql@9.1.9)(better-sqlite3@12.6.2)(mssql@11.0.1):
     dependencies:
       '@types/mssql': 9.1.9
       mssql: 11.0.1
@@ -7510,12 +7513,12 @@ snapshots:
       '@libsql/client': 0.17.0
       better-sqlite3: 12.6.2
 
-  drizzle-seeder@0.2.1(@faker-js/faker@10.2.0)(drizzle-orm@1.0.0-beta.11-05230d9(@cloudflare/workers-types@4.20260122.0)(@effect/sql@0.49.0(@effect/experimental@0.58.0(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@libsql/client@0.17.0)(@types/mssql@9.1.9)(better-sqlite3@12.6.2)(mssql@11.0.1))(typescript@5.9.3):
+  drizzle-seeder@0.2.1(@faker-js/faker@10.2.0)(drizzle-orm@1.0.0-beta.12-a5629fb(@cloudflare/workers-types@4.20260122.0)(@effect/sql@0.49.0(@effect/experimental@0.58.0(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@libsql/client@0.17.0)(@types/mssql@9.1.9)(better-sqlite3@12.6.2)(mssql@11.0.1))(typescript@5.9.3):
     dependencies:
       '@faker-js/faker': 10.2.0
       '@libsql/client': 0.15.15
       devalue: 5.6.2
-      drizzle-orm: 1.0.0-beta.11-05230d9(@cloudflare/workers-types@4.20260122.0)(@effect/sql@0.49.0(@effect/experimental@0.58.0(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@libsql/client@0.17.0)(@types/mssql@9.1.9)(better-sqlite3@12.6.2)(mssql@11.0.1)
+      drizzle-orm: 1.0.0-beta.12-a5629fb(@cloudflare/workers-types@4.20260122.0)(@effect/sql@0.49.0(@effect/experimental@0.58.0(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@libsql/client@0.17.0)(@types/mssql@9.1.9)(better-sqlite3@12.6.2)(mssql@11.0.1)
       typescript: 5.9.3
     transitivePeerDependencies:
       - bufferutil
@@ -8422,11 +8425,11 @@ snapshots:
 
   nf3@0.1.12: {}
 
-  nitro@3.0.1-alpha.1(@azure/identity@4.13.0)(@libsql/client@0.17.0)(better-sqlite3@12.6.2)(drizzle-orm@1.0.0-beta.11-05230d9(@cloudflare/workers-types@4.20260122.0)(@effect/sql@0.49.0(@effect/experimental@0.58.0(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@libsql/client@0.17.0)(@types/mssql@9.1.9)(better-sqlite3@12.6.2)(mssql@11.0.1))(lru-cache@11.2.4)(rollup@4.53.3)(vite@7.2.6(@types/node@22.19.1)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)):
+  nitro@3.0.1-alpha.1(@azure/identity@4.13.0)(@libsql/client@0.17.0)(better-sqlite3@12.6.2)(drizzle-orm@1.0.0-beta.12-a5629fb(@cloudflare/workers-types@4.20260122.0)(@effect/sql@0.49.0(@effect/experimental@0.58.0(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@libsql/client@0.17.0)(@types/mssql@9.1.9)(better-sqlite3@12.6.2)(mssql@11.0.1))(lru-cache@11.2.4)(rollup@4.53.3)(vite@7.2.6(@types/node@22.19.1)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)):
     dependencies:
       consola: 3.4.2
       crossws: 0.4.1(srvx@0.9.8)
-      db0: 0.3.4(@libsql/client@0.17.0)(better-sqlite3@12.6.2)(drizzle-orm@1.0.0-beta.11-05230d9(@cloudflare/workers-types@4.20260122.0)(@effect/sql@0.49.0(@effect/experimental@0.58.0(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@libsql/client@0.17.0)(@types/mssql@9.1.9)(better-sqlite3@12.6.2)(mssql@11.0.1))
+      db0: 0.3.4(@libsql/client@0.17.0)(better-sqlite3@12.6.2)(drizzle-orm@1.0.0-beta.12-a5629fb(@cloudflare/workers-types@4.20260122.0)(@effect/sql@0.49.0(@effect/experimental@0.58.0(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@libsql/client@0.17.0)(@types/mssql@9.1.9)(better-sqlite3@12.6.2)(mssql@11.0.1))
       h3: 2.0.1-rc.5(crossws@0.4.1(srvx@0.9.8))
       jiti: 2.6.1
       nf3: 0.1.12
@@ -8437,7 +8440,7 @@ snapshots:
       srvx: 0.9.8
       undici: 7.16.0
       unenv: 2.0.0-rc.24
-      unstorage: 2.0.0-alpha.4(@azure/identity@4.13.0)(db0@0.3.4(@libsql/client@0.17.0)(better-sqlite3@12.6.2)(drizzle-orm@1.0.0-beta.11-05230d9(@cloudflare/workers-types@4.20260122.0)(@effect/sql@0.49.0(@effect/experimental@0.58.0(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@libsql/client@0.17.0)(@types/mssql@9.1.9)(better-sqlite3@12.6.2)(mssql@11.0.1)))(lru-cache@11.2.4)(ofetch@2.0.0-alpha.3)
+      unstorage: 2.0.0-alpha.4(@azure/identity@4.13.0)(db0@0.3.4(@libsql/client@0.17.0)(better-sqlite3@12.6.2)(drizzle-orm@1.0.0-beta.12-a5629fb(@cloudflare/workers-types@4.20260122.0)(@effect/sql@0.49.0(@effect/experimental@0.58.0(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@libsql/client@0.17.0)(@types/mssql@9.1.9)(better-sqlite3@12.6.2)(mssql@11.0.1)))(lru-cache@11.2.4)(ofetch@2.0.0-alpha.3)
     optionalDependencies:
       rollup: 4.53.3
       vite: 7.2.6(@types/node@22.19.1)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)
@@ -9197,7 +9200,7 @@ snapshots:
       '@azure/core-auth': 1.10.1
       '@azure/identity': 4.13.0
       '@azure/keyvault-keys': 4.10.0
-      '@js-joda/core': 5.6.5
+      '@js-joda/core': 5.7.0
       '@types/node': 22.19.7
       bl: 6.1.6
       iconv-lite: 0.6.3
@@ -9212,7 +9215,7 @@ snapshots:
       '@azure/core-auth': 1.10.1
       '@azure/identity': 4.13.0
       '@azure/keyvault-keys': 4.10.0
-      '@js-joda/core': 5.6.5
+      '@js-joda/core': 5.7.0
       '@types/node': 22.19.7
       bl: 6.1.6
       iconv-lite: 0.7.2
@@ -9337,10 +9340,10 @@ snapshots:
       picomatch: 4.0.3
       webpack-virtual-modules: 0.6.2
 
-  unstorage@2.0.0-alpha.4(@azure/identity@4.13.0)(db0@0.3.4(@libsql/client@0.17.0)(better-sqlite3@12.6.2)(drizzle-orm@1.0.0-beta.11-05230d9(@cloudflare/workers-types@4.20260122.0)(@effect/sql@0.49.0(@effect/experimental@0.58.0(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@libsql/client@0.17.0)(@types/mssql@9.1.9)(better-sqlite3@12.6.2)(mssql@11.0.1)))(lru-cache@11.2.4)(ofetch@2.0.0-alpha.3):
+  unstorage@2.0.0-alpha.4(@azure/identity@4.13.0)(db0@0.3.4(@libsql/client@0.17.0)(better-sqlite3@12.6.2)(drizzle-orm@1.0.0-beta.12-a5629fb(@cloudflare/workers-types@4.20260122.0)(@effect/sql@0.49.0(@effect/experimental@0.58.0(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@libsql/client@0.17.0)(@types/mssql@9.1.9)(better-sqlite3@12.6.2)(mssql@11.0.1)))(lru-cache@11.2.4)(ofetch@2.0.0-alpha.3):
     optionalDependencies:
       '@azure/identity': 4.13.0
-      db0: 0.3.4(@libsql/client@0.17.0)(better-sqlite3@12.6.2)(drizzle-orm@1.0.0-beta.11-05230d9(@cloudflare/workers-types@4.20260122.0)(@effect/sql@0.49.0(@effect/experimental@0.58.0(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@libsql/client@0.17.0)(@types/mssql@9.1.9)(better-sqlite3@12.6.2)(mssql@11.0.1))
+      db0: 0.3.4(@libsql/client@0.17.0)(better-sqlite3@12.6.2)(drizzle-orm@1.0.0-beta.12-a5629fb(@cloudflare/workers-types@4.20260122.0)(@effect/sql@0.49.0(@effect/experimental@0.58.0(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@libsql/client@0.17.0)(@types/mssql@9.1.9)(better-sqlite3@12.6.2)(mssql@11.0.1))
       lru-cache: 11.2.4
       ofetch: 2.0.0-alpha.3
 

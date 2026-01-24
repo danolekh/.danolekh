@@ -1,10 +1,7 @@
 import * as schema from "./schema";
 
 import { drizzle as d1Drizzle } from "drizzle-orm/d1";
-import {
-  drizzle as libsqlDrizzle,
-  type LibSQLDatabase,
-} from "drizzle-orm/libsql";
+import { drizzle as libsqlDrizzle, type LibSQLDatabase } from "drizzle-orm/libsql";
 import { generate, seed } from "drizzle-seeder/sqlite-core";
 
 const db = (
@@ -39,8 +36,7 @@ const generator = generate(schema, {
           const bookIndex = Math.floor(ctx.index / AVG_REVIEWS_PER_BOOK);
           return ctx.ref.books[bookIndex % BOOK_COUNT]!.id((v) => v);
         },
-        rating: (ctx) =>
-          ctx.faker.number.float({ min: 1, max: 5, fractionDigits: 1 }),
+        rating: (ctx) => ctx.faker.number.float({ min: 1, max: 5, fractionDigits: 1 }),
         body: (ctx) => ctx.faker.lorem.paragraph(),
       },
     },
