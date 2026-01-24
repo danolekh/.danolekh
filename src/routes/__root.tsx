@@ -1,33 +1,30 @@
-import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router";
+import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 
 import appCss from "../styles.css?url";
+import { createMeta } from "@/lib/seo";
 
 export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      {
-        charSet: "utf-8",
-      },
-      {
-        name: "viewport",
-        content: "width=device-width, initial-scale=1",
-      },
-      {
-        title: "Dan Olekh",
-      },
-    ],
-    links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
-    ],
-  }),
+  head: () => {
+    const seo = createMeta();
+    return {
+      meta: [
+        { charSet: "utf-8" },
+        { name: "viewport", content: "width=device-width, initial-scale=1" },
+        ...seo.meta,
+      ],
+      links: [{ rel: "stylesheet", href: appCss }, ...seo.links],
+    };
+  },
 
+  component: RootComponent,
   shellComponent: RootDocument,
 });
+
+function RootComponent() {
+  return <Outlet />;
+}
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (

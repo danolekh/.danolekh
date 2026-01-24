@@ -1,7 +1,14 @@
 import * as schema from "./schema";
 
+import { drizzle as d1Drizzle } from "drizzle-orm/d1";
+import { drizzle as libsqlDrizzle, type LibSQLDatabase } from "drizzle-orm/libsql";
 import { generate, seed } from "drizzle-seeder/sqlite-core";
-import { db } from ".";
+
+const db = (
+  typeof process.env.db === "string"
+    ? libsqlDrizzle(process.env.db, { schema })
+    : d1Drizzle(process.env.db as any, { schema })
+) as LibSQLDatabase<typeof schema>;
 
 const BOOK_COUNT = 30;
 const AVG_NOTES_PER_BOOK = 20;
@@ -19,7 +26,6 @@ const generator = generate(schema, {
       columns: {
         title: (ctx) => ctx.faker.book.title(),
         author: (ctx) => ctx.faker.person.fullName(),
-        coverUrl: (ctx) => ctx.faker.image.url(),
       },
     },
     reviews: {

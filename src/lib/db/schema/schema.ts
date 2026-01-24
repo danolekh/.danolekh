@@ -6,7 +6,9 @@ export const books = sqliteTable(
     id: integer().primaryKey(),
     title: text("title").notNull(),
     author: text("author").notNull(),
-    coverUrl: text("cover_url"),
+    coverStatus: text("cover_status", {
+      enum: ["pending", "found", "not_found"],
+    }).default("pending"),
     createdAt: integer("created_at", { mode: "timestamp" })
       .notNull()
       .$defaultFn(() => new Date()),

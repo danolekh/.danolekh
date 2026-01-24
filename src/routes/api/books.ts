@@ -3,6 +3,7 @@ import { Schema, Either } from "effect";
 import { db } from "@/lib/db";
 import { books, reviews, notes } from "@/lib/db/schema";
 import { env } from "cloudflare:workers";
+import { and, eq } from "drizzle-orm";
 import { EventSchema, type ReviewEvent, type NoteEvent } from "./-schema";
 
 export const Route = createFileRoute("/api/books")({
@@ -12,13 +13,10 @@ export const Route = createFileRoute("/api/books")({
         try {
           const authHeader = request.headers.get("Authorization");
           if (!authHeader?.startsWith("Bearer ")) {
-            return new Response(
-              JSON.stringify({ error: "Missing bearer token" }),
-              {
-                status: 401,
-                headers: { "Content-Type": "application/json" },
-              },
-            );
+            return new Response(JSON.stringify({ error: "Missing bearer token" }), {
+              status: 401,
+              headers: { "Content-Type": "application/json" },
+            });
           }
 
           const token = authHeader.slice(7);
@@ -58,26 +56,38 @@ export const Route = createFileRoute("/api/books")({
           const event = parseResult.right;
           const now = new Date();
 
-          const bookId = await db
-            .insert(books)
-            .values({
-              title: event.book.title,
-              author: event.book.author,
-              createdAt: now,
-              updatedAt: now,
-            })
-            .onConflictDoUpdate({
-              target: [books.title, books.author],
-              set: {
-                title: event.book.title,
-                author: event.book.author,
-                updatedAt: now,
-              },
-            })
-            .returning({
+          let bookId = await db
+            .select({
               id: books.id,
             })
-            .then((r) => r[0].id);
+            .from(books)
+            .where(and(eq(books.title, event.book.title), eq(books.author, event.book.author)))
+            .then((r) => r.at(0)?.id);
+
+          if (!bookId) {
+            const [inserted] = await db
+              .insert(books)
+              .values({
+                title: event.book.title,
+                author: event.book.author,
+                coverStatus: "pending",
+                createdAt: now,
+                updatedAt: now,
+              })
+              .returning({
+                id: books.id,
+              });
+            bookId = inserted.id;
+
+            // Trigger Cloudflare Workflow
+            await env.INDEX_BOOK_WORKFLOW.create({
+              params: {
+                bookId,
+                title: event.book.title,
+                author: event.book.author,
+              },
+            });
+          }
 
           if (event.type === "review") {
             const reviewEvent = event as ReviewEvent;
@@ -90,7 +100,7 @@ export const Route = createFileRoute("/api/books")({
           } else {
             const noteEvent = event as NoteEvent;
             await db.insert(notes).values({
-              bookId,
+              bookId: bookId,
               referenceText: noteEvent.referenceText,
               body: noteEvent.body,
               createdAt: now,
