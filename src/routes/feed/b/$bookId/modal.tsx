@@ -5,20 +5,29 @@ import { createServerFn } from "@tanstack/react-start";
 import { motion } from "motion/react";
 import { useEffect, useRef } from "react";
 import { Schema } from "effect";
-import { NoteChunk } from "../../_components/-note-chunk";
 import { createBookMeta } from "@/lib/seo";
 import { BookNotFound } from "./-not-found";
+import { FeedChunk } from "../../_components/-feed-chunk";
+import { isReview } from "../../_components/-review-chunk";
 
 export const getBookById = createServerFn({ method: "GET" })
-  .inputValidator(
-    Schema.Struct({ bookId: Schema.Number }).pipe(Schema.standardSchemaV1),
-  )
+  .inputValidator(Schema.Struct({ bookId: Schema.Number }).pipe(Schema.standardSchemaV1))
   .handler(async ({ data }) => {
     const book = await db.query.books.findFirst({
       where: {
         id: { eq: data.bookId },
       },
       with: {
+        reviews: {
+          orderBy: (reviews, { desc }) => desc(reviews.createdAt),
+          columns: {
+            id: true,
+            body: true,
+            rating: true,
+            createdAt: true,
+          },
+          limit: 1,
+        },
         notes: {
           orderBy: (notes, { desc }) => desc(notes.createdAt),
           columns: {
@@ -38,8 +47,7 @@ export const getBookById = createServerFn({ method: "GET" })
 
 export const Route = createFileRoute("/feed/b/$bookId/modal")({
   component: RouteComponent,
-  loader: async ({ params }) =>
-    getBookById({ data: { bookId: parseInt(params.bookId) } }),
+  loader: async ({ params }) => getBookById({ data: { bookId: parseInt(params.bookId) } }),
   notFoundComponent: BookNotFound,
   head: ({ loaderData }) => {
     if (!loaderData) return { meta: [], links: [] };
@@ -102,16 +110,10 @@ function RouteComponent() {
             />
           </motion.div>
           <div>
-            <motion.h3
-              layoutId={`${layoutId}-title`}
-              className="text-lg font-medium"
-            >
+            <motion.h3 layoutId={`${layoutId}-title`} className="text-lg font-medium">
               {book.title}
             </motion.h3>
-            <motion.p
-              layoutId={`${layoutId}-author`}
-              className="text-muted-foreground text-sm"
-            >
+            <motion.p layoutId={`${layoutId}-author`} className="text-muted-foreground text-sm">
               {book.author}
             </motion.p>
           </div>
@@ -120,13 +122,15 @@ function RouteComponent() {
           className="mt-4 overflow-y-auto max-h-[calc(80vh-120px)] no-scrollbar space-y-6 pb-8"
           ref={scrollContainerRef}
         >
-          {book.notes.map((note, index) => (
-            <NoteChunk
-              key={note.id}
-              note={note}
-              layoutId={index < 3 ? `${layoutId}-chunk-${index}` : undefined}
-            />
-          ))}
+          {[...book.reviews, ...book.notes]
+            .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+            .map((chunk, index) => (
+              <FeedChunk
+                chunk={chunk}
+                layoutId={index < 4 ? `${layoutId}-chunk-${index}` : undefined}
+                key={`chunk-${chunk.id}-${isReview(chunk) ? "review" : "note"}`}
+              />
+            ))}
         </div>
       </motion.div>
     </>
