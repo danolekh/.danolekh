@@ -2,8 +2,7 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "tanstack-start-app",
   "vars": {
-    "BOOK_API_TOKEN": "qFWu6t46LIfZckfKEaSffh4Y8HEDrk+fPsf7aJM0pzU=",
-    "R2_PUBLIC_URL": "https://r2.danolekh.com"
+    "VITE_BUCKET_PUBLIC_URL": "https://bucket.danolekh.com"
   },
   "compatibility_date": "2025-09-02",
   "compatibility_flags": ["nodejs_compat"],
