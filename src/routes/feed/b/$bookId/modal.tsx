@@ -56,6 +56,8 @@ export const Route = createFileRoute("/feed/b/$bookId/modal")({
   // prevents flickering, when route was mounted before and router tries to mount its
   // previously final state from cache (not needed because we animate it)
   gcTime: 0,
+  // Only reload the route when the user navigates to it or when deps change
+  shouldReload: false,
 });
 
 function RouteComponent() {
@@ -99,7 +101,7 @@ function RouteComponent() {
       />
       <motion.div
         layoutId={`${layoutId}-container`}
-        className="fixed inset-x-4 top-[10vh] bottom-[10vh] md:inset-x-auto md:left-1/2 md:w-xl md:-translate-x-1/2 z-50 bg-background p-4 overflow-hidden"
+        className="fixed h-fit inset-x-4 top-[10vh] bottom-[10vh] md:inset-x-auto md:left-1/2 md:w-xl md:-translate-x-1/2 z-50 bg-background p-4 overflow-hidden"
       >
         <div className="flex gap-2">
           <motion.div layoutId={layoutId}>
@@ -119,7 +121,7 @@ function RouteComponent() {
           </div>
         </div>
         <div
-          className="mt-4 overflow-y-auto max-h-[calc(80vh-120px)] h-fit no-scrollbar space-y-6"
+          className="mt-4 overflow-y-auto max-h-[calc(80vh-120px)] no-scrollbar space-y-6"
           ref={scrollContainerRef}
         >
           {[...book.reviews, ...book.notes]

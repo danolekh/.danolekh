@@ -58,16 +58,16 @@ function FeedPage() {
   return (
     <LayoutGroup>
       <div className="min-h-screen p-8">
-        <div className="max-w-2xl mx-auto space-y-4">
-          {books.length === 0 && (
-            <div className="text-center py-12 text-muted-foreground">
-              <p className="text-lg">No activity yet</p>
-            </div>
-          )}
+        <div className="flex-1 max-w-2xl mx-auto space-y-4">
           <Button render={<Link to="/"></Link>} nativeButton={false} variant={"link"}>
             <IconArrowLeft />
             Back to Home
           </Button>
+          {books.length === 0 && (
+            <div className="h-full text-center py-12 text-muted-foreground">
+              <p className="text-lg md:text-xl font-light italic">No activity yet</p>
+            </div>
+          )}
           {books.length > 0 && (
             <>
               <div className="space-y-6">
