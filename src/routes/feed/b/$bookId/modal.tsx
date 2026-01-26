@@ -119,7 +119,7 @@ function RouteComponent() {
           </div>
         </div>
         <div
-          className="mt-4 overflow-y-auto max-h-[calc(80vh-120px)] no-scrollbar space-y-6 pb-8"
+          className="mt-4 overflow-y-auto max-h-[calc(80vh-120px)] h-fit no-scrollbar space-y-6"
           ref={scrollContainerRef}
         >
           {[...book.reviews, ...book.notes]
