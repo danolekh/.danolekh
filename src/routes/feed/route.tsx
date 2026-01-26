@@ -57,7 +57,7 @@ function FeedPage() {
 
   return (
     <LayoutGroup>
-      <div className="min-h-screen p-8">
+      <div className="min-h-screen p-6 md:p-8">
         <div className="flex-1 max-w-2xl mx-auto space-y-4">
           <Button render={<Link to="/"></Link>} nativeButton={false} variant={"link"}>
             <IconArrowLeft />

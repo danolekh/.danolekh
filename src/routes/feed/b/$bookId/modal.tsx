@@ -101,7 +101,7 @@ function RouteComponent() {
       />
       <motion.div
         layoutId={`${layoutId}-container`}
-        className="fixed h-fit inset-x-4 top-[10vh] bottom-[10vh] md:inset-x-auto md:left-1/2 md:w-xl md:-translate-x-1/2 z-50 bg-background p-4 overflow-hidden"
+        className="fixed h-fit inset-x-6 md:inset-x-8 top-[10vh] bottom-[10vh] md:left-1/2 md:w-xl md:-translate-x-1/2 z-50 bg-background p-4 overflow-hidden"
       >
         <div className="flex gap-2">
           <motion.div layoutId={layoutId}>
