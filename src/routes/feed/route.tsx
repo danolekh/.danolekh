@@ -102,7 +102,7 @@ function BookBlock({ book, feedChunks }: { book: Book; feedChunks: BookFeedChunk
 
   return (
     <motion.div
-      className="p-4 space-y-4 border border-dashed"
+      className="p-4 space-y-4 border border-dashed bg-background"
       onClick={() => {
         navigate({
           resetScroll: false,
