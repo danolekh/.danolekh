@@ -52,8 +52,8 @@ const generator = generate(schema, {
           const bookIndex = Math.floor(ctx.index / AVG_NOTES_PER_BOOK);
           return ctx.ref.books[bookIndex % BOOK_COUNT]!.id((v) => v);
         },
-        referenceText: (ctx) => ctx.faker.lorem.sentence(),
-        body: (ctx) => ctx.faker.lorem.sentences({ min: 1, max: 3 }),
+        referenceText: (ctx) => ctx.faker.lorem.sentences({ min: 2, max: 5 }),
+        body: (ctx) => ctx.faker.lorem.sentences({ min: 2, max: 6 }),
         createdAt: (ctx) => ctx.faker.date.past(),
       },
     },
