@@ -4,16 +4,10 @@ import { NoteChunk } from "./-note-chunk";
 
 export type BookFeedChunk = Omit<Note, "bookId"> | Omit<Review, "bookId">;
 
-export function FeedChunk({
-  chunk,
-  layoutId,
-}: {
-  chunk: BookFeedChunk;
-  layoutId: string | undefined;
-}) {
+export function FeedChunk({ chunk }: { chunk: BookFeedChunk }) {
   if (isReview(chunk)) {
-    return <ReviewChunk review={chunk} layoutId={layoutId} />;
+    return <ReviewChunk review={chunk} />;
   }
 
-  return <NoteChunk note={chunk} layoutId={layoutId} />;
+  return <NoteChunk note={chunk} />;
 }

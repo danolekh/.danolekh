@@ -1,19 +1,10 @@
 import type { Note, Review } from "@/lib/db/schema";
 import { formatRelativeDate } from "@/lib/utils";
 import { IconStar } from "@tabler/icons-react";
-import { motion } from "motion/react";
 
-export function ReviewChunk({
-  review,
-  layoutId,
-}: {
-  review: Pick<Review, "body" | "rating" | "createdAt">;
-  layoutId: string | undefined;
-}) {
-  const Wrapper = layoutId ? motion.div : "div";
-
+export function ReviewChunk({ review }: { review: Pick<Review, "body" | "rating" | "createdAt"> }) {
   return (
-    <Wrapper layoutId={layoutId} className="space-y-4">
+    <div className="space-y-4">
       {review.rating !== null && (
         <div className="flex items-center gap-2">
           <div className="gap-1 flex items-center">
@@ -82,7 +73,7 @@ export function ReviewChunk({
           {formatRelativeDate(review.createdAt)}
         </span>
       </p>
-    </Wrapper>
+    </div>
   );
 }
 

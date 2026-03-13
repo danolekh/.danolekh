@@ -1,9 +1,9 @@
+import * as React from "react";
 import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { db } from "@/lib/db";
 import type { Book } from "@/lib/db/schema";
 import { getBookCoverUrl } from "@/lib/utils";
-import { LayoutGroup, motion } from "motion/react";
 import { isReview } from "./_components/-review-chunk";
 import { createMeta } from "@/lib/seo";
 import { siteConfig } from "@/lib/config";
@@ -56,7 +56,7 @@ function FeedPage() {
   const books = Route.useLoaderData();
 
   return (
-    <LayoutGroup>
+    <React.Fragment>
       <div className="min-h-screen p-6 md:p-8">
         <div className="flex-1 max-w-2xl mx-auto space-y-4">
           <Button render={<Link to="/"></Link>} nativeButton={false} variant={"link"}>
@@ -92,16 +92,15 @@ function FeedPage() {
         </div>
       </div>
       <Outlet />
-    </LayoutGroup>
+    </React.Fragment>
   );
 }
 
 function BookBlock({ book, feedChunks }: { book: Book; feedChunks: BookFeedChunk[] }) {
   const navigate = useNavigate();
-  const layoutId = `book-${book.id}`;
 
   return (
-    <motion.div
+    <div
       className="p-4 space-y-4 border border-dashed bg-background"
       onClick={() => {
         navigate({
@@ -112,35 +111,28 @@ function BookBlock({ book, feedChunks }: { book: Book; feedChunks: BookFeedChunk
           },
         });
       }}
-      layoutId={`${layoutId}-container`}
-      exit={{ opacity: 0 }}
     >
       <div className="flex gap-2">
-        <motion.div layoutId={layoutId}>
+        <div>
           <img
             src={getBookCoverUrl(book, "M")}
             alt={book.title}
             className="w-16 h-24 object-cover rounded"
           />
-        </motion.div>
+        </div>
         <div>
-          <motion.h3 className="text-lg font-medium" layoutId={`${layoutId}-title`}>
-            {book.title}
-          </motion.h3>
-          <motion.p className="text-muted-foreground text-sm" layoutId={`${layoutId}-author`}>
-            {book.author}
-          </motion.p>
+          <h3 className="text-lg font-medium">{book.title}</h3>
+          <p className="text-muted-foreground text-sm">{book.author}</p>
         </div>
       </div>
       <div className="space-y-6">
-        {feedChunks.map((chunk, index) => (
+        {feedChunks.map((chunk) => (
           <FeedChunk
             chunk={chunk}
-            layoutId={index < 4 ? `${layoutId}-chunk-${index}` : undefined}
             key={`chunk-${chunk.id}-${isReview(chunk) ? "review" : "note"}`}
           />
         ))}
       </div>
-    </motion.div>
+    </div>
   );
 }

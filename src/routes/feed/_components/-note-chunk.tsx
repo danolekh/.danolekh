@@ -1,18 +1,9 @@
 import type { Note } from "@/lib/db/schema";
 import { formatRelativeDate } from "@/lib/utils";
-import { motion } from "motion/react";
 
-export function NoteChunk({
-  note,
-  layoutId,
-}: {
-  note: Pick<Note, "body" | "referenceText" | "createdAt">;
-  layoutId: string | undefined;
-}) {
-  const Wrapper = layoutId ? motion.div : "div";
-
+export function NoteChunk({ note }: { note: Pick<Note, "body" | "referenceText" | "createdAt"> }) {
   return (
-    <Wrapper layoutId={layoutId} className="space-y-4">
+    <div className="space-y-4">
       <blockquote className="border-l-2 pl-4 italic">{note.referenceText}</blockquote>
       <p className="leading-relaxed whitespace-pre-wrap">
         {note.body}
@@ -20,6 +11,6 @@ export function NoteChunk({
           {formatRelativeDate(note.createdAt)}
         </span>
       </p>
-    </Wrapper>
+    </div>
   );
 }

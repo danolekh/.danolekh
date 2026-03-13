@@ -2,7 +2,6 @@ import { db } from "@/lib/db";
 import { getBookCoverUrl } from "@/lib/utils";
 import { createFileRoute, notFound, useRouter } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import { motion } from "motion/react";
 import { useEffect, useRef } from "react";
 import { Schema } from "effect";
 import { createBookMeta } from "@/lib/seo";
@@ -53,11 +52,6 @@ export const Route = createFileRoute("/feed/b/$bookId/modal")({
     if (!loaderData) return { meta: [], links: [] };
     return createBookMeta(loaderData);
   },
-  // prevents flickering, when route was mounted before and router tries to mount its
-  // previously final state from cache (not needed because we animate it)
-  gcTime: 0,
-  // Only reload the route when the user navigates to it or when deps change
-  shouldReload: false,
 });
 
 function RouteComponent() {
@@ -87,37 +81,24 @@ function RouteComponent() {
     router.navigate({ to: "/feed", resetScroll: false });
   };
 
-  const layoutId = `book-${book.id}`;
-
   return (
     <>
-      <motion.div
-        key="overlay"
-        className="fixed inset-0 bg-black/30 z-40"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
+      <div
+        className="fixed inset-0 bg-black/10 z-40 supports-backdrop-filter:backdrop-blur-xs"
         onClick={() => goToFeed()}
       />
-      <motion.div
-        layoutId={`${layoutId}-container`}
-        className="fixed h-fit inset-x-6 md:inset-x-8 top-[10vh] bottom-[10vh] md:left-1/2 md:w-xl md:-translate-x-1/2 z-50 bg-background p-4 overflow-hidden"
-      >
+      <div className="fixed h-fit inset-x-6 md:inset-x-8 top-[10vh] bottom-[10vh] md:left-1/2 md:w-xl md:-translate-x-1/2 z-50 bg-background p-4 overflow-hidden">
         <div className="flex gap-2">
-          <motion.div layoutId={layoutId}>
+          <div>
             <img
               src={getBookCoverUrl(book, "M")}
               alt={book.title}
               className="w-16 h-24 object-cover rounded"
             />
-          </motion.div>
+          </div>
           <div>
-            <motion.h3 layoutId={`${layoutId}-title`} className="text-lg font-medium">
-              {book.title}
-            </motion.h3>
-            <motion.p layoutId={`${layoutId}-author`} className="text-muted-foreground text-sm">
-              {book.author}
-            </motion.p>
+            <h3 className="text-lg font-medium">{book.title}</h3>
+            <p className="text-muted-foreground text-sm">{book.author}</p>
           </div>
         </div>
         <div
@@ -126,15 +107,14 @@ function RouteComponent() {
         >
           {[...book.reviews, ...book.notes]
             .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-            .map((chunk, index) => (
+            .map((chunk) => (
               <FeedChunk
                 chunk={chunk}
-                layoutId={index < 4 ? `${layoutId}-chunk-${index}` : undefined}
                 key={`chunk-${chunk.id}-${isReview(chunk) ? "review" : "note"}`}
               />
             ))}
         </div>
-      </motion.div>
+      </div>
     </>
   );
 }
