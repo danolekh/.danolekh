@@ -48,7 +48,6 @@ function RouteComponent() {
               .map((chunk) => (
                 <FeedChunk
                   chunk={chunk}
-                  layoutId={undefined}
                   key={`chunk-${chunk.id}-${isReview(chunk) ? "review" : "note"}`}
                 />
               ))}
