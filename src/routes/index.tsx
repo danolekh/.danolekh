@@ -1,6 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { createMeta } from "@/lib/seo";
 import { siteConfig } from "@/lib/config";
+import Hero from "./_components/-hero";
+import Projects from "./_components/-projects";
+import Skills from "./_components/-skills";
 
 export const Route = createFileRoute("/")({
   component: App,
@@ -13,14 +16,10 @@ export const Route = createFileRoute("/")({
 
 function App() {
   return (
-    <div className="min-h-dvh flex flex-col gap-2 items-center justify-center">
-      <p>hi</p>
-      <p>
-        you can see what I read{" "}
-        <Link to="/feed" className="underline">
-          here
-        </Link>
-      </p>
-    </div>
+    <>
+      <Hero />
+      <Projects />
+      <Skills />
+    </>
   );
 }
