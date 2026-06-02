@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ResumeRouteImport } from './routes/resume'
 import { Route as FeedRouteRouteImport } from './routes/feed/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BSlugRouteImport } from './routes/b.$slug'
 import { Route as ApiBooksRouteImport } from './routes/api/books'
 import { Route as FeedBBookIdRouteImport } from './routes/feed_.b.$bookId'
 import { Route as FeedBBookIdModalRouteImport } from './routes/feed/b/$bookId/modal'
@@ -29,6 +30,11 @@ const FeedRouteRoute = FeedRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BSlugRoute = BSlugRouteImport.update({
+  id: '/b/$slug',
+  path: '/b/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiBooksRoute = ApiBooksRouteImport.update({
@@ -52,6 +58,7 @@ export interface FileRoutesByFullPath {
   '/feed': typeof FeedRouteRouteWithChildren
   '/resume': typeof ResumeRoute
   '/api/books': typeof ApiBooksRoute
+  '/b/$slug': typeof BSlugRoute
   '/feed/b/$bookId': typeof FeedBBookIdRoute
   '/feed/b/$bookId/modal': typeof FeedBBookIdModalRoute
 }
@@ -60,6 +67,7 @@ export interface FileRoutesByTo {
   '/feed': typeof FeedRouteRouteWithChildren
   '/resume': typeof ResumeRoute
   '/api/books': typeof ApiBooksRoute
+  '/b/$slug': typeof BSlugRoute
   '/feed/b/$bookId': typeof FeedBBookIdRoute
   '/feed/b/$bookId/modal': typeof FeedBBookIdModalRoute
 }
@@ -69,6 +77,7 @@ export interface FileRoutesById {
   '/feed': typeof FeedRouteRouteWithChildren
   '/resume': typeof ResumeRoute
   '/api/books': typeof ApiBooksRoute
+  '/b/$slug': typeof BSlugRoute
   '/feed_/b/$bookId': typeof FeedBBookIdRoute
   '/feed/b/$bookId/modal': typeof FeedBBookIdModalRoute
 }
@@ -79,6 +88,7 @@ export interface FileRouteTypes {
     | '/feed'
     | '/resume'
     | '/api/books'
+    | '/b/$slug'
     | '/feed/b/$bookId'
     | '/feed/b/$bookId/modal'
   fileRoutesByTo: FileRoutesByTo
@@ -87,6 +97,7 @@ export interface FileRouteTypes {
     | '/feed'
     | '/resume'
     | '/api/books'
+    | '/b/$slug'
     | '/feed/b/$bookId'
     | '/feed/b/$bookId/modal'
   id:
@@ -95,6 +106,7 @@ export interface FileRouteTypes {
     | '/feed'
     | '/resume'
     | '/api/books'
+    | '/b/$slug'
     | '/feed_/b/$bookId'
     | '/feed/b/$bookId/modal'
   fileRoutesById: FileRoutesById
@@ -104,6 +116,7 @@ export interface RootRouteChildren {
   FeedRouteRoute: typeof FeedRouteRouteWithChildren
   ResumeRoute: typeof ResumeRoute
   ApiBooksRoute: typeof ApiBooksRoute
+  BSlugRoute: typeof BSlugRoute
   FeedBBookIdRoute: typeof FeedBBookIdRoute
 }
 
@@ -128,6 +141,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/b/$slug': {
+      id: '/b/$slug'
+      path: '/b/$slug'
+      fullPath: '/b/$slug'
+      preLoaderRoute: typeof BSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/books': {
@@ -171,6 +191,7 @@ const rootRouteChildren: RootRouteChildren = {
   FeedRouteRoute: FeedRouteRouteWithChildren,
   ResumeRoute: ResumeRoute,
   ApiBooksRoute: ApiBooksRoute,
+  BSlugRoute: BSlugRoute,
   FeedBBookIdRoute: FeedBBookIdRoute,
 }
 export const routeTree = rootRouteImport

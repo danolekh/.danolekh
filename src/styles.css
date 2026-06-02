@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@plugin "@tailwindcss/typography";
+
 @import "tw-animate-css";
 
 @import "shadcn/tailwind.css";
@@ -166,4 +168,57 @@ code {
 /* Apply Nunito Sans to all elements on this page */
 * {
   font-family: "Nunito Sans", Helvetica, Arial, sans-serif;
+}
+
+/* ── Themed markdown prose (/b/:slug) ─────────────────────────────────────────
+   Bind Tailwind Typography's prose variables to the site's design tokens. The tokens
+   already flip under `.dark`, so the dark block can repeat the same var references. */
+.prose,
+.prose.prose-invert,
+.dark .prose {
+  --tw-prose-body: var(--foreground);
+  --tw-prose-headings: var(--foreground);
+  --tw-prose-lead: var(--muted-foreground);
+  --tw-prose-links: var(--primary);
+  --tw-prose-bold: var(--foreground);
+  --tw-prose-counters: var(--muted-foreground);
+  --tw-prose-bullets: var(--border);
+  --tw-prose-hr: var(--border);
+  --tw-prose-quotes: var(--foreground);
+  --tw-prose-quote-borders: var(--border);
+  --tw-prose-captions: var(--muted-foreground);
+  --tw-prose-code: var(--foreground);
+  --tw-prose-pre-code: var(--foreground);
+  --tw-prose-pre-bg: var(--muted);
+  --tw-prose-th-borders: var(--border);
+  --tw-prose-td-borders: var(--border);
+}
+
+/* ── Shiki code blocks inside prose ──────────────────────────────────────────
+   Scope under `.prose pre.shiki` (specificity 0,2,1) so it wins over prose's own
+   `.prose pre` rules for padding/background, and force a monospace family so the
+   global `* { font-family: "Nunito Sans" }` rule above doesn't bleed into code. */
+.prose pre.shiki {
+  margin: 1.5em 0;
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius);
+  overflow-x: auto;
+  font-size: 0.875em;
+  line-height: 1.6;
+  background-color: var(--shiki-light-bg);
+}
+.dark .prose pre.shiki {
+  background-color: var(--shiki-dark-bg);
+}
+.prose :where(code, pre.shiki, pre.shiki span) {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+/* Dual-theme token colors: light vars by default, dark vars under `.dark` (set on <html>). */
+.prose pre.shiki,
+.prose pre.shiki span {
+  color: var(--shiki-light);
+}
+.dark .prose pre.shiki,
+.dark .prose pre.shiki span {
+  color: var(--shiki-dark);
 }

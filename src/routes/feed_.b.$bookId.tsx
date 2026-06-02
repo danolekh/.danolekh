@@ -24,9 +24,9 @@ function RouteComponent() {
   return (
     <div className="min-h-screen p-8">
       <div className="max-w-2xl mx-auto space-y-4">
-        <Button render={<Link to="/feed"></Link>} nativeButton={false} variant={"link"}>
+        <Button render={<Link to="/"></Link>} nativeButton={false} variant="link" className="px-0">
           <IconArrowLeft />
-          Back to Feed
+          Back home
         </Button>
         <div className="p-4 space-y-4 border border-dashed">
           <div className="flex gap-2">
@@ -54,9 +54,9 @@ function RouteComponent() {
           </div>
         </div>
         <div className="text-right">
-          <Button render={<Link to="/feed"></Link>} nativeButton={false} variant={"link"}>
+          <Button render={<Link to="/"></Link>} nativeButton={false} variant="link" className="px-0">
             <IconArrowLeft />
-            Back to Feed
+            Back home
           </Button>
         </div>
       </div>
