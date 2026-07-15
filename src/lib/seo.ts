@@ -95,6 +95,19 @@ export function createArticleMeta(props: {
   });
 }
 
+export function createProjectMeta(props: {
+  title: string;
+  description?: string;
+  slug: string;
+}): HeadConfig {
+  return createMeta({
+    title: props.title,
+    description: props.description,
+    url: `${siteConfig.url}/p/${props.slug}`,
+    type: "article",
+  });
+}
+
 export function createBookMeta(
   book: Pick<Book, "id" | "title" | "author" | "coverStatus">,
 ): HeadConfig {

@@ -7,21 +7,24 @@ import { cloudflare } from "@cloudflare/vite-plugin";
 import { readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
-// Enumerate the markdown articles in src/content/b/ at config time (Node) so each /b/<slug>
-// can be prerendered to static HTML. Same folder the route's content module reads.
-function getBPages() {
-  const dir = fileURLToPath(new URL("./src/content/b/", import.meta.url));
+// Enumerate the markdown files in a content dir at config time (Node) so each page can be
+// prerendered to static HTML. Same folders the route content modules read.
+function getContentPages(dir: string, routePrefix: string) {
+  const abs = fileURLToPath(new URL(dir, import.meta.url));
   try {
-    return readdirSync(dir)
+    return readdirSync(abs)
       .filter((f) => f.endsWith(".md"))
       .map((f) => ({
-        path: `/b/${f.replace(/\.md$/, "")}`,
+        path: `${routePrefix}/${f.replace(/\.md$/, "")}`,
         prerender: { enabled: true },
       }));
   } catch {
     return [];
   }
 }
+
+const getBPages = () => getContentPages("./src/content/b/", "/b");
+const getPPages = () => getContentPages("./src/content/p/", "/p");
 
 const config = defineConfig({
   plugins: [
@@ -45,6 +48,7 @@ const config = defineConfig({
         { path: "/", prerender: { enabled: true } },
         { path: "/resume", prerender: { enabled: true } },
         ...getBPages(),
+        ...getPPages(),
       ],
     }),
     viteReact(),
