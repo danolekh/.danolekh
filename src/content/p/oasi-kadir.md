@@ -145,7 +145,7 @@ isn't.
 
 ```block:feedback
 {
-  "quote": "TODO: Ask Ashraf for the feedback",
+  "quote": "Working with Daniil was a great experience from start to finish. What impressed me most is that he kept finding and fixing problems I didn't even know we had, and he always came with the solution already worked out and clearly explained. He treated the project like it was his own. I will definitely work with him again and recommend him without hesitation.",
   "author": "Ashraf",
   "role": "Oasi Kadir"
 }
