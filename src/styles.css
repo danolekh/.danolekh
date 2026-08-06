@@ -23,6 +23,15 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
+/* Text selection: a translucent periwinkle wash, lighter on dark backgrounds so it tints the text
+   instead of drowning it. */
+::selection {
+  background: #79a1ff99;
+}
+.dark ::selection {
+  background: #79a1ff33;
+}
+
 :root {
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.141 0.005 285.823);

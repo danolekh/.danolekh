@@ -7,6 +7,7 @@ import appCss from "../styles.css?url";
 import { createMeta } from "@/lib/seo";
 import { ThemeProvider, useTheme } from "next-themes";
 import PixelBlast from "@/components/pixel-blasts";
+import { CustomCursor } from "@/components/custom-cursor";
 
 export const Route = createRootRoute({
   head: () => {
@@ -73,6 +74,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <ThemeProvider attribute={"class"} enableSystem disableTransitionOnChange>
+          <CustomCursor />
           {children}
         </ThemeProvider>
         {import.meta.env.DEV && (
