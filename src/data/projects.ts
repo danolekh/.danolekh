@@ -6,9 +6,37 @@ export type Project = {
   title: string;
   subtitle: string;
   cover: string;
+  /** Hidden from the home grid until `WEB3_LIVE` (src/lib/config.ts) flips on. */
+  draft?: boolean;
 } & ({ internal: true } | { internal: false; href: string });
 
 export const projects: Project[] = [
+  {
+    slug: "milestone-escrow",
+    title: "Milestone Escrow",
+    subtitle:
+      "USDC milestone escrow on Base — verified contract, fuzz + invariant tests, wallet-connected demo",
+    cover: "/images/milestone-escrow.png",
+    internal: true,
+    draft: true,
+  },
+  {
+    slug: "evm-ledger-indexer",
+    title: "EVM Ledger Indexer",
+    subtitle: "Reorg-safe double-entry ledger from on-chain events — Effect + Cloudflare D1",
+    cover: "/images/evm-ledger-indexer.png",
+    internal: true,
+    draft: true,
+  },
+  {
+    slug: "effect-viem",
+    title: "effect-viem",
+    subtitle: "viem clients as Effect services: typed errors, retries, streams",
+    cover: "/images/effect-viem.png",
+    internal: false,
+    href: "https://github.com/danolekh/effect-viem",
+    draft: true,
+  },
   {
     slug: "oasi-kadir",
     title: "Oasi Kadir",

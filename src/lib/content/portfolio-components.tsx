@@ -1,5 +1,11 @@
 import type { ComponentType } from "react";
-import { IconArrowNarrowRight, IconQuote } from "@tabler/icons-react";
+import {
+  IconArrowNarrowRight,
+  IconBrandGithub,
+  IconCircleCheck,
+  IconExternalLink,
+  IconQuote,
+} from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 import { BlockShell } from "@/lib/content/block-shell";
 import {
@@ -24,6 +30,7 @@ const PORTFOLIO_BLOCKS: Record<string, ComponentType<Record<string, unknown>>> =
   stack: StackBlock as ComponentType<Record<string, unknown>>,
   "stat-row": StatRowBlock as ComponentType<Record<string, unknown>>,
   feedback: FeedbackBlock as ComponentType<Record<string, unknown>>,
+  onchain: OnchainBlock as ComponentType<Record<string, unknown>>,
   // Hydraulics sourcing post — these read from src/data/hydraulics.ts rather than fence JSON.
   globe: GlobeBlock as ComponentType<Record<string, unknown>>,
   verdict: VerdictBlock as ComponentType<Record<string, unknown>>,
@@ -331,5 +338,111 @@ function FeedbackBlock(props: { quote?: string; author?: string; role?: string }
         </figcaption>
       ) : null}
     </section>
+  );
+}
+
+// ── onchain: deployed contracts + repo/demo links ──────────────────────────────
+// One row per deployment. An address that is missing or literally "pending" renders as a muted
+// "deploy pending" note instead of a link, so the block can sit at the top of a write-up before
+// the contract is actually on the chain.
+type ChainId = "base-sepolia" | "base";
+
+const CHAINS: Record<ChainId, { label: string; explorer: string }> = {
+  "base-sepolia": { label: "Base Sepolia", explorer: "https://sepolia.basescan.org" },
+  base: { label: "Base", explorer: "https://basescan.org" },
+};
+
+const ADDRESS_RE = /^0x[0-9a-fA-F]{40}$/;
+
+function OnchainBlock(props: {
+  title?: string;
+  caption?: string;
+  contracts?: {
+    name?: string;
+    chain?: ChainId | string;
+    address?: string | null;
+    verified?: boolean;
+  }[];
+  repo?: string;
+  demo?: string;
+}) {
+  const contracts = props.contracts ?? [];
+  const hasLinks = Boolean(props.repo || props.demo);
+  if (contracts.length === 0 && !hasLinks) return null;
+
+  return (
+    <BlockShell title={props.title ?? "Onchain"} caption={props.caption}>
+      {contracts.length > 0 ? (
+        <ul className="divide-y divide-dashed">
+          {contracts.map((c, i) => {
+            const chain = c.chain && c.chain in CHAINS ? CHAINS[c.chain as ChainId] : null;
+            const address = typeof c.address === "string" ? c.address.trim() : "";
+            const deployed = ADDRESS_RE.test(address);
+            const href = chain && deployed ? `${chain.explorer}/address/${address}` : null;
+            return (
+              <li
+                key={i}
+                className="flex flex-wrap items-center gap-x-3 gap-y-1.5 py-2 first:pt-0 last:pb-0 text-sm"
+              >
+                <span className="border border-dashed px-2 py-0.5 text-xs whitespace-nowrap">
+                  {chain?.label ?? c.chain ?? "unknown chain"}
+                </span>
+                {c.name ? <span className="font-medium">{c.name}</span> : null}
+                {href ? (
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="min-w-0 truncate font-mono text-xs text-primary underline underline-offset-4 hover:text-primary/80"
+                    title={address}
+                  >
+                    {address}
+                  </a>
+                ) : (
+                  <span className="text-xs italic text-muted-foreground">deploy pending</span>
+                )}
+                {deployed && c.verified ? (
+                  <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-1.5 py-px text-[0.7rem] font-medium text-emerald-700 dark:text-emerald-300">
+                    <IconCircleCheck className="size-3" />
+                    verified
+                  </span>
+                ) : null}
+              </li>
+            );
+          })}
+        </ul>
+      ) : null}
+      {hasLinks ? (
+        <div
+          className={cn(
+            "flex flex-wrap gap-x-5 gap-y-1 text-sm",
+            contracts.length > 0 && "mt-3 border-t border-dashed pt-3",
+          )}
+        >
+          {props.repo ? (
+            <a
+              href={props.repo}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-primary underline underline-offset-4 hover:text-primary/80"
+            >
+              <IconBrandGithub className="size-4" />
+              Source
+            </a>
+          ) : null}
+          {props.demo ? (
+            <a
+              href={props.demo}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-primary underline underline-offset-4 hover:text-primary/80"
+            >
+              <IconExternalLink className="size-4" />
+              Live demo
+            </a>
+          ) : null}
+        </div>
+      ) : null}
+    </BlockShell>
   );
 }

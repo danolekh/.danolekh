@@ -1,6 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { projects, type Project } from "@/data/projects";
+import { WEB3_LIVE } from "@/lib/config";
+
+// Draft cards (the onchain projects) stay out of the grid until the flag flips.
+const visibleProjects = projects.filter((p) => !p.draft || WEB3_LIVE);
 
 export default function Projects() {
   return (
@@ -8,7 +12,7 @@ export default function Projects() {
       <div className="max-w-208 mx-auto">
         <h2 className="text-2xl font-bold tracking-tight mb-6">Projects</h2>
         <div className="grid gap-4 sm:grid-cols-2">
-          {projects.map((project) => (
+          {visibleProjects.map((project) => (
             <ProjectCard key={project.slug} project={project} />
           ))}
         </div>

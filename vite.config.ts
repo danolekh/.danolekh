@@ -4,16 +4,21 @@ import viteReact from "@vitejs/plugin-react";
 import viteTsConfigPaths from "vite-tsconfig-paths";
 import tailwindcss from "@tailwindcss/vite";
 import { cloudflare } from "@cloudflare/vite-plugin";
-import { readdirSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import { fileURLToPath } from "node:url";
+import matter from "gray-matter";
 
 // Enumerate the markdown files in a content dir at config time (Node) so each page can be
-// prerendered to static HTML. Same folders the route content modules read.
+// prerendered to static HTML. Same folders the route content modules read. Files with
+// `draft: true` in their frontmatter are skipped, matching the loaders (which also hide them from
+// lists and 404 them in production).
 function getContentPages(dir: string, routePrefix: string) {
   const abs = fileURLToPath(new URL(dir, import.meta.url));
   try {
     return readdirSync(abs)
       .filter((f) => f.endsWith(".md"))
+      .filter((f) => matter(readFileSync(join(abs, f), "utf8")).data.draft !== true)
       .map((f) => ({
         path: `${routePrefix}/${f.replace(/\.md$/, "")}`,
         prerender: { enabled: true },
@@ -47,6 +52,7 @@ const config = defineConfig({
       pages: [
         { path: "/", prerender: { enabled: true } },
         { path: "/resume", prerender: { enabled: true } },
+        { path: "/b", prerender: { enabled: true } },
         ...getBPages(),
         ...getPPages(),
       ],

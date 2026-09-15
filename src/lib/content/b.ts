@@ -32,11 +32,34 @@ export type BNode =
 
 export type BPost = {
   slug: string;
+  /** `draft: true` in frontmatter: hidden from the index and prerender, 404 in production. */
+  draft: boolean;
   title: string;
   date: string | null;
   description: string | null;
   nodes: BNode[];
 };
+
+/** What the `/b` index needs per post - frontmatter only, no markdown rendering. */
+export type BPostSummary = Pick<BPost, "slug" | "title" | "date" | "description">;
+
+function isDraft(data: Record<string, unknown>): boolean {
+  return data.draft === true;
+}
+
+function slugOf(key: string): string {
+  return key.slice(key.lastIndexOf("/") + 1).replace(/\.md$/, "");
+}
+
+function summarize(key: string, data: Record<string, unknown>): BPostSummary {
+  const slug = slugOf(key);
+  return {
+    slug,
+    title: typeof data.title === "string" ? data.title : slug,
+    date: data.date != null ? String(data.date) : null,
+    description: typeof data.description === "string" ? data.description : null,
+  };
+}
 
 let markedPromise: Promise<Marked> | null = null;
 
@@ -113,18 +136,24 @@ export async function getBPostBySlug(slug: string): Promise<BPost | null> {
   await pushProse(content.slice(lastIndex));
 
   const post: BPost = {
-    slug,
-    title: typeof data.title === "string" ? data.title : slug,
-    date: data.date != null ? String(data.date) : null,
-    description: typeof data.description === "string" ? data.description : null,
+    ...summarize(`/src/content/b/${slug}.md`, data),
+    draft: isDraft(data),
     nodes,
   };
   cache.set(slug, post);
   return post;
 }
 
+/** Published (non-draft) posts, newest first. Undated posts sort last. */
+export function listBPosts(): BPostSummary[] {
+  return Object.entries(rawFiles)
+    .map(([key, raw]) => ({ key, data: matter(raw).data as Record<string, unknown> }))
+    .filter(({ data }) => !isDraft(data))
+    .map(({ key, data }) => summarize(key, data))
+    .sort((a, b) => (b.date ?? "").localeCompare(a.date ?? ""));
+}
+
+/** Published (non-draft) post slugs. Drafts are still reachable by slug in dev. */
 export function getAllBSlugs(): string[] {
-  return Object.keys(rawFiles).map((key) =>
-    key.slice(key.lastIndexOf("/") + 1).replace(/\.md$/, ""),
-  );
+  return listBPosts().map((p) => p.slug);
 }

@@ -57,6 +57,8 @@ export type TocEntry = { id: string; text: string; level: 2 | 3 };
 
 export type PProject = {
   slug: string;
+  /** `draft: true` in frontmatter: hidden from lists and prerender, 404 in production. */
+  draft: boolean;
   title: string;
   subtitle: string | null;
   client: string | null;
@@ -146,6 +148,10 @@ function asStringOrNull(value: unknown): string | null {
   return typeof value === "string" ? value : value != null ? String(value) : null;
 }
 
+function isDraft(data: Record<string, unknown>): boolean {
+  return data.draft === true;
+}
+
 export async function getPProjectBySlug(slug: string): Promise<PProject | null> {
   const cached = cache.get(slug);
   if (cached) return cached;
@@ -186,6 +192,7 @@ export async function getPProjectBySlug(slug: string): Promise<PProject | null> 
 
   const project: PProject = {
     slug,
+    draft: isDraft(data),
     title: typeof data.title === "string" ? data.title : slug,
     subtitle: asStringOrNull(data.subtitle),
     client: asStringOrNull(data.client),
@@ -200,8 +207,9 @@ export async function getPProjectBySlug(slug: string): Promise<PProject | null> 
   return project;
 }
 
+/** Published (non-draft) case-study slugs. Drafts are still reachable by slug in dev. */
 export function getAllPSlugs(): string[] {
-  return Object.keys(rawFiles).map((key) =>
-    key.slice(key.lastIndexOf("/") + 1).replace(/\.md$/, ""),
-  );
+  return Object.entries(rawFiles)
+    .filter(([, raw]) => !isDraft(matter(raw).data))
+    .map(([key]) => key.slice(key.lastIndexOf("/") + 1).replace(/\.md$/, ""));
 }

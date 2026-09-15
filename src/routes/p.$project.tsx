@@ -13,7 +13,8 @@ const getProjectPost = createServerFn({ method: "GET" })
   .inputValidator(Schema.Struct({ slug: Schema.String }).pipe(Schema.standardSchemaV1))
   .handler(async ({ data }) => {
     const project = await getPProjectBySlug(data.slug);
-    if (!project) throw notFound();
+    // Drafts stay reachable in dev for writing; in production they do not exist.
+    if (!project || (project.draft && !import.meta.env.DEV)) throw notFound();
     return project;
   });
 

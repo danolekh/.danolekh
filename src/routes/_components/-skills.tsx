@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { IconPaw } from "@tabler/icons-react";
 import { useTheme } from "next-themes";
+import { WEB3_LIVE } from "@/lib/config";
 
 const SVGL = "https://svgl.app/library";
 
@@ -31,6 +32,18 @@ const skills: Skill[] = [
   { name: "Python", icon: `${SVGL}/python.svg` },
 ];
 
+// EVM badges, appended once WEB3_LIVE flips. svgl only carries a Solidity mark; the rest fall
+// back to the default icon.
+const web3Skills: Skill[] = [
+  { name: "Solidity", icon: `${SVGL}/solidity.svg` },
+  { name: "Foundry", icon: { type: "component" } },
+  { name: "viem", icon: { type: "component" } },
+  { name: "wagmi", icon: { type: "component" } },
+  { name: "Base", icon: { type: "component" } },
+];
+
+const visibleSkills: Skill[] = WEB3_LIVE ? [...skills, ...web3Skills] : skills;
+
 export default function Skills() {
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
@@ -46,7 +59,7 @@ export default function Skills() {
       <div className="max-w-208 mx-auto">
         <h2 className="text-2xl font-bold tracking-tight mb-6">Skills</h2>
         <div className="flex flex-wrap gap-2">
-          {skills.map((skill) => {
+          {visibleSkills.map((skill) => {
             const src = getIconSrc(skill.icon);
             return (
               <Badge

@@ -11,7 +11,8 @@ const getPost = createServerFn({ method: "GET" })
   .inputValidator(Schema.Struct({ slug: Schema.String }).pipe(Schema.standardSchemaV1))
   .handler(async ({ data }) => {
     const post = await getBPostBySlug(data.slug);
-    if (!post) throw notFound();
+    // Drafts stay reachable in dev for writing; in production they do not exist.
+    if (!post || (post.draft && !import.meta.env.DEV)) throw notFound();
     return post;
   });
 
