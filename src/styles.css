@@ -231,3 +231,8 @@ code {
 .dark .prose pre.shiki span {
   color: var(--shiki-dark);
 }
+
+/* Anchored jumps from the contents rail shouldn't tuck the heading against the viewport edge. */
+.prose :is(h2, h3, h4) {
+  scroll-margin-top: 5rem;
+}

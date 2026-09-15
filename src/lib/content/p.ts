@@ -18,15 +18,42 @@ const rawFiles = import.meta.glob("/src/content/p/*.md", {
 }) as Record<string, string>;
 
 const THEMES = { light: "github-light", dark: "github-dark" } as const;
+
+// Inline code that is really a confidence label, and the chip it becomes. Keyed on the exact text
+// used in the posts; extend here rather than inventing per-post syntax.
+const CHIP_BASE =
+  "not-prose inline-flex items-center rounded-full border px-1.5 py-px text-[0.7em] font-medium align-[0.1em] whitespace-nowrap";
+const CONFIDENCE_CHIPS: Record<string, string> = {
+  подтверждено: `${CHIP_BASE} border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300`,
+  "прайс дилера": `${CHIP_BASE} border-sky-500/40 bg-sky-500/10 text-sky-700 dark:text-sky-300`,
+  оценка: `${CHIP_BASE} border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300`,
+};
+
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
 const LANGS = ["ts", "tsx", "js", "jsx", "json", "bash", "shell", "md", "css", "html"];
 
-export type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
+export type JsonValue =
+  | string
+  | number
+  | boolean
+  | null
+  | JsonValue[]
+  | { [key: string]: JsonValue };
 
 // A node is either a run of rendered prose HTML, or a portfolio block embedded via a
 // ```block:<name> fenced block. The route maps block nodes through the PORTFOLIO_BLOCKS registry.
 export type PNode =
   | { type: "html"; html: string }
   | { type: "block"; name: string; props: Record<string, JsonValue> };
+
+/** One entry in the in-page table of contents. Only h2/h3 — h4 is too fine for a sidebar. */
+export type TocEntry = { id: string; text: string; level: 2 | 3 };
 
 export type PProject = {
   slug: string;
@@ -38,7 +65,33 @@ export type PProject = {
   liveUrl: string | null;
   stack: string[];
   nodes: PNode[];
+  toc: TocEntry[];
 };
+
+/* Headings arrive as plain <h2>/<h3> from marked. Long posts need anchors to link to and a
+ * contents rail to navigate, so both are derived here, in one pass over the rendered HTML, rather
+ * than by hooking marked's renderer — the renderer is a shared singleton and would need per-parse
+ * state to collect anything. */
+const HEADING_RE = /<(h[23])>([\s\S]*?)<\/\1>/g;
+
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function addHeadingIds(html: string, toc: TocEntry[], seen: Map<string, number>): string {
+  return html.replace(HEADING_RE, (_all, tag: string, inner: string) => {
+    const text = inner.replace(/<[^>]*>/g, "").trim();
+    const base = slugify(text) || "section";
+    const n = (seen.get(base) ?? 0) + 1;
+    seen.set(base, n);
+    const id = n === 1 ? base : `${base}-${n}`;
+    toc.push({ id, text, level: tag === "h2" ? 2 : 3 });
+    return `<${tag} id="${id}">${inner}</${tag}>`;
+  });
+}
 
 let markedPromise: Promise<Marked> | null = null;
 
@@ -62,6 +115,15 @@ function getMarked(): Promise<Marked> {
               themes: THEMES,
               defaultColor: false,
             });
+          },
+          // Confidence labels are written as ordinary inline code in the markdown so the source
+          // stays readable, and are promoted to coloured chips on the way out. Anything else keeps
+          // the normal <code> treatment.
+          codespan({ text }) {
+            const chip = CONFIDENCE_CHIPS[text.trim()];
+            return chip
+              ? `<span class="${chip}">${escapeHtml(text)}</span>`
+              : `<code>${escapeHtml(text)}</code>`;
           },
         },
       });
@@ -95,9 +157,12 @@ export async function getPProjectBySlug(slug: string): Promise<PProject | null> 
   const marked = await getMarked();
 
   const nodes: PNode[] = [];
+  const toc: TocEntry[] = [];
+  const seenSlugs = new Map<string, number>();
   const pushProse = async (md: string) => {
     if (md.trim().length === 0) return;
-    nodes.push({ type: "html", html: await marked.parse(md) });
+    const html = await marked.parse(md);
+    nodes.push({ type: "html", html: addHeadingIds(html, toc, seenSlugs) });
   };
 
   let lastIndex = 0;
@@ -129,6 +194,7 @@ export async function getPProjectBySlug(slug: string): Promise<PProject | null> 
     liveUrl: asStringOrNull(data.liveUrl),
     stack: asStringArray(data.stack),
     nodes,
+    toc,
   };
   cache.set(slug, project);
   return project;

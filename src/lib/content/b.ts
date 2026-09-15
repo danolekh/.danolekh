@@ -15,7 +15,13 @@ const rawFiles = import.meta.glob("/src/content/b/*.md", {
 const THEMES = { light: "github-light", dark: "github-dark" } as const;
 const LANGS = ["ts", "tsx", "js", "jsx", "json", "bash", "shell", "md", "css", "html"];
 
-export type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
+export type JsonValue =
+  | string
+  | number
+  | boolean
+  | null
+  | JsonValue[]
+  | { [key: string]: JsonValue };
 
 // A node is either a run of rendered prose HTML, or an interactive component embedded via a
 // ```demo:<name> fenced block. The route maps component nodes through a name→component registry.

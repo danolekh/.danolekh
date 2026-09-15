@@ -56,7 +56,21 @@ type PixelBlastProps = {
   transparent?: boolean;
   edgeFade?: number;
   noiseAmount?: number;
+  /** Sustained frame rate below which the effect gives up on this device. 0 disables the watchdog. */
+  minFps?: number;
+  /** Called once when the watchdog trips. The parent is expected to unmount this component, which
+   *  runs the normal cleanup and releases the WebGL context. */
+  onTooSlow?: () => void;
 };
+
+/* FPS watchdog tuning. The first frames include shader compilation and the first paint, which are
+ * slow on every device, so measurement only starts after a warm-up and then averages over a window
+ * long enough that a single hitch can't trip it. */
+const WATCHDOG_WARMUP_MS = 1_000;
+const WATCHDOG_SAMPLE_MS = 2_000;
+// A single frame longer than this means the loop was suspended (tab hidden, device asleep), not
+// that the GPU is slow — discard the sample rather than blame the hardware.
+const WATCHDOG_MAX_FRAME_MS = 500;
 
 const createTouchTexture = (): TouchTexture => {
   const size = 64;
@@ -389,11 +403,24 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
   transparent = true,
   edgeFade = 0.5,
   noiseAmount = 0,
+  minFps = 0,
+  onTooSlow,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const visibilityRef = useRef({ visible: true });
   const speedRef = useRef(speed);
   const initTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Read inside the animation loop, so keep them in refs rather than re-running init on change.
+  const minFpsRef = useRef(minFps);
+  const onTooSlowRef = useRef(onTooSlow);
+  const watchdogRef = useRef({
+    startedAt: 0,
+    sampleFrom: 0,
+    frames: 0,
+    lastFrameAt: 0,
+    settled: false,
+  });
 
   const threeRef = useRef<{
     renderer: THREE.WebGLRenderer;
@@ -626,9 +653,65 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
         window.addEventListener("pointerdown", onPointerDown, { passive: true });
         window.addEventListener("pointermove", onPointerMove, { passive: true });
 
+        watchdogRef.current = {
+          startedAt: 0,
+          sampleFrom: 0,
+          frames: 0,
+          lastFrameAt: 0,
+          settled: false,
+        };
+
+        /* Averages the real frame rate over a window and reports back if the device can't keep up.
+         * Returns false to ask the loop to stop. */
+        const checkFrameRate = (): boolean => {
+          const w = watchdogRef.current;
+          if (w.settled || minFpsRef.current <= 0) return true;
+
+          // Browsers throttle rAF hard in a background tab, and IntersectionObserver doesn't
+          // notice because the element is still technically on screen. Measuring through that
+          // would read as single-digit FPS and wrongly condemn a perfectly capable device.
+          if (typeof document !== "undefined" && document.hidden) {
+            w.sampleFrom = 0;
+            return true;
+          }
+
+          const now = performance.now();
+          const sinceLastFrame = w.lastFrameAt === 0 ? 0 : now - w.lastFrameAt;
+          w.lastFrameAt = now;
+
+          if (w.startedAt === 0) w.startedAt = now;
+          if (now - w.startedAt < WATCHDOG_WARMUP_MS) return true;
+
+          // A gap this large is the loop having been suspended — the tab was hidden and shown
+          // again between two frames, or the device slept. Start the window over.
+          if (sinceLastFrame > WATCHDOG_MAX_FRAME_MS) {
+            w.sampleFrom = 0;
+            return true;
+          }
+
+          if (w.sampleFrom === 0) {
+            w.sampleFrom = now;
+            w.frames = 0;
+            return true;
+          }
+
+          w.frames++;
+          const elapsed = now - w.sampleFrom;
+          if (elapsed < WATCHDOG_SAMPLE_MS) return true;
+
+          w.settled = true;
+          if ((w.frames * 1000) / elapsed >= minFpsRef.current) return true;
+
+          onTooSlowRef.current?.();
+          return false;
+        };
+
         let raf = 0;
         const animate = () => {
           if (autoPauseOffscreen && !visibilityRef.current.visible) {
+            // Paused frames aren't rendered, so don't let the idle wall-time count against the
+            // measured frame rate — restart the sample window when we come back on screen.
+            watchdogRef.current.sampleFrom = 0;
             raf = requestAnimationFrame(animate);
             return;
           }
@@ -655,6 +738,9 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
             });
             composer.render();
           } else renderer.render(scene, camera);
+
+          // Measured after the draw call so this frame's own cost is part of the sample.
+          if (!checkFrameRate()) return;
           raf = requestAnimationFrame(animate);
         };
 
@@ -693,6 +779,11 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
   useEffect(() => {
     speedRef.current = speed;
   }, [speed]);
+
+  useEffect(() => {
+    minFpsRef.current = minFps;
+    onTooSlowRef.current = onTooSlow;
+  }, [minFps, onTooSlow]);
 
   useEffect(() => {
     const t = threeRef.current;

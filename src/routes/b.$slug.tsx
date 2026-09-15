@@ -70,7 +70,12 @@ function RouteComponent() {
         </div>
 
         <div className="mt-10 text-right">
-          <Button render={<Link to="/"></Link>} nativeButton={false} variant="link" className="px-0">
+          <Button
+            render={<Link to="/"></Link>}
+            nativeButton={false}
+            variant="link"
+            className="px-0"
+          >
             <IconArrowLeft />
             Back home
           </Button>

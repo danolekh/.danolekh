@@ -1,6 +1,17 @@
 import type { ComponentType } from "react";
 import { IconArrowNarrowRight, IconQuote } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
+import { BlockShell } from "@/lib/content/block-shell";
+import {
+  CandidatesBlock,
+  CostCalcBlock,
+  GlobeBlock,
+  LeadTimeBlock,
+  MoneySplitBlock,
+  PriceBarsBlock,
+  SpecMatchBlock,
+  VerdictBlock,
+} from "@/lib/content/hydraulics-blocks";
 
 // Registry of bespoke, in-theme achievement blocks embeddable in a case study via a
 // ```block:<name> fenced block (see src/lib/content/p.ts). Every block takes JSON-serializable
@@ -13,43 +24,21 @@ const PORTFOLIO_BLOCKS: Record<string, ComponentType<Record<string, unknown>>> =
   stack: StackBlock as ComponentType<Record<string, unknown>>,
   "stat-row": StatRowBlock as ComponentType<Record<string, unknown>>,
   feedback: FeedbackBlock as ComponentType<Record<string, unknown>>,
+  // Hydraulics sourcing post — these read from src/data/hydraulics.ts rather than fence JSON.
+  globe: GlobeBlock as ComponentType<Record<string, unknown>>,
+  verdict: VerdictBlock as ComponentType<Record<string, unknown>>,
+  "price-bars": PriceBarsBlock as ComponentType<Record<string, unknown>>,
+  "money-split": MoneySplitBlock as ComponentType<Record<string, unknown>>,
+  "spec-match": SpecMatchBlock as ComponentType<Record<string, unknown>>,
+  candidates: CandidatesBlock as ComponentType<Record<string, unknown>>,
+  "lead-time": LeadTimeBlock as ComponentType<Record<string, unknown>>,
+  "cost-calc": CostCalcBlock as ComponentType<Record<string, unknown>>,
 };
 
-export function PortfolioBlock({
-  name,
-  props,
-}: {
-  name: string;
-  props: Record<string, unknown>;
-}) {
+export function PortfolioBlock({ name, props }: { name: string; props: Record<string, unknown> }) {
   const Component = PORTFOLIO_BLOCKS[name];
   if (!Component) return null;
   return <Component {...props} />;
-}
-
-// Shared shell so every block reads as one system: dashed border, card surface, small heading.
-function BlockShell({
-  title,
-  caption,
-  children,
-  className,
-}: {
-  title?: string;
-  caption?: string;
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <section className={cn("border border-dashed bg-card/60 p-4 not-prose", className)}>
-      {title ? (
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          {title}
-        </h3>
-      ) : null}
-      <div className={cn(title && "mt-3")}>{children}</div>
-      {caption ? <p className="mt-3 text-xs text-muted-foreground">{caption}</p> : null}
-    </section>
-  );
 }
 
 // ── metrics: Core Web Vitals grid ──────────────────────────────────────────────
@@ -344,4 +333,3 @@ function FeedbackBlock(props: { quote?: string; author?: string; role?: string }
     </section>
   );
 }
-

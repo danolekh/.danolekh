@@ -56,8 +56,8 @@ export function DocIndexDemo() {
           Index engineering documents with Claude
         </h3>
         <p className="mt-1 text-sm text-muted-foreground">
-          Claude pulls author, addressee, date, and subject from each document, then keyword-search the
-          whole set.
+          Claude pulls author, addressee, date, and subject from each document, then keyword-search
+          the whole set.
         </p>
       </div>
 
@@ -102,12 +102,13 @@ export function DocIndexDemo() {
 
         {/* Index action */}
         <div className="flex flex-col items-center gap-2 py-1">
-          <Button onClick={run} disabled={phase === "indexing"} size="lg" className="rounded-full px-6">
-            {phase === "indexing" ? (
-              <IconLoader2 className="animate-spin" />
-            ) : (
-              <IconSparkles />
-            )}
+          <Button
+            onClick={run}
+            disabled={phase === "indexing"}
+            size="lg"
+            className="rounded-full px-6"
+          >
+            {phase === "indexing" ? <IconLoader2 className="animate-spin" /> : <IconSparkles />}
             {phase === "indexing" ? "Indexing…" : "Index all with Claude"}
           </Button>
           <span className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
@@ -145,7 +146,9 @@ export function DocIndexDemo() {
                       <Cell loading={loading} value={r?.fields.subject} />
                       <td className="px-3 py-3">
                         {r && <IndexedTag />}
-                        {loading && <IconLoader2 className="size-3.5 animate-spin text-muted-foreground" />}
+                        {loading && (
+                          <IconLoader2 className="size-3.5 animate-spin text-muted-foreground" />
+                        )}
                       </td>
                     </tr>
                   );

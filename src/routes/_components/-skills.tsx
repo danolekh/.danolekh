@@ -6,10 +6,7 @@ const SVGL = "https://svgl.app/library";
 
 interface Skill {
   name: string;
-  icon:
-    | string
-    | { light: string; dark: string }
-    | { type: "component" };
+  icon: string | { light: string; dark: string } | { type: "component" };
 }
 
 const skills: Skill[] = [
@@ -21,9 +18,15 @@ const skills: Skill[] = [
   { name: "Bun", icon: `${SVGL}/bun.svg` },
   { name: "PostgreSQL", icon: `${SVGL}/postgresql.svg` },
   { name: "SQLite", icon: `${SVGL}/sqlite.svg` },
-  { name: "Drizzle ORM", icon: { light: `${SVGL}/drizzle-orm_light.svg`, dark: `${SVGL}/drizzle-orm_dark.svg` } },
+  {
+    name: "Drizzle ORM",
+    icon: { light: `${SVGL}/drizzle-orm_light.svg`, dark: `${SVGL}/drizzle-orm_dark.svg` },
+  },
   { name: "Zustand", icon: { type: "component" } },
-  { name: "Radix UI", icon: { light: `${SVGL}/radix-ui_light.svg`, dark: `${SVGL}/radix-ui_dark.svg` } },
+  {
+    name: "Radix UI",
+    icon: { light: `${SVGL}/radix-ui_light.svg`, dark: `${SVGL}/radix-ui_dark.svg` },
+  },
   { name: "Zig", icon: `${SVGL}/zig.svg` },
   { name: "Python", icon: `${SVGL}/python.svg` },
 ];
@@ -46,7 +49,11 @@ export default function Skills() {
           {skills.map((skill) => {
             const src = getIconSrc(skill.icon);
             return (
-              <Badge key={skill.name} variant="secondary" className="gap-1.5 px-2.5 py-1 text-sm h-auto">
+              <Badge
+                key={skill.name}
+                variant="secondary"
+                className="gap-1.5 px-2.5 py-1 text-sm h-auto"
+              >
                 {src ? (
                   <img src={src} alt={skill.name} className="size-4" />
                 ) : (

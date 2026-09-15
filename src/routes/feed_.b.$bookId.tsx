@@ -54,7 +54,12 @@ function RouteComponent() {
           </div>
         </div>
         <div className="text-right">
-          <Button render={<Link to="/"></Link>} nativeButton={false} variant="link" className="px-0">
+          <Button
+            render={<Link to="/"></Link>}
+            nativeButton={false}
+            variant="link"
+            className="px-0"
+          >
             <IconArrowLeft />
             Back home
           </Button>

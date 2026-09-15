@@ -35,10 +35,12 @@ export function FlowContentsDemo() {
   return (
     <div className="not-prose my-8 overflow-hidden rounded-2xl border border-border bg-card text-card-foreground">
       <div className="border-b border-border px-5 py-4">
-        <h3 className="text-sm font-semibold text-foreground">Try it — photo → the exact retailer page</h3>
+        <h3 className="text-sm font-semibold text-foreground">
+          Try it — photo → the exact retailer page
+        </h3>
         <p className="mt-1 text-sm text-muted-foreground">
-          Pick a detected item. The server runs Google Lens on the crop and resolves the real product URL
-          + price, live — ranked by retailer domain, price, and exact-match confidence.
+          Pick a detected item. The server runs Google Lens on the crop and resolves the real
+          product URL + price, live — ranked by retailer domain, price, and exact-match confidence.
         </p>
       </div>
 
@@ -58,7 +60,12 @@ export function FlowContentsDemo() {
               )}
               title={s.label}
             >
-              <img src={s.imageUrl} alt={s.label} loading="lazy" className="h-full w-full object-cover" />
+              <img
+                src={s.imageUrl}
+                alt={s.label}
+                loading="lazy"
+                className="h-full w-full object-cover"
+              />
             </button>
           ))}
         </div>
@@ -105,7 +112,9 @@ export function FlowContentsDemo() {
               className="space-y-4"
             >
               <div className="rounded-xl border border-border bg-background p-4">
-                <div className="text-xs font-medium text-muted-foreground">Today’s pipeline returns</div>
+                <div className="text-xs font-medium text-muted-foreground">
+                  Today’s pipeline returns
+                </div>
                 <div className="mt-1 truncate font-mono text-xs text-muted-foreground line-through">
                   {result.aggregatorExample}
                 </div>
@@ -115,7 +124,8 @@ export function FlowContentsDemo() {
                 <ResultCard match={result.chosen} highlight />
               ) : (
                 <p className="text-sm text-muted-foreground">
-                  No confident retailer match — the pipeline would keep the existing value and flag it for review.
+                  No confident retailer match — the pipeline would keep the existing value and flag
+                  it for review.
                 </p>
               )}
 
@@ -124,8 +134,8 @@ export function FlowContentsDemo() {
               ))}
 
               <div className="text-[11px] text-muted-foreground">
-                {result.source === "live" ? "Live Google Lens" : "Cached sample"} · top match highlighted, ranked
-                by retailer domain + price + exact match
+                {result.source === "live" ? "Live Google Lens" : "Cached sample"} · top match
+                highlighted, ranked by retailer domain + price + exact match
               </div>
             </motion.div>
           )}
@@ -158,7 +168,9 @@ function ResultCard({ match, highlight }: { match: FlowMatch; highlight?: boolea
         <div className="mt-0.5 flex items-center gap-2 text-xs text-muted-foreground">
           <span>{match.source}</span>
           {match.price && (
-            <span className="rounded bg-muted px-1.5 py-0.5 font-medium text-foreground">{match.price}</span>
+            <span className="rounded bg-muted px-1.5 py-0.5 font-medium text-foreground">
+              {match.price}
+            </span>
           )}
         </div>
         <a

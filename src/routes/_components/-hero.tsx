@@ -34,7 +34,10 @@ export default function Hero() {
               </div>
               <p className="text-lg mt-4">
                 Check out my{" "}
-                <Link to="/feed" className="underline underline-offset-4 text-primary hover:text-primary/80 transition-colors">
+                <Link
+                  to="/feed"
+                  className="underline underline-offset-4 text-primary hover:text-primary/80 transition-colors"
+                >
                   feed
                 </Link>{" "}
                 for what I've been reading and thinking about.
