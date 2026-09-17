@@ -8,6 +8,7 @@ import { PortfolioBlock } from "@/lib/content/portfolio-components";
 import { createProjectMeta } from "@/lib/seo";
 import { getProject } from "@/data/projects";
 import { PostToc } from "@/components/post-toc";
+import { ProjectCover } from "@/components/project-cover";
 
 const getProjectPost = createServerFn({ method: "GET" })
   .inputValidator(Schema.Struct({ slug: Schema.String }).pipe(Schema.standardSchemaV1))
@@ -45,7 +46,6 @@ function RouteComponent() {
   const project = Route.useLoaderData();
   // Cover comes from the static project list (falls back to none if the slug isn't listed).
   const meta = getProject(project.slug);
-  const cover = meta?.cover;
 
   return (
     <div className="min-h-dvh px-6 py-12">
@@ -71,12 +71,8 @@ function RouteComponent() {
           </div>
 
           <header className="mt-6 mb-8 space-y-4">
-            {cover ? (
-              <img
-                src={cover}
-                alt={`${project.title} preview`}
-                className="w-full border border-dashed object-cover"
-              />
+            {meta ? (
+              <ProjectCover project={meta} className="w-full border border-dashed object-cover" />
             ) : null}
 
             <div className="flex flex-wrap items-end justify-between gap-3">

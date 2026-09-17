@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { ProjectCover } from "@/components/project-cover";
 import { projects, type Project } from "@/data/projects";
 import { WEB3_LIVE } from "@/lib/config";
 
@@ -24,11 +25,8 @@ export default function Projects() {
 function ProjectCard({ project }: { project: Project }) {
   const inner = (
     <Card size="sm" className="h-full hover:ring-foreground/20 transition-all cursor-pointer">
-      <img
-        src={project.cover}
-        alt={`${project.title} preview`}
-        className="h-36 w-full object-cover"
-      />
+      {/* 16:9, the ratio the cover art is composed at, so nothing important gets cropped away. */}
+      <ProjectCover project={project} className="aspect-video w-full object-cover" loading="lazy" />
       <CardHeader>
         <CardTitle className="text-base">{project.title}</CardTitle>
         <CardDescription>{project.subtitle}</CardDescription>

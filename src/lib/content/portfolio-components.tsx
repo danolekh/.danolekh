@@ -8,6 +8,7 @@ import {
 } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 import { BlockShell } from "@/lib/content/block-shell";
+import { ConsollineGlobeBlock, HalftoneFieldBlock } from "@/lib/content/consolline/showcase-blocks";
 import {
   CandidatesBlock,
   CostCalcBlock,
@@ -31,6 +32,9 @@ const PORTFOLIO_BLOCKS: Record<string, ComponentType<Record<string, unknown>>> =
   "stat-row": StatRowBlock as ComponentType<Record<string, unknown>>,
   feedback: FeedbackBlock as ComponentType<Record<string, unknown>>,
   onchain: OnchainBlock as ComponentType<Record<string, unknown>>,
+  // Consolline case study: live WebGL demos, each lazily importing its own renderer chunk.
+  "consolline-globe": ConsollineGlobeBlock as ComponentType<Record<string, unknown>>,
+  "halftone-field": HalftoneFieldBlock as ComponentType<Record<string, unknown>>,
   // Hydraulics sourcing post — these read from src/data/hydraulics.ts rather than fence JSON.
   globe: GlobeBlock as ComponentType<Record<string, unknown>>,
   verdict: VerdictBlock as ComponentType<Record<string, unknown>>,

@@ -41,9 +41,14 @@ I built the site on my own in Astro, from the Figma frames to 140 static pages:
 
 ### A globe you can spin
 
-![The About section: a dotted WebGL globe with orbit lines behind the Facts and Figures heading](/images/p/consolline/globe.webp)
+The globe below is the real thing, running on this page: drag it sideways, or scroll and watch it
+pick up speed.
 
-The globe is a single WebGL2 shader with a WebGL1 fallback. It started from the open-source cobe
+```block:consolline-globe
+{}
+```
+
+It is a single WebGL2 shader with a WebGL1 fallback. It started from the open-source cobe
 globe and was retuned to the Figma node: land drawn as dots on a latitude and longitude grid,
 brighter toward the rim, with the glow only on land. It drifts on its own at about one turn a
 minute. Scrolling gives it a push that fades out, dragging spins it and hands your speed over when
@@ -51,7 +56,9 @@ you let go, and off-screen it stops drawing.
 
 ### Halftone that reacts to the pointer
 
-![The testimonials section over a lime halftone dot field](/images/p/consolline/halftone.webp)
+```block:halftone-field
+{}
+```
 
 Behind the shipping calculator, the testimonials and the footer wordmark sits a halftone dot
 field - another WebGL2 shader. It redraws the image dot by dot, reading each dot's size from the

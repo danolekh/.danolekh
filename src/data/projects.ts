@@ -5,7 +5,10 @@ export type Project = {
   slug: string;
   title: string;
   subtitle: string;
+  /** Cover art for the dark theme (and the only cover when there is no light cut). */
   cover: string;
+  /** Light-theme cut of the same cover; the theme class on <html> picks one before paint. */
+  coverLight?: string;
   /** Hidden from the home grid until `WEB3_LIVE` (src/lib/config.ts) flips on. */
   draft?: boolean;
 } & ({ internal: true } | { internal: false; href: string });
@@ -41,7 +44,8 @@ export const projects: Project[] = [
     slug: "oasi-kadir",
     title: "Oasi Kadir",
     subtitle: "Bilingual agriturismo site — Astro + Strapi on Cloudflare, with native bookings",
-    cover: "/images/oasi-kadir.jpg",
+    cover: "/images/covers/oasi-kadir-dark.webp",
+    coverLight: "/images/covers/oasi-kadir-light.webp",
     internal: true,
   },
   {
@@ -49,7 +53,8 @@ export const projects: Project[] = [
     title: "Consolline",
     subtitle:
       "Four-language logistics site in Astro — WebGL globe and halftone shaders, built from Figma",
-    cover: "/images/consolline.jpg",
+    cover: "/images/covers/consolline-dark.webp",
+    coverLight: "/images/covers/consolline-light.webp",
     internal: true,
   },
   {
@@ -57,7 +62,8 @@ export const projects: Project[] = [
     title: "SportMagaz",
     subtitle:
       "Sports-equipment store for Ukraine with its own admin panel — Next.js, then static Astro",
-    cover: "/images/sportmagaz.jpg",
+    cover: "/images/covers/sportmagaz-dark.webp",
+    coverLight: "/images/covers/sportmagaz-light.webp",
     internal: true,
   },
 ];
