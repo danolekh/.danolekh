@@ -83,9 +83,32 @@ function slugify(text: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
+const NAMED_ENTITIES: Record<string, string> = {
+  amp: "&",
+  lt: "<",
+  gt: ">",
+  quot: '"',
+  apos: "'",
+  nbsp: " ",
+};
+
+/* marked escapes heading text (`It's` arrives as `It&#39;s`). The TOC renders `text` as a React
+ * child, which escapes it again, so entities are decoded here. One pass: `&amp;lt;` becomes `&lt;`,
+ * not `<`. */
+function decodeEntities(text: string): string {
+  return text.replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (entity, body: string) => {
+    if (body[0] === "#") {
+      const hex = body[1] === "x" || body[1] === "X";
+      const code = hex ? parseInt(body.slice(2), 16) : Number(body.slice(1));
+      return code <= 0x10ffff ? String.fromCodePoint(code) : entity;
+    }
+    return NAMED_ENTITIES[body.toLowerCase()] ?? entity;
+  });
+}
+
 function addHeadingIds(html: string, toc: TocEntry[], seen: Map<string, number>): string {
   return html.replace(HEADING_RE, (_all, tag: string, inner: string) => {
-    const text = inner.replace(/<[^>]*>/g, "").trim();
+    const text = decodeEntities(inner.replace(/<[^>]*>/g, "").trim());
     const base = slugify(text) || "section";
     const n = (seen.get(base) ?? 0) + 1;
     seen.set(base, n);

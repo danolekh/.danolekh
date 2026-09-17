@@ -45,12 +45,20 @@ export const projects: Project[] = [
     internal: true,
   },
   {
-    slug: "ifit",
-    title: "iFit",
-    subtitle: "E-commerce store for selling sports equipment in Ukraine",
-    cover: "/images/ifit.png",
-    internal: false,
-    href: "https://ifit.danolekh.com",
+    slug: "consolline",
+    title: "Consolline",
+    subtitle:
+      "Four-language logistics site in Astro — WebGL globe and halftone shaders, built from Figma",
+    cover: "/images/consolline.jpg",
+    internal: true,
+  },
+  {
+    slug: "sportmagaz",
+    title: "SportMagaz",
+    subtitle:
+      "Sports-equipment store for Ukraine with its own admin panel — Next.js, then static Astro",
+    cover: "/images/sportmagaz.jpg",
+    internal: true,
   },
 ];
 
