@@ -1,13 +1,23 @@
 import { Link } from "@tanstack/react-router";
-import { WEB3_LIVE } from "@/lib/config";
+import { WEB3_LIVE, siteConfig } from "@/lib/config";
+
+const LINK = "underline underline-offset-4 text-primary hover:text-primary/80 transition-colors";
+
+// How to reach me, in the order people usually want them.
+const CONTACTS = [
+  { label: "Email", href: `mailto:${siteConfig.email}` },
+  { label: "GitHub", href: siteConfig.links.github },
+  { label: "LinkedIn", href: siteConfig.links.linkedin },
+  { label: "X", href: siteConfig.links.twitter },
+];
 
 export default function Hero() {
   return (
     <section className="relative pt-12 pb-8 md:pt-24 md:pb-12 px-6 md:px-12 overflow-hidden">
       <div className="max-w-208 mx-auto z-10 w-full relative">
         <div className="flex flex-col items-start gap-10">
-          <div className="flex gap-8">
-            <div className="relative w-24 h-24 md:w-28 md:h-28 shrink-0">
+          <div className="flex gap-5 sm:gap-8">
+            <div className="relative w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 shrink-0">
               <img
                 src="/images/me.jpeg"
                 alt="Dan Olekh"
@@ -15,10 +25,12 @@ export default function Hero() {
               />
             </div>
 
-            <div className="flex flex-col justify-between py-1">
+            <div className="flex min-w-0 flex-col justify-between py-1">
               <div>
-                <div className="text-3xl md:text-4xl font-bold tracking-tight">Dan Olekh</div>
-                <p className="text-lg text-muted-foreground">
+                <div className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight">
+                  Dan Olekh
+                </div>
+                <p className="text-base sm:text-lg text-muted-foreground">
                   {WEB3_LIVE ? "Software engineer · TypeScript · EVM" : "Software engineer"}
                 </p>
               </div>
@@ -54,21 +66,31 @@ export default function Hero() {
               </div>
               <p className="text-lg mt-4">
                 Check out my{" "}
-                <Link
-                  to="/feed"
-                  className="underline underline-offset-4 text-primary hover:text-primary/80 transition-colors"
-                >
+                <Link to="/feed" className={LINK}>
                   feed
                 </Link>{" "}
                 for what I've been reading and thinking about, or my{" "}
-                <Link
-                  to="/b"
-                  className="underline underline-offset-4 text-primary hover:text-primary/80 transition-colors"
-                >
+                <Link to="/b" className={LINK}>
                   writing
                 </Link>
                 .
               </p>
+              <p className="text-lg mt-4">
+                Open to full-time or contract work, remote from Vienna. Here's my{" "}
+                <Link to="/resume" className={LINK}>
+                  resume
+                </Link>
+                .
+              </p>
+              <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-lg">
+                {CONTACTS.map((c) => (
+                  <li key={c.label}>
+                    <a href={c.href} className={LINK}>
+                      {c.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>

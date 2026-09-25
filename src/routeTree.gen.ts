@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ResumeRouteImport } from './routes/resume'
 import { Route as FeedRouteRouteImport } from './routes/feed/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -19,6 +20,11 @@ import { Route as ApiBooksRouteImport } from './routes/api/books'
 import { Route as FeedBBookIdRouteImport } from './routes/feed_.b.$bookId'
 import { Route as FeedBBookIdModalRouteImport } from './routes/feed/b/$bookId/modal'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResumeRoute = ResumeRouteImport.update({
   id: '/resume',
   path: '/resume',
@@ -69,6 +75,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/feed': typeof FeedRouteRouteWithChildren
   '/resume': typeof ResumeRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/books': typeof ApiBooksRoute
   '/b/$slug': typeof BSlugRoute
   '/p/$project': typeof PProjectRoute
@@ -80,6 +87,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/feed': typeof FeedRouteRouteWithChildren
   '/resume': typeof ResumeRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/books': typeof ApiBooksRoute
   '/b/$slug': typeof BSlugRoute
   '/p/$project': typeof PProjectRoute
@@ -92,6 +100,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/feed': typeof FeedRouteRouteWithChildren
   '/resume': typeof ResumeRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/books': typeof ApiBooksRoute
   '/b/$slug': typeof BSlugRoute
   '/p/$project': typeof PProjectRoute
@@ -105,6 +114,7 @@ export interface FileRouteTypes {
     | '/'
     | '/feed'
     | '/resume'
+    | '/sitemap.xml'
     | '/api/books'
     | '/b/$slug'
     | '/p/$project'
@@ -116,6 +126,7 @@ export interface FileRouteTypes {
     | '/'
     | '/feed'
     | '/resume'
+    | '/sitemap.xml'
     | '/api/books'
     | '/b/$slug'
     | '/p/$project'
@@ -127,6 +138,7 @@ export interface FileRouteTypes {
     | '/'
     | '/feed'
     | '/resume'
+    | '/sitemap.xml'
     | '/api/books'
     | '/b/$slug'
     | '/p/$project'
@@ -139,6 +151,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   FeedRouteRoute: typeof FeedRouteRouteWithChildren
   ResumeRoute: typeof ResumeRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiBooksRoute: typeof ApiBooksRoute
   BSlugRoute: typeof BSlugRoute
   PProjectRoute: typeof PProjectRoute
@@ -148,6 +161,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/resume': {
       id: '/resume'
       path: '/resume'
@@ -230,6 +250,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   FeedRouteRoute: FeedRouteRouteWithChildren,
   ResumeRoute: ResumeRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiBooksRoute: ApiBooksRoute,
   BSlugRoute: BSlugRoute,
   PProjectRoute: PProjectRoute,

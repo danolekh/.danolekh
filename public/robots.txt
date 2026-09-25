@@ -1,3 +1,8 @@
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
-Disallow:
+Allow: /
+
+# The API route has nothing to index.
+Disallow: /api/
+
+Sitemap: https://www.danolekh.com/sitemap.xml

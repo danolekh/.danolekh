@@ -2,6 +2,7 @@ import matter from "gray-matter";
 import { Marked } from "marked";
 import { createHighlighter, type Highlighter } from "shiki";
 import { createJavaScriptRegexEngine } from "shiki/engine/javascript";
+import { type LinkPreview, markLinkPreviews } from "./previews";
 
 // Portfolio case studies. Mirrors `src/lib/content/b.ts` (the blog loader): markdown files are
 // inlined raw at build time, split into ordered prose-HTML nodes + embedded component nodes, and
@@ -61,13 +62,26 @@ export type PProject = {
   draft: boolean;
   title: string;
   subtitle: string | null;
+  /** Meta description. Falls back to `subtitle`, which is written for the page, not for a SERP. */
+  description: string | null;
   client: string | null;
   role: string | null;
   year: string | null;
   liveUrl: string | null;
   stack: string[];
+  /** ISO date the write-up went up, and when it was last revised — both feed the article markup. */
+  date: string | null;
+  updated: string | null;
+  /** BCP-47 tag for the body copy; not every case study is in English. */
+  lang: string;
+  /** `cover` / `coverLight` in frontmatter: hero art for a case study that isn't in the project list
+   *  (src/data/projects.ts), which is where listed ones keep theirs. */
+  cover: string | null;
+  coverLight: string | null;
   nodes: PNode[];
   toc: TocEntry[];
+  /** The pages this case study links to, by path, for the hover cards on those links. */
+  previews: Record<string, LinkPreview>;
 };
 
 /* Headings arrive as plain <h2>/<h3> from marked. Long posts need anchors to link to and a
@@ -171,6 +185,14 @@ function asStringOrNull(value: unknown): string | null {
   return typeof value === "string" ? value : value != null ? String(value) : null;
 }
 
+/* gray-matter parses an unquoted `date: 2026-09-17` into a Date, so normalise both shapes down to
+ * the YYYY-MM-DD string that schema.org and sitemaps want. */
+function asIsoDateOrNull(value: unknown): string | null {
+  if (value instanceof Date) return value.toISOString().slice(0, 10);
+  if (typeof value === "string" && value.trim()) return value.trim().slice(0, 10);
+  return null;
+}
+
 function isDraft(data: Record<string, unknown>): boolean {
   return data.draft === true;
 }
@@ -213,26 +235,52 @@ export async function getPProjectBySlug(slug: string): Promise<PProject | null> 
   }
   await pushProse(content.slice(lastIndex));
 
+  const previews: Record<string, LinkPreview> = {};
+  for (const node of nodes)
+    if (node.type === "html") node.html = markLinkPreviews(node.html, `/p/${slug}`, previews);
+
   const project: PProject = {
     slug,
     draft: isDraft(data),
     title: typeof data.title === "string" ? data.title : slug,
     subtitle: asStringOrNull(data.subtitle),
+    description: asStringOrNull(data.description),
     client: asStringOrNull(data.client),
     role: asStringOrNull(data.role),
     year: asStringOrNull(data.year),
     liveUrl: asStringOrNull(data.liveUrl),
     stack: asStringArray(data.stack),
+    date: asIsoDateOrNull(data.date),
+    updated: asIsoDateOrNull(data.updated),
+    lang: typeof data.lang === "string" ? data.lang : "en",
+    cover: asStringOrNull(data.cover),
+    coverLight: asStringOrNull(data.coverLight),
     nodes,
     toc,
+    previews,
   };
   cache.set(slug, project);
   return project;
 }
 
+/** Slug + dates for every published case study, newest first. Feeds the sitemap; no body parsing. */
+export function listPProjects(): Array<{
+  slug: string;
+  date: string | null;
+  updated: string | null;
+}> {
+  return Object.entries(rawFiles)
+    .map(([key, raw]) => ({ key, data: matter(raw).data as Record<string, unknown> }))
+    .filter(({ data }) => !isDraft(data))
+    .map(({ key, data }) => ({
+      slug: key.slice(key.lastIndexOf("/") + 1).replace(/\.md$/, ""),
+      date: asIsoDateOrNull(data.date),
+      updated: asIsoDateOrNull(data.updated),
+    }))
+    .sort((a, b) => (b.date ?? "").localeCompare(a.date ?? ""));
+}
+
 /** Published (non-draft) case-study slugs. Drafts are still reachable by slug in dev. */
 export function getAllPSlugs(): string[] {
-  return Object.entries(rawFiles)
-    .filter(([, raw]) => !isDraft(matter(raw).data))
-    .map(([key]) => key.slice(key.lastIndexOf("/") + 1).replace(/\.md$/, ""));
+  return listPProjects().map((p) => p.slug);
 }

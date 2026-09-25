@@ -49,7 +49,12 @@ const PORTFOLIO_BLOCKS: Record<string, ComponentType<Record<string, unknown>>> =
 export function PortfolioBlock({ name, props }: { name: string; props: Record<string, unknown> }) {
   const Component = PORTFOLIO_BLOCKS[name];
   if (!Component) return null;
-  return <Component {...props} />;
+  // `data-block` is a handle for scripts/generate-covers.ts, which captures blocks by name.
+  return (
+    <div data-block={name}>
+      <Component {...props} />
+    </div>
+  );
 }
 
 // ── metrics: Core Web Vitals grid ──────────────────────────────────────────────

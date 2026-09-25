@@ -11,9 +11,22 @@ export type Project = {
   coverLight?: string;
   /** Hidden from the home grid until `WEB3_LIVE` (src/lib/config.ts) flips on. */
   draft?: boolean;
+  /** A clip whose first frame is the cover (made with cardstock's apps/promo recorder): `src` plays
+   *  over the grid card while it's hovered, `hero` loops above the case study. Light cuts optional. */
+  video?: { src: string; srcLight?: string; hero?: string; heroLight?: string };
 } & ({ internal: true } | { internal: false; href: string });
 
 export const projects: Project[] = [
+  {
+    slug: "cardstock",
+    title: "cardstock",
+    subtitle:
+      "Headless bank-card primitives for React — tilt, flip, live shader backgrounds, WebGL frost and a swipeable carousel",
+    cover: "/images/covers/cardstock-shaders.webp",
+    internal: true,
+    // cardstock 0.5 on the promo stage (take v05): shader backgrounds, the flips, a freeze over a live shader.
+    video: { src: "/videos/cardstock-shaders-800.mp4", hero: "/videos/cardstock-shaders-1600.mp4" },
+  },
   {
     slug: "milestone-escrow",
     title: "Milestone Escrow",

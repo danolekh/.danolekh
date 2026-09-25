@@ -2,6 +2,7 @@ import matter from "gray-matter";
 import { Marked } from "marked";
 import { createHighlighter, type Highlighter } from "shiki";
 import { createJavaScriptRegexEngine } from "shiki/engine/javascript";
+import { type LinkPreview, markLinkPreviews } from "./previews";
 
 // Eagerly inline every markdown file's RAW text at build time. Keys look like
 // "/src/content/b/hello-world.md". Lives in a server-only module (only imported by the
@@ -34,21 +35,53 @@ export type BPost = {
   slug: string;
   /** `draft: true` in frontmatter: hidden from the index and prerender, 404 in production. */
   draft: boolean;
+  /** `unlisted: true`: published and reachable by URL, but kept off the index and the sitemap, and
+   *  noindexed. For pages written for one reader, like an outreach note. */
+  unlisted: boolean;
+  /** `noindex: true` (implied by `unlisted`): the page asks search engines not to index it. */
+  noindex: boolean;
+  /** `image`: the page's own share image, a path under /public. */
+  image: string | null;
+  /** `cover` / `coverLight`: the dark and light hero (1600x900, made by scripts/generate-covers.ts),
+   *  shown above the title and as the post's card on /b. */
+  cover: string | null;
+  coverLight: string | null;
+  /** `video` / `videoLight`: a clip that loops over the hero, its first frame being the cover. */
+  video: string | null;
+  videoLight: string | null;
   title: string;
   date: string | null;
   description: string | null;
   nodes: BNode[];
+  /** The pages this post links to, by path, for the hover cards on those links. */
+  previews: Record<string, LinkPreview>;
 };
 
 /** What the `/b` index needs per post - frontmatter only, no markdown rendering. */
-export type BPostSummary = Pick<BPost, "slug" | "title" | "date" | "description">;
+export type BPostSummary = Pick<
+  BPost,
+  "slug" | "title" | "date" | "description" | "cover" | "coverLight"
+>;
 
 function isDraft(data: Record<string, unknown>): boolean {
   return data.draft === true;
 }
 
+function isUnlisted(data: Record<string, unknown>): boolean {
+  return data.unlisted === true;
+}
+
 function slugOf(key: string): string {
   return key.slice(key.lastIndexOf("/") + 1).replace(/\.md$/, "");
+}
+
+/* gray-matter turns an unquoted `date: 2026-06-03` into a Date, and `String(date)` on that gives
+ * "Tue Jun 02 2026 02:00:00 GMT+0200 (…)" — which was reaching <meta article:published_time> and
+ * the sitemap's <lastmod>, where only YYYY-MM-DD is valid. Normalise both shapes here. */
+function asIsoDate(value: unknown): string | null {
+  if (value instanceof Date) return value.toISOString().slice(0, 10);
+  if (typeof value === "string" && value.trim()) return value.trim().slice(0, 10);
+  return null;
 }
 
 function summarize(key: string, data: Record<string, unknown>): BPostSummary {
@@ -56,8 +89,10 @@ function summarize(key: string, data: Record<string, unknown>): BPostSummary {
   return {
     slug,
     title: typeof data.title === "string" ? data.title : slug,
-    date: data.date != null ? String(data.date) : null,
+    date: asIsoDate(data.date),
     description: typeof data.description === "string" ? data.description : null,
+    cover: typeof data.cover === "string" ? data.cover : null,
+    coverLight: typeof data.coverLight === "string" ? data.coverLight : null,
   };
 }
 
@@ -135,20 +170,30 @@ export async function getBPostBySlug(slug: string): Promise<BPost | null> {
   }
   await pushProse(content.slice(lastIndex));
 
+  const previews: Record<string, LinkPreview> = {};
+  for (const node of nodes)
+    if (node.type === "html") node.html = markLinkPreviews(node.html, `/b/${slug}`, previews);
+
   const post: BPost = {
     ...summarize(`/src/content/b/${slug}.md`, data),
     draft: isDraft(data),
+    unlisted: isUnlisted(data),
+    noindex: data.noindex === true || isUnlisted(data),
+    image: typeof data.image === "string" ? data.image : null,
+    video: typeof data.video === "string" ? data.video : null,
+    videoLight: typeof data.videoLight === "string" ? data.videoLight : null,
     nodes,
+    previews,
   };
   cache.set(slug, post);
   return post;
 }
 
-/** Published (non-draft) posts, newest first. Undated posts sort last. */
+/** Published posts (not drafts, not unlisted), newest first. Undated posts sort last. */
 export function listBPosts(): BPostSummary[] {
   return Object.entries(rawFiles)
     .map(([key, raw]) => ({ key, data: matter(raw).data as Record<string, unknown> }))
-    .filter(({ data }) => !isDraft(data))
+    .filter(({ data }) => !isDraft(data) && !isUnlisted(data))
     .map(({ key, data }) => summarize(key, data))
     .sort((a, b) => (b.date ?? "").localeCompare(a.date ?? ""));
 }

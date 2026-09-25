@@ -9,7 +9,8 @@ export const Route = createFileRoute("/")({
   component: App,
   head: () =>
     createMeta({
-      description: "Software Engineer",
+      description:
+        "Dan Olekh — software engineer building fast, user-loved web platforms in TypeScript. Case studies from Consolline, SportMagaz and Oasi Kadir, plus writing and a reading feed.",
       url: siteConfig.url,
     }),
 });

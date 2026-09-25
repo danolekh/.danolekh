@@ -33,6 +33,11 @@ export type GlobeOptions = {
   limbDirection: number;
   light: [number, number, number];
   whiten: number;
+  /** What the brightest dots wash toward: white on consolline.com's dark ground. */
+  highlight: [number, number, number];
+  /** 0 adds the dots' light to the body (a dark ground); 1 paints them over it like ink, which is
+   *  the only way to get dark dots on a light ground. */
+  paint: number;
   baseColor: [number, number, number];
   dotColor: [number, number, number];
 };
@@ -92,6 +97,8 @@ const DEFAULTS: GlobeOptions = {
   limbDirection: 0.75,
   light: [0.62, 0.58, 0.53],
   whiten: 0.6,
+  highlight: [1, 1, 1],
+  paint: 0,
   baseColor: [0, 0, 0],
   dotColor: [1, 1, 1],
 };
@@ -124,6 +131,8 @@ uniform vec4 uLevels;
 uniform vec3 uLimb;
 uniform vec3 uLight;
 uniform float uWhiten;
+uniform vec3 uHighlight;
+uniform float uPaint;
 uniform float uOpacity;
 uniform sampler2D uMap;
 
@@ -181,14 +190,15 @@ float dots(vec3 p, out float ink, out float skirt) {
   return cover;
 }
 
-/* Bloom goes as the square of brightness, so it belongs to the land; the tint washes toward white
-   as a dot brightens, which is what makes the limb crescent pale while the centre stays lime. */
-vec3 shell(vec3 n, mat3 m, float lit) {
+/* Bloom goes as the square of brightness, so it belongs to the land; the tint washes toward the
+   highlight as a dot brightens, which is what makes the limb crescent pale while the centre stays
+   lime. Returns the tint and how much of it this fragment carries. */
+vec4 shell(vec3 n, mat3 m, float lit) {
   float ink, skirt;
   float cover = dots(n * m, ink, skirt);
   float v = ink * lit;
-  vec3 tint = mix(uDotColor, vec3(1.0), clamp(v * uWhiten, 0.0, 1.0));
-  return tint * (cover * v + skirt * uLevels.w * v * v);
+  vec3 tint = mix(uDotColor, uHighlight, clamp(v * uWhiten, 0.0, 1.0));
+  return vec4(tint, cover * v + skirt * uLevels.w * v * v);
 }
 
 void main() {
@@ -208,7 +218,8 @@ void main() {
   float lit = uLevels.z
             + uLimb.y * pow(1.0 - front.z, uLimb.x) * mix(1.0 - uLimb.z, 1.0, toward);
 
-  vec3 colour = uBase + shell(front, spin(uAngles.y, uAngles.x), lit);
+  vec4 sh = shell(front, spin(uAngles.y, uAngles.x), lit);
+  vec3 colour = mix(uBase + sh.rgb * sh.a, mix(uBase, sh.rgb, clamp(sh.a, 0.0, 1.0)), uPaint);
   gl_FragColor = vec4(colour, 1.0) * disc * uOpacity;
 }
 `;
@@ -226,6 +237,8 @@ const UNIFORMS = [
   "uLimb",
   "uLight",
   "uWhiten",
+  "uHighlight",
+  "uPaint",
   "uOpacity",
   "uMap",
 ] as const;
@@ -357,6 +370,8 @@ export function createGlobe(
     gl.uniform3f(u.uLimb, o.limbPower, o.limbGain, o.limbDirection);
     gl.uniform3fv(u.uLight, o.light);
     gl.uniform1f(u.uWhiten, o.whiten);
+    gl.uniform3fv(u.uHighlight, o.highlight);
+    gl.uniform1f(u.uPaint, o.paint);
     gl.uniform1f(u.uOpacity, o.opacity);
     gl.uniform1i(u.uMap, 0);
     gl.activeTexture(gl.TEXTURE0);

@@ -5,6 +5,7 @@ import { IconArrowLeft } from "@tabler/icons-react";
 import { listBPosts } from "@/lib/content/b";
 import { createMeta } from "@/lib/seo";
 import { siteConfig } from "@/lib/config";
+import { Cover } from "@/components/project-cover";
 
 // Frontmatter only - the markdown itself is rendered per post in `b.$slug.tsx`. Drafts are
 // filtered out in the loader module, so they never reach this list.
@@ -56,17 +57,32 @@ function WritingIndex() {
                   <Link
                     to="/b/$slug"
                     params={{ slug: post.slug }}
-                    className="group block py-5 first:pt-0"
+                    className="group flex flex-col gap-4 py-5 first:pt-0 sm:flex-row-reverse sm:items-start sm:gap-6"
                   >
-                    <h2 className="text-xl font-semibold tracking-tight text-foreground underline-offset-4 group-hover:underline">
-                      {post.title}
-                    </h2>
-                    {date ? <p className="mt-1 text-sm text-muted-foreground">{date}</p> : null}
-                    {post.description ? (
-                      <p className="mt-2 leading-relaxed text-muted-foreground">
-                        {post.description}
-                      </p>
+                    {post.cover ? (
+                      <div className="shrink-0 overflow-hidden border border-dashed sm:w-56">
+                        <Cover
+                          art={{
+                            title: post.title,
+                            cover: post.cover,
+                            coverLight: post.coverLight,
+                          }}
+                          className="w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                          sizes="(min-width: 640px) 224px, 100vw"
+                        />
+                      </div>
                     ) : null}
+                    <div className="min-w-0 flex-1">
+                      <h2 className="text-xl font-semibold tracking-tight text-foreground underline-offset-4 group-hover:underline">
+                        {post.title}
+                      </h2>
+                      {date ? <p className="mt-1 text-sm text-muted-foreground">{date}</p> : null}
+                      {post.description ? (
+                        <p className="mt-2 leading-relaxed text-muted-foreground">
+                          {post.description}
+                        </p>
+                      ) : null}
+                    </div>
                   </Link>
                 </li>
               );

@@ -11,8 +11,11 @@ export const siteConfig = {
   description: "Software Engineer",
   ens: "danolekh.eth",
   farcaster: "https://warpcast.com/danolekh",
+  email: "danyaolekhq@gmail.com",
   links: {
     twitter: "https://x.com/danolekh",
     github: "https://github.com/danolekh",
+    linkedin: "https://www.linkedin.com/in/danolekh",
+    telegram: "https://t.me/danolekh",
   },
 };

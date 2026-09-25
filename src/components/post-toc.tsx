@@ -14,38 +14,68 @@ import { cn } from "@/lib/utils";
  *   list      → the sidebar on wide screens, where there is margin to spare;
  *   dropdown  → a compact trigger for everything narrower, so the contents are not desktop-only.
  *
- * Links are plain `#id` anchors, so they work before hydration and without JS; the observer only
- * adds the highlight. Sticky positioning is the caller's job, not this component's.
+ * Links are plain `#id` anchors, so they work before hydration and without JS; the scroll check
+ * only adds the highlight. Sticky positioning is the caller's job, not this component's.
  */
 
-// Same band shadcn uses: a heading counts as current while it sits in the top fifth of the screen.
-const ROOT_MARGIN = "0% 0% -80% 0%";
+// A heading is current once it has scrolled above this line: 30% down the screen, at most 120px.
+const lineY = () => Math.min(window.innerHeight * 0.3, 120);
 
+/* Which heading the reader is in, from positions rather than intersection events.
+ *
+ * The old IntersectionObserver band only fired when a heading crossed the top fifth of the screen,
+ * so two things went wrong: a scroll that started while images were still loading (headings moving
+ * under it) left the highlight stale, and headings near the end never reached the band, so the
+ * last one could not become current. Now every check asks "which is the last heading above the
+ * line?", and the bottom of the page always selects the last heading.
+ */
 function useActiveHeading(entries: TocEntry[]): string | null {
   const [activeId, setActiveId] = useState<string | null>(null);
 
   useEffect(() => {
-    const elements = entries
+    const headings = entries
       .map((e) => document.getElementById(e.id))
       .filter((el): el is HTMLElement => el !== null);
-    if (elements.length === 0) return;
+    if (headings.length === 0) return;
 
-    // Track the set of headings currently in the band and take the first in document order.
-    // Picking "whichever fired last" flickers between neighbours when several cross at once.
-    const inBand = new Set<string>();
-    const io = new IntersectionObserver(
-      (records) => {
-        for (const r of records) {
-          if (r.isIntersecting) inBand.add(r.target.id);
-          else inBand.delete(r.target.id);
+    const check = () => {
+      const doc = document.documentElement;
+      const atBottom = window.innerHeight + window.scrollY >= doc.scrollHeight - 2;
+      let current: HTMLElement | null = null;
+      if (atBottom && window.scrollY > 0) current = headings[headings.length - 1];
+      else {
+        const line = lineY();
+        for (const h of headings) {
+          if (h.getBoundingClientRect().top <= line) current = h;
+          else break;
         }
-        const first = entries.find((e) => inBand.has(e.id));
-        if (first) setActiveId(first.id);
-      },
-      { rootMargin: ROOT_MARGIN, threshold: 0 },
-    );
-    elements.forEach((el) => io.observe(el));
-    return () => io.disconnect();
+      }
+      setActiveId(current?.id ?? null);
+    };
+
+    let frame = 0;
+    const schedule = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        check();
+      });
+    };
+
+    check();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    window.addEventListener("hashchange", schedule);
+    // Images, fonts and embeds that load after the first paint move the headings.
+    const ro = new ResizeObserver(schedule);
+    ro.observe(document.body);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      window.removeEventListener("hashchange", schedule);
+      ro.disconnect();
+    };
   }, [entries]);
 
   return activeId;
@@ -75,9 +105,9 @@ export function PostToc({
           )}
         >
           <IconListSearch className="size-4 shrink-0" aria-hidden />
-          <span className="truncate">{active?.text ?? "Содержание"}</span>
+          <span className="min-w-0 truncate">{active?.text ?? "Contents"}</span>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="max-h-[70svh] w-70 overflow-y-auto">
+        <DropdownMenuContent className="max-h-[70svh] w-[min(20rem,calc(100vw-2rem))] overflow-y-auto">
           {entries.map((e) => (
             <DropdownMenuItem
               key={e.id}
@@ -85,7 +115,7 @@ export function PostToc({
                 <a href={`#${e.id}`}>
                   <span
                     className={cn(
-                      "block truncate",
+                      "block whitespace-normal leading-snug",
                       e.level === 3 && "pl-3 text-xs text-muted-foreground",
                       e.id === activeId && "font-medium text-primary",
                     )}
@@ -102,9 +132,9 @@ export function PostToc({
   }
 
   return (
-    <nav aria-label="Содержание" className={className}>
+    <nav aria-label="Contents" className={className}>
       <p className="mb-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-        Содержание
+        Contents
       </p>
       <ul className="space-y-1 border-l border-dashed text-sm">
         {entries.map((e) => (

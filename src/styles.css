@@ -160,18 +160,47 @@ code {
   }
 }
 
-/* Nunito Sans Font Family (Variable) */
+/* Nunito Sans, variable weight. Built by scripts/build-fonts.py from the full TTFs in
+   public/Nunito_Sans/: weight stays variable, the other axes are pinned, and each face is split
+   into Latin and Cyrillic files so a page only downloads what it shows. `swap` paints text in the
+   fallback right away instead of hiding it until the font arrives. */
 @font-face {
   font-family: "Nunito Sans";
-  src: url("/Nunito_Sans/NunitoSans-VariableFont_YTLC,opsz,wdth,wght.ttf") format("truetype");
+  src: url("/fonts/nunito-sans-latin.woff2") format("woff2");
   font-weight: 200 1000;
   font-style: normal;
+  font-display: swap;
+  unicode-range:
+    U+0000-00FF, U+0100-024F, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304,
+    U+0308, U+0329, U+1E00-1EFF, U+2000-206F, U+20AC, U+2122, U+2190-2199, U+2212, U+2215, U+2713,
+    U+FEFF, U+FFFD;
 }
 @font-face {
   font-family: "Nunito Sans";
-  src: url("/Nunito_Sans/NunitoSans-Italic-VariableFont_YTLC,opsz,wdth,wght.ttf") format("truetype");
+  src: url("/fonts/nunito-sans-cyrillic.woff2") format("woff2");
+  font-weight: 200 1000;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: "Nunito Sans";
+  src: url("/fonts/nunito-sans-latin-italic.woff2") format("woff2");
   font-weight: 200 1000;
   font-style: italic;
+  font-display: swap;
+  unicode-range:
+    U+0000-00FF, U+0100-024F, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304,
+    U+0308, U+0329, U+1E00-1EFF, U+2000-206F, U+20AC, U+2122, U+2190-2199, U+2212, U+2215, U+2713,
+    U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Nunito Sans";
+  src: url("/fonts/nunito-sans-cyrillic-italic.woff2") format("woff2");
+  font-weight: 200 1000;
+  font-style: italic;
+  font-display: swap;
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
 }
 
 /* Apply Nunito Sans to all elements on this page */
@@ -235,4 +264,43 @@ code {
 /* Anchored jumps from the contents rail shouldn't tuck the heading against the viewport edge. */
 .prose :is(h2, h3, h4) {
   scroll-margin-top: 5rem;
+}
+
+/* Printing (the resume, mostly): light colours whatever the theme, no fixed background layers. */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm 16mm;
+  }
+  :root,
+  .dark {
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.141 0.005 285.823);
+    --muted-foreground: oklch(0.45 0.016 285.938);
+    --border: oklch(0.85 0.004 286.32);
+    color-scheme: light;
+  }
+  body {
+    background: #fff !important;
+    font-size: 10pt;
+  }
+  .fixed,
+  canvas {
+    display: none !important;
+  }
+}
+
+/* Theme switch: the toggle animates a circular clip on the new snapshot itself, so turn off the
+   default cross-fade and keep the old snapshot underneath until the circle has covered it. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* Links in posts and case studies that show a preview card on hover (src/components/link-previews.tsx):
+ * a dotted underline says there's something to see before you go. */
+.prose a[data-preview] {
+  text-decoration-style: dotted;
+  text-underline-offset: 0.2em;
 }

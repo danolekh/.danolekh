@@ -4,9 +4,10 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 
 import appCss from "../styles.css?url";
-import { createMeta } from "@/lib/seo";
+import { createMeta, siteJsonLd } from "@/lib/seo";
 import { ThemeProvider, useTheme } from "next-themes";
 import { CustomCursor } from "@/components/custom-cursor";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { useHeavyEffectsAllowed } from "@/lib/use-heavy-effects";
 
 // Lazy so three.js and postprocessing split into their own chunk. Statically imported they landed
@@ -16,14 +17,27 @@ const PixelBlast = lazy(() => import("@/components/pixel-blasts"));
 
 export const Route = createRootRoute({
   head: () => {
-    const seo = createMeta();
+    // `canonical: false` — the root's own URL would otherwise be emitted alongside each leaf
+    // route's, and Google throws away conflicting canonicals rather than choosing between them.
+    const seo = createMeta({ canonical: false, jsonLd: [siteJsonLd()] });
     return {
       meta: [
         { charSet: "utf-8" },
         { name: "viewport", content: "width=device-width, initial-scale=1" },
         ...seo.meta,
       ],
-      links: [{ rel: "stylesheet", href: appCss }, ...seo.links],
+      links: [
+        // The body font, requested with the HTML instead of after the stylesheet has been parsed.
+        {
+          rel: "preload",
+          href: "/fonts/nunito-sans-latin.woff2",
+          as: "font",
+          type: "font/woff2",
+          crossOrigin: "anonymous",
+        },
+        { rel: "stylesheet", href: appCss },
+        ...seo.links,
+      ],
     };
   },
 
@@ -38,7 +52,23 @@ function RootComponent() {
   // light) instead of the stale value captured at first paint.
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  // The background is decoration, so it waits until the page has loaded and the browser is idle:
+  // its 140 KB of WebGL code and shader setup otherwise compete with the first paint on a phone.
+  useEffect(() => {
+    let idle = 0;
+    const start = () => {
+      idle = window.requestIdleCallback
+        ? window.requestIdleCallback(() => setMounted(true), { timeout: 2000 })
+        : window.setTimeout(() => setMounted(true), 200);
+    };
+    if (document.readyState === "complete") start();
+    else window.addEventListener("load", start, { once: true });
+    return () => {
+      window.removeEventListener("load", start);
+      if (window.cancelIdleCallback) window.cancelIdleCallback(idle);
+      else window.clearTimeout(idle);
+    };
+  }, []);
 
   // Weak devices skip the WebGL background entirely: the wrapper below already paints
   // `bg-background`, so dropping it costs nothing visually and buys back the frame budget.
@@ -80,6 +110,7 @@ function RootComponent() {
           <Outlet />
         </div>
       </main>
+      <ThemeToggle className="fixed right-4 bottom-4 z-40 print:hidden" />
     </div>
   );
 }
@@ -98,7 +129,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         {import.meta.env.DEV && (
           <TanStackDevtools
             config={{
-              position: "bottom-right",
+              // Bottom-left: the theme toggle owns the bottom-right corner.
+              position: "bottom-left",
             }}
             plugins={[
               {

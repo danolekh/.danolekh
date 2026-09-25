@@ -6,7 +6,7 @@
  * ink in that cell, and the dot that belongs there is the disc of the same area. Nothing is traced
  * or shipped alongside the picture — the picture already says where its dots are and how big.
  *
- * Here the lattice is pinned to the poster <img>: it has the plate's aspect, and its box inside the
+ * Here the lattice is pinned to the poster's box: it has the plate's aspect, and its box inside the
  * host is where the plate lands, so the canvas and the still it replaces line up at every breakpoint.
  * Loaded with a dynamic import from the case-study block, so only /p/consolline ever requests it. */
 
@@ -20,6 +20,8 @@ export type DotFieldConfig = {
   ink: number;
   cull: number;
   color: [number, number, number];
+  /** What a dot turns toward as the wake lifts it: brighter on a dark ground, deeper on a light one. */
+  liftColor: [number, number, number];
   alpha: number;
   push: number;
   glow: number;
@@ -58,6 +60,7 @@ const FRAG = `#version 300 es
   uniform float uInk;
   uniform float uCull;
   uniform vec3  uColor;
+  uniform vec3  uLiftColor;
   uniform float uAlpha;
   uniform float uPush;
   uniform float uGlow;
@@ -117,7 +120,7 @@ const FRAG = `#version 300 es
       }
     }
 
-    vec3 rgb = min(uColor * (1.0 + lift * uLift), vec3(1.0));
+    vec3 rgb = mix(uColor, uLiftColor, min(lift * uLift, 1.0));
     float ink = mask * uAlpha;
     fragColor = vec4(rgb * ink, ink);
   }`;
@@ -134,11 +137,11 @@ function trailSize(w: number, h: number): [number, number] {
 export function mountDotField(
   host: HTMLElement,
   canvas: HTMLCanvasElement,
-  plate: HTMLImageElement,
+  plate: HTMLElement,
   config: DotFieldConfig,
   onLive: () => void,
 ): (() => void) | null {
-  const { source, lattice, ink, cull, color, alpha, push, glow, lift } = config;
+  const { source, lattice, ink, cull, color, liftColor, alpha, push, glow, lift } = config;
   const LOD = Math.log2(lattice.pitch);
   const AXIS_X = Math.cos((lattice.angle * Math.PI) / 180);
   const AXIS_Y = Math.sin((lattice.angle * Math.PI) / 180);
@@ -195,6 +198,7 @@ export function mountDotField(
   gl.uniform1f(uniform("uInk"), 1 / ink);
   gl.uniform1f(uniform("uCull"), cull);
   gl.uniform3f(uniform("uColor"), color[0] / 255, color[1] / 255, color[2] / 255);
+  gl.uniform3f(uniform("uLiftColor"), liftColor[0] / 255, liftColor[1] / 255, liftColor[2] / 255);
   gl.uniform1f(uniform("uAlpha"), alpha);
   gl.uniform1f(uniform("uPush"), push);
   gl.uniform1f(uniform("uGlow"), glow);

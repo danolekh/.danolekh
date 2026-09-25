@@ -14,7 +14,10 @@ const skills: Skill[] = [
   { name: "TypeScript", icon: `${SVGL}/typescript.svg` },
   { name: "React", icon: { light: `${SVGL}/react_light.svg`, dark: `${SVGL}/react_dark.svg` } },
   { name: "Next.js", icon: `${SVGL}/nextjs_icon_dark.svg` },
-  { name: "TanStack", icon: `${SVGL}/tanstack.svg` },
+  {
+    name: "TanStack",
+    icon: { light: `${SVGL}/tanstack_light.svg`, dark: `${SVGL}/tanstack_dark.svg` },
+  },
   { name: "Node.js", icon: `${SVGL}/nodejs.svg` },
   { name: "Bun", icon: `${SVGL}/bun.svg` },
   { name: "PostgreSQL", icon: `${SVGL}/postgresql.svg` },
@@ -68,7 +71,15 @@ export default function Skills() {
                 className="gap-1.5 px-2.5 py-1 text-sm h-auto"
               >
                 {src ? (
-                  <img src={src} alt={skill.name} className="size-4" />
+                  <img
+                    src={src}
+                    alt={skill.name}
+                    width={16}
+                    height={16}
+                    loading="lazy"
+                    decoding="async"
+                    className="size-4"
+                  />
                 ) : (
                   <IconPaw className="size-4" />
                 )}
