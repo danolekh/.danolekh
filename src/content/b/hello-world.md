@@ -1,4 +1,5 @@
 ---
+draft: true
 title: Hello World
 date: 2026-06-02
 description: A first markdown post to verify the /b pipeline end to end.

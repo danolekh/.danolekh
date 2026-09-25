@@ -1,9 +1,11 @@
 ---
 title: Oasi Kadir
 subtitle: A bilingual agriturismo site on Cloudflare - content-managed, fast, and cheap to run
+description: "Oasi Kadir case study: a bilingual agriturismo site for a farm outside Rome — Astro and Strapi 5 on Cloudflare, with native booking requests."
 client: Oasi Kadir (agriturismo, Rome)
 role: Design & full-stack engineering
 year: 2026
+date: 2026-07-18
 liveUrl: https://nuovo.oasikadir.it
 stack:
   - Astro

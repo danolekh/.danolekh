@@ -1,9 +1,11 @@
 ---
 title: Consolline
 subtitle: A four-language logistics site in Astro - WebGL motion from a Figma design, no animation library
+description: "Consolline case study: a four-language logistics site built in Astro — a WebGL dotted globe, halftone map shaders and pinned scroll storytelling, matched to Figma with no animation library."
 client: Consolline (international logistics, Ukraine)
 role: Front-end engineering
 year: 2026
+date: 2026-09-17
 liveUrl: https://consolline.com
 stack:
   - Astro

@@ -2,6 +2,8 @@
 title: From a photo to the exact retailer URL
 date: 2026-06-02
 description: A live demo — detect a product in a photo, then resolve the real retailer product page (not a Google Shopping redirect), cheaply and in one call.
+cover: /images/covers/exact-retailer-url-from-a-photo-dark.webp
+coverLight: /images/covers/exact-retailer-url-from-a-photo-light.webp
 ---
 
 Insurance-claim software (and plenty of other pipelines) detects a product in a photo, then needs the

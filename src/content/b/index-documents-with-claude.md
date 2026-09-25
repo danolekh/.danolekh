@@ -2,6 +2,8 @@
 title: Index a stack of documents with Claude
 date: 2026-06-03
 description: A live demo - point Claude at a pile of documents, pull author, addressee, date, and subject from each, and keyword-search the whole set. No terminal required.
+cover: /images/covers/index-documents-with-claude-dark.webp
+coverLight: /images/covers/index-documents-with-claude-light.webp
 ---
 
 If you have thousands of pages of scanned third-party documents (letters, reports, RFIs, photo logs),

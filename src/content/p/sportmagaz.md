@@ -1,9 +1,11 @@
 ---
 title: SportMagaz
 subtitle: A sports-equipment store for Ukraine with its own admin panel - built, shipped and rebuilt solo
+description: "SportMagaz case study: a sports-equipment store for Ukraine with its own admin panel — shipped solo on Next.js, then rebuilt as a static Astro storefront."
 client: SportMagaz (sports equipment store, Kyiv)
 role: Solo full-stack engineering
 year: 2024 – 2026
+date: 2026-09-17
 liveUrl: https://sportmagaz.com.ua
 stack:
   - Next.js 14
