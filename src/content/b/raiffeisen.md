@@ -44,14 +44,17 @@ Using it looks like this:
 </ShaderLibrary>
 ```
 
-cardstock's parts ship no styles: each reports its state as data attributes and CSS variables, so a design system brings its own tokens and its own motion. That approach isn't tied to React, and it would carry over to an Angular design system just as well.
+cardstock's parts ship no styles: each reports its state as data attributes and CSS variables, so a design system brings its own tokens and its own motion.
 
 ## The whole library, in 40 seconds
 
 Here's everything cardstock does, on the same six cards. The video swipes through the tiers, flips a card, decodes its details, freezes it over the moving shader, drags the limit, and types in a brand shader of its own:
 
-<video poster="/videos/raiffeisen-library-poster.webp" autoplay muted loop playsinline preload="metadata" width="1600" height="900" style="width:100%;height:auto;border-radius:12px;border:1px solid var(--border)" aria-label="cardstock with six Raiffeisen-coloured shader cards: swiping through the tiers, tilting, flipping, revealing details, freezing over a running shader, dragging the monthly limit, and typing in a custom shader">
+<video class="dark:hidden" poster="/videos/raiffeisen-library-poster.webp" autoplay muted loop playsinline preload="metadata" width="1600" height="900" style="width:100%;height:auto;border-radius:12px;border:1px solid var(--border)" aria-label="cardstock with six Raiffeisen-coloured shader cards: swiping through the tiers, tilting, flipping, revealing details, freezing over a running shader, dragging the monthly limit, and typing in a custom shader">
   <source src="/videos/raiffeisen-library-1600.mp4" type="video/mp4">
+</video>
+<video class="hidden dark:block" poster="/videos/raiffeisen-library-dark-poster.webp" autoplay muted loop playsinline preload="metadata" width="1600" height="900" style="width:100%;height:auto;border-radius:12px;border:1px solid var(--border)" aria-label="cardstock with six Raiffeisen-coloured shader cards: swiping through the tiers, tilting, flipping, revealing details, freezing over a running shader, dragging the monthly limit, and typing in a custom shader">
+  <source src="/videos/raiffeisen-library-dark-1600.mp4" type="video/mp4">
 </video>
 
 <small>Recorded frame by frame from cardstock's own stage. The shaders are design concepts in your colours; there's no bank logo on the cards.</small>

@@ -22,10 +22,17 @@ export const projects: Project[] = [
     title: "cardstock",
     subtitle:
       "Headless bank-card primitives for React — tilt, flip, live shader backgrounds, WebGL frost and a swipeable carousel",
-    cover: "/images/covers/cardstock-shaders.webp",
+    cover: "/images/covers/cardstock-shaders-dark.webp",
+    coverLight: "/images/covers/cardstock-shaders.webp",
     internal: true,
-    // cardstock 0.5 on the promo stage (take v05): shader backgrounds, the flips, a freeze over a live shader.
-    video: { src: "/videos/cardstock-shaders-800.mp4", hero: "/videos/cardstock-shaders-1600.mp4" },
+    // cardstock 0.5 on the promo stage (take v05, --theme dark and light): shader backgrounds, the
+    // flips, a freeze over a live shader.
+    video: {
+      src: "/videos/cardstock-shaders-dark-800.mp4",
+      srcLight: "/videos/cardstock-shaders-800.mp4",
+      hero: "/videos/cardstock-shaders-dark-1600.mp4",
+      heroLight: "/videos/cardstock-shaders-1600.mp4",
+    },
   },
   {
     slug: "milestone-escrow",
