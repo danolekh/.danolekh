@@ -14,8 +14,10 @@ import { Route as ResumeRouteImport } from './routes/resume'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as FeedRouteRouteImport } from './routes/feed/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as LabIndexRouteImport } from './routes/lab.index'
 import { Route as BIndexRouteImport } from './routes/b.index'
 import { Route as PProjectRouteImport } from './routes/p.$project'
+import { Route as LabSlugRouteImport } from './routes/lab.$slug'
 import { Route as BSlugRouteImport } from './routes/b.$slug'
 import { Route as ApiBooksRouteImport } from './routes/api/books'
 import { Route as FeedBBookIdRouteImport } from './routes/feed_.b.$bookId'
@@ -46,6 +48,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LabIndexRoute = LabIndexRouteImport.update({
+  id: '/lab/',
+  path: '/lab/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BIndexRoute = BIndexRouteImport.update({
   id: '/b/',
   path: '/b/',
@@ -54,6 +61,11 @@ const BIndexRoute = BIndexRouteImport.update({
 const PProjectRoute = PProjectRouteImport.update({
   id: '/p/$project',
   path: '/p/$project',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LabSlugRoute = LabSlugRouteImport.update({
+  id: '/lab/$slug',
+  path: '/lab/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BSlugRoute = BSlugRouteImport.update({
@@ -85,8 +97,10 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/books': typeof ApiBooksRoute
   '/b/$slug': typeof BSlugRoute
+  '/lab/$slug': typeof LabSlugRoute
   '/p/$project': typeof PProjectRoute
   '/b/': typeof BIndexRoute
+  '/lab/': typeof LabIndexRoute
   '/feed/b/$bookId': typeof FeedBBookIdRoute
   '/feed/b/$bookId/modal': typeof FeedBBookIdModalRoute
 }
@@ -98,8 +112,10 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/books': typeof ApiBooksRoute
   '/b/$slug': typeof BSlugRoute
+  '/lab/$slug': typeof LabSlugRoute
   '/p/$project': typeof PProjectRoute
   '/b': typeof BIndexRoute
+  '/lab': typeof LabIndexRoute
   '/feed/b/$bookId': typeof FeedBBookIdRoute
   '/feed/b/$bookId/modal': typeof FeedBBookIdModalRoute
 }
@@ -112,8 +128,10 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/books': typeof ApiBooksRoute
   '/b/$slug': typeof BSlugRoute
+  '/lab/$slug': typeof LabSlugRoute
   '/p/$project': typeof PProjectRoute
   '/b/': typeof BIndexRoute
+  '/lab/': typeof LabIndexRoute
   '/feed_/b/$bookId': typeof FeedBBookIdRoute
   '/feed/b/$bookId/modal': typeof FeedBBookIdModalRoute
 }
@@ -127,8 +145,10 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/api/books'
     | '/b/$slug'
+    | '/lab/$slug'
     | '/p/$project'
     | '/b/'
+    | '/lab/'
     | '/feed/b/$bookId'
     | '/feed/b/$bookId/modal'
   fileRoutesByTo: FileRoutesByTo
@@ -140,8 +160,10 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/api/books'
     | '/b/$slug'
+    | '/lab/$slug'
     | '/p/$project'
     | '/b'
+    | '/lab'
     | '/feed/b/$bookId'
     | '/feed/b/$bookId/modal'
   id:
@@ -153,8 +175,10 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/api/books'
     | '/b/$slug'
+    | '/lab/$slug'
     | '/p/$project'
     | '/b/'
+    | '/lab/'
     | '/feed_/b/$bookId'
     | '/feed/b/$bookId/modal'
   fileRoutesById: FileRoutesById
@@ -167,8 +191,10 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiBooksRoute: typeof ApiBooksRoute
   BSlugRoute: typeof BSlugRoute
+  LabSlugRoute: typeof LabSlugRoute
   PProjectRoute: typeof PProjectRoute
   BIndexRoute: typeof BIndexRoute
+  LabIndexRoute: typeof LabIndexRoute
   FeedBBookIdRoute: typeof FeedBBookIdRoute
 }
 
@@ -209,6 +235,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lab/': {
+      id: '/lab/'
+      path: '/lab'
+      fullPath: '/lab/'
+      preLoaderRoute: typeof LabIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/b/': {
       id: '/b/'
       path: '/b'
@@ -221,6 +254,13 @@ declare module '@tanstack/react-router' {
       path: '/p/$project'
       fullPath: '/p/$project'
       preLoaderRoute: typeof PProjectRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lab/$slug': {
+      id: '/lab/$slug'
+      path: '/lab/$slug'
+      fullPath: '/lab/$slug'
+      preLoaderRoute: typeof LabSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/b/$slug': {
@@ -274,8 +314,10 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiBooksRoute: ApiBooksRoute,
   BSlugRoute: BSlugRoute,
+  LabSlugRoute: LabSlugRoute,
   PProjectRoute: PProjectRoute,
   BIndexRoute: BIndexRoute,
+  LabIndexRoute: LabIndexRoute,
   FeedBBookIdRoute: FeedBBookIdRoute,
 }
 export const routeTree = rootRouteImport

@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { listBPosts } from "@/lib/content/b";
 import { listPProjects } from "@/lib/content/p";
 import { siteConfig } from "@/lib/config";
+import { lab } from "@/data/lab";
 
 /* /sitemap.xml — the list `robots.txt` points Google Search Console at.
  *
@@ -36,6 +37,8 @@ export const Route = createFileRoute("/sitemap.xml")({
             lastmod: p.updated ?? p.date,
           })),
           ...listBPosts().map((p) => ({ path: `/b/${p.slug}`, lastmod: p.date })),
+          { path: "/lab" },
+          ...lab.map((item) => ({ path: `/lab/${item.slug}`, lastmod: item.date })),
         ];
 
         const xml = `<?xml version="1.0" encoding="UTF-8"?>

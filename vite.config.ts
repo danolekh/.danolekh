@@ -8,6 +8,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import matter from "gray-matter";
+import { lab } from "./src/data/lab";
 
 // Enumerate the markdown files in a content dir at config time (Node) so each page can be
 // prerendered to static HTML. Same folders the route content modules read. Files with
@@ -31,6 +32,10 @@ function getContentPages(dir: string, routePrefix: string) {
 // src/private/b holds pages kept off git until what they show is released (see AGENTS.md).
 const getBPages = () => [...getContentPages("./src/content/b/", "/b"), ...getContentPages("./src/private/b/", "/b")];
 const getPPages = () => getContentPages("./src/content/p/", "/p");
+const getLabPages = () => [
+  { path: "/lab", prerender: { enabled: true } },
+  ...lab.map((item) => ({ path: `/lab/${item.slug}`, prerender: { enabled: true } })),
+];
 
 const config = defineConfig({
   plugins: [
@@ -41,7 +46,7 @@ const config = defineConfig({
     }),
     tailwindcss(),
     tanstackStart({
-      // Prerender only the static pages: home, the resume bounce page, and every /b/<slug>.
+      // Prerender only the static pages: home, the resume bounce page, every /b/<slug> and the lab.
       // The D1-backed /feed routes stay normal SSR (they're $-param/dynamic and excluded below).
       prerender: {
         enabled: true,
@@ -56,6 +61,7 @@ const config = defineConfig({
         { path: "/b", prerender: { enabled: true } },
         ...getBPages(),
         ...getPPages(),
+        ...getLabPages(),
       ],
     }),
     viteReact(),

@@ -69,11 +69,15 @@ export default function Hero() {
                 <Link to="/feed" className={LINK}>
                   feed
                 </Link>{" "}
-                for what I've been reading and thinking about, or my{" "}
+                for what I've been reading and thinking about, my{" "}
                 <Link to="/b" className={LINK}>
                   writing
                 </Link>
-                .
+                , or the{" "}
+                <Link to="/lab" className={LINK}>
+                  lab
+                </Link>
+                , small interface things I build for products I like.
               </p>
               <p className="text-lg mt-4">
                 Open to full-time or contract work, remote from Vienna. Here's my{" "}

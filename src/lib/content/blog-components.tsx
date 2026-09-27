@@ -15,6 +15,11 @@ const BLOG_COMPONENTS: Record<string, ComponentType<Record<string, unknown>>> = 
   debugger: lazy(() => import("@/components/demos/debugger-embed")) as unknown as ComponentType<
     Record<string, unknown>
   >,
+  // The lab's demos (src/data/lab.ts): each part is installed from its registry item and loads
+  // with the page that shows it.
+  "price-evidence": lazy(() => import("@/components/demos/lab/price-evidence-demo")) as unknown as ComponentType<
+    Record<string, unknown>
+  >,
   // Demos kept off git until what they show is released: each src/private/demos/<name>.tsx
   // default-exports its component and is embedded as ```demo:<name>. They load with the page that
   // embeds them, so the other posts don't carry them.

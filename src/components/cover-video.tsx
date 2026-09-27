@@ -31,10 +31,14 @@ function useVideoAllowed(): boolean {
   return allowed;
 }
 
-/** The cut for the theme the page is showing; `undefined` until next-themes knows it. */
+/** The cut for the theme the page is showing; `undefined` until mounted. next-themes knows the
+ * theme on the client's first render already, but the server didn't, so rendering the <video> then
+ * failed hydration. */
 function useThemedSrc(video: VideoCut): string | undefined {
   const { resolvedTheme } = useTheme();
-  if (!resolvedTheme) return undefined;
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted || !resolvedTheme) return undefined;
   return resolvedTheme === "light" && video.srcLight ? video.srcLight : video.src;
 }
 

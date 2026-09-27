@@ -2,6 +2,7 @@ import sharp from "sharp";
 import { mkdirSync, readFileSync, readdirSync } from "node:fs";
 import matter from "gray-matter";
 import { projects } from "../src/data/projects";
+import { lab } from "../src/data/lab";
 
 /* Social cards. Every page used to point og:image at /og.jpg, which was never in `public/` — so
  * Google, X, LinkedIn and Telegram all got a 404 where the preview should be. This writes the one
@@ -132,6 +133,10 @@ async function main() {
       if (typeof data.cover !== "string" || data.draft === true || listed.has(slug)) continue;
       await projectCard(slug, String(data.title ?? slug), data.cover, kind, `${prefix}${slug}`);
     }
+  }
+  // The lab's pages (/og/lab-<slug>.jpg), once an item has a cover.
+  for (const item of lab) {
+    if (item.cover) await projectCard(item.slug, item.title, item.cover, "Lab", `lab-${item.slug}`);
   }
   console.log("Done!");
 }
