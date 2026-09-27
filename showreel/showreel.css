@@ -1,0 +1,195 @@
+@import "tailwindcss" source(none);
+@import "@fontsource-variable/jetbrains-mono";
+
+/* The stage's own classes, and the cardstock card's (it's the site's registry copy). */
+@source "./";
+@source "../src/components/payment-card.tsx";
+
+/* The full variable Nunito Sans, every axis: the reel animates weight (200-1000) and width
+   (75-125%), which the site's subset woff2 doesn't carry. */
+@font-face {
+  font-family: "Nunito Reel";
+  src: url("/Nunito_Sans/NunitoSans-VariableFont_YTLC,opsz,wdth,wght.ttf") format("truetype");
+  font-weight: 200 1000;
+  font-stretch: 75% 125%;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: "Nunito Reel";
+  src: url("/Nunito_Sans/NunitoSans-Italic-VariableFont_YTLC,opsz,wdth,wght.ttf") format("truetype");
+  font-weight: 200 1000;
+  font-stretch: 75% 125%;
+  font-style: italic;
+  font-display: block;
+}
+
+:root {
+  --ground: #0b0b0b;
+  --ink: #fafafa;
+  --muted: #a1a1aa;
+  --dim: #52525b;
+  --line: rgb(255 255 255 / 0.1);
+  --blue: #3b82f6;
+  --periwinkle: #79a1ff;
+  --good: #3fce3f;
+  --average: #fab219;
+  --poor: #e46a6a;
+  --lime: #baee2a;
+  --consolline: #121311;
+  --cardstock: #ff7a4d;
+  --sport: #f7c600;
+  --sans: "Nunito Reel", "Nunito Sans", Helvetica, Arial, sans-serif;
+  --mono: "JetBrains Mono Variable", Menlo, monospace;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+}
+body {
+  color: var(--ink);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+  cursor: none;
+}
+* {
+  box-sizing: border-box;
+  cursor: none !important;
+}
+
+/* The frame the recorder films: 1280x720 CSS px, filmed at 3x. */
+.stage {
+  position: relative;
+  width: 1280px;
+  height: 720px;
+  overflow: hidden;
+  background: var(--ground);
+  isolation: isolate;
+  font-family: var(--sans);
+}
+.layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.mono {
+  font-family: var(--mono);
+  font-feature-settings: "zero" 0;
+}
+.num {
+  font-variant-numeric: tabular-nums;
+}
+.abs {
+  position: absolute;
+}
+.chip {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 16px 9px 12px;
+  border-radius: 12px;
+  background: rgb(255 255 255 / 0.055);
+  border: 1px solid rgb(255 255 255 / 0.12);
+  font-size: 17px;
+  font-weight: 700;
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+}
+.chip b {
+  font-weight: 900;
+}
+.chip i {
+  width: 4px;
+  align-self: stretch;
+  border-radius: 2px;
+}
+.label {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* A browser window around a capture. */
+.browser {
+  position: absolute;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #18181b;
+  border: 1px solid rgb(255 255 255 / 0.14);
+  box-shadow:
+    0 40px 80px -30px rgb(0 0 0 / 0.8),
+    0 0 0 1px rgb(0 0 0 / 0.4);
+}
+.browser > header {
+  height: 30px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 12px;
+  background: #1f1f23;
+  border-bottom: 1px solid rgb(255 255 255 / 0.08);
+}
+.browser > header > span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #3f3f46;
+}
+.browser > header > em {
+  margin: 0 auto;
+  padding: 3px 14px;
+  border-radius: 6px;
+  background: rgb(255 255 255 / 0.06);
+  font: 500 11px/1 var(--mono);
+  font-style: normal;
+  color: var(--muted);
+}
+
+/* A phone around a tall capture. */
+.phone {
+  position: absolute;
+  border-radius: 34px;
+  padding: 9px;
+  background: #0d0d0f;
+  border: 1.5px solid rgb(255 255 255 / 0.18);
+  box-shadow:
+    0 50px 90px -30px rgb(0 0 0 / 0.9),
+    inset 0 0 0 1px rgb(0 0 0 / 0.6);
+}
+.phone > div {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 26px;
+  overflow: hidden;
+  background: #fff;
+}
+.phone img {
+  display: block;
+  width: 100%;
+}
+
+/* Dev scrubber, hidden while recording. */
+.scrubber {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 724px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 12px;
+  font: 12px var(--mono);
+  color: #aaa;
+}
+.scrubber input {
+  flex: 1;
+}
