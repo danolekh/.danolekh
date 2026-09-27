@@ -18,23 +18,6 @@ export type Project = {
 
 export const projects: Project[] = [
   {
-    slug: "earshot",
-    title: "earshot",
-    subtitle:
-      "A call debugger for voice agents, and the headless React parts it's built from: one call on one clock, from LiveKit, Pipecat or ElevenLabs",
-    cover: "/images/covers/earshot-dark.webp",
-    coverLight: "/images/covers/earshot.webp",
-    internal: true,
-    // The call debugger filmed frame by frame by earshot's apps/promo (take `debugger`, dark and
-    // light), with the call's own sound.
-    video: {
-      src: "/videos/earshot-dark-800.mp4",
-      srcLight: "/videos/earshot-800.mp4",
-      hero: "/videos/earshot-dark-1600.mp4",
-      heroLight: "/videos/earshot-1600.mp4",
-    },
-  },
-  {
     slug: "cardstock",
     title: "cardstock",
     subtitle:

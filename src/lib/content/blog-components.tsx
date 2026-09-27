@@ -10,9 +10,9 @@ const BLOG_COMPONENTS: Record<string, ComponentType<Record<string, unknown>>> = 
   "doc-index": DocIndexDemo,
   "link-preview": LinkPreviewDemo as ComponentType<Record<string, unknown>>,
   "raiffeisen-card": RaiffeisenCardDemo,
-  // earshot's call inspector on a demo call: heavy (the parts, a trace, a recording), so it loads
-  // with the pitch page that embeds it.
-  "call-inspector": lazy(() => import("@/components/demos/call-inspector-demo")) as unknown as ComponentType<
+  // The call debugger itself, live in an iframe (debugger.danolekh.com): loads with the pitch page
+  // that embeds it.
+  debugger: lazy(() => import("@/components/demos/debugger-embed")) as unknown as ComponentType<
     Record<string, unknown>
   >,
   // Demos kept off git until what they show is released: each src/private/demos/<name>.tsx
