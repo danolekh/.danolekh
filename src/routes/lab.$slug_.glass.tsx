@@ -4,11 +4,13 @@ import { getLabItem } from "@/data/lab";
 import { createMeta } from "@/lib/seo";
 import { siteConfig } from "@/lib/config";
 
-export const Route = createFileRoute("/lab/$slug")({
-  component: () => <LabPage item={Route.useLoaderData()} />,
+// The same page with the demo in glass, for the X post that shows it. Not linked from anywhere on
+// the site, noindexed, and canonical to the page itself.
+export const Route = createFileRoute("/lab/$slug_/glass")({
+  component: () => <LabPage item={Route.useLoaderData()} look="glass" />,
   loader: ({ params }) => {
     const item = getLabItem(params.slug);
-    if (!item) throw notFound();
+    if (!item?.looks?.includes("glass")) throw notFound();
     return item;
   },
   head: ({ loaderData }) => {
@@ -17,9 +19,8 @@ export const Route = createFileRoute("/lab/$slug")({
       title: loaderData.title,
       description: loaderData.description,
       url: `${siteConfig.url}/lab/${loaderData.slug}`,
-      type: "article",
-      publishedTime: loaderData.date,
-      ...(loaderData.cover ? { image: `${siteConfig.url}/og/lab-${loaderData.slug}.jpg` } : {}),
+      noindex: true,
+      ...(loaderData.cover ? { image: `${siteConfig.url}/og/lab-${loaderData.slug}-glass.jpg` } : {}),
     });
   },
 });

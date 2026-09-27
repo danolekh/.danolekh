@@ -14,6 +14,8 @@ export type LabItem = {
   date: string;
   /** A ```demo:<name>``` component from src/lib/content/blog-components.tsx. */
   demo: string;
+  /** Other looks the demo has, each at /lab/<slug>/<look> (noindexed, linked from nowhere). */
+  looks?: "glass"[];
   /** Cover art and a looping clip, dark by default, from cardstock's promo encoder. */
   cover?: string;
   coverLight?: string;
@@ -29,6 +31,7 @@ export const lab: LabItem[] = [
     for: { name: "Minimist", url: "https://minimist.com" },
     date: "2026-10-01",
     demo: "price-evidence",
+    looks: ["glass"],
     // Take lab-price-evidence in cardstock's apps/promo, --poster at the full plot with a sale read.
     cover: "/images/covers/lab-price-evidence-dark.webp",
     coverLight: "/images/covers/lab-price-evidence.webp",

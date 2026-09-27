@@ -1,5 +1,5 @@
 import sharp from "sharp";
-import { mkdirSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync } from "node:fs";
 import matter from "gray-matter";
 import { projects } from "../src/data/projects";
 import { lab } from "../src/data/lab";
@@ -137,6 +137,11 @@ async function main() {
   // The lab's pages (/og/lab-<slug>.jpg), once an item has a cover.
   for (const item of lab) {
     if (item.cover) await projectCard(item.slug, item.title, item.cover, "Lab", `lab-${item.slug}`);
+    // Its other looks (/lab/<slug>/<look>), from a cover named after the look when there is one.
+    for (const look of item.looks ?? []) {
+      const cover = `/images/covers/lab-${item.slug}-${look}.webp`;
+      if (existsSync(`public${cover}`)) await projectCard(item.slug, item.title, cover, "Lab", `lab-${item.slug}-${look}`);
+    }
   }
   console.log("Done!");
 }

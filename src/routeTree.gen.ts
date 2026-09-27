@@ -20,6 +20,7 @@ import { Route as PProjectRouteImport } from './routes/p.$project'
 import { Route as LabSlugRouteImport } from './routes/lab.$slug'
 import { Route as BSlugRouteImport } from './routes/b.$slug'
 import { Route as ApiBooksRouteImport } from './routes/api/books'
+import { Route as LabSlugGlassRouteImport } from './routes/lab.$slug_.glass'
 import { Route as FeedBBookIdRouteImport } from './routes/feed_.b.$bookId'
 import { Route as FeedBBookIdModalRouteImport } from './routes/feed/b/$bookId/modal'
 
@@ -78,6 +79,11 @@ const ApiBooksRoute = ApiBooksRouteImport.update({
   path: '/api/books',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LabSlugGlassRoute = LabSlugGlassRouteImport.update({
+  id: '/lab/$slug_/glass',
+  path: '/lab/$slug/glass',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FeedBBookIdRoute = FeedBBookIdRouteImport.update({
   id: '/feed_/b/$bookId',
   path: '/feed/b/$bookId',
@@ -102,6 +108,7 @@ export interface FileRoutesByFullPath {
   '/b/': typeof BIndexRoute
   '/lab/': typeof LabIndexRoute
   '/feed/b/$bookId': typeof FeedBBookIdRoute
+  '/lab/$slug/glass': typeof LabSlugGlassRoute
   '/feed/b/$bookId/modal': typeof FeedBBookIdModalRoute
 }
 export interface FileRoutesByTo {
@@ -117,6 +124,7 @@ export interface FileRoutesByTo {
   '/b': typeof BIndexRoute
   '/lab': typeof LabIndexRoute
   '/feed/b/$bookId': typeof FeedBBookIdRoute
+  '/lab/$slug/glass': typeof LabSlugGlassRoute
   '/feed/b/$bookId/modal': typeof FeedBBookIdModalRoute
 }
 export interface FileRoutesById {
@@ -133,6 +141,7 @@ export interface FileRoutesById {
   '/b/': typeof BIndexRoute
   '/lab/': typeof LabIndexRoute
   '/feed_/b/$bookId': typeof FeedBBookIdRoute
+  '/lab/$slug_/glass': typeof LabSlugGlassRoute
   '/feed/b/$bookId/modal': typeof FeedBBookIdModalRoute
 }
 export interface FileRouteTypes {
@@ -150,6 +159,7 @@ export interface FileRouteTypes {
     | '/b/'
     | '/lab/'
     | '/feed/b/$bookId'
+    | '/lab/$slug/glass'
     | '/feed/b/$bookId/modal'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -165,6 +175,7 @@ export interface FileRouteTypes {
     | '/b'
     | '/lab'
     | '/feed/b/$bookId'
+    | '/lab/$slug/glass'
     | '/feed/b/$bookId/modal'
   id:
     | '__root__'
@@ -180,6 +191,7 @@ export interface FileRouteTypes {
     | '/b/'
     | '/lab/'
     | '/feed_/b/$bookId'
+    | '/lab/$slug_/glass'
     | '/feed/b/$bookId/modal'
   fileRoutesById: FileRoutesById
 }
@@ -196,6 +208,7 @@ export interface RootRouteChildren {
   BIndexRoute: typeof BIndexRoute
   LabIndexRoute: typeof LabIndexRoute
   FeedBBookIdRoute: typeof FeedBBookIdRoute
+  LabSlugGlassRoute: typeof LabSlugGlassRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -277,6 +290,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiBooksRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lab/$slug_/glass': {
+      id: '/lab/$slug_/glass'
+      path: '/lab/$slug/glass'
+      fullPath: '/lab/$slug/glass'
+      preLoaderRoute: typeof LabSlugGlassRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/feed_/b/$bookId': {
       id: '/feed_/b/$bookId'
       path: '/feed/b/$bookId'
@@ -319,6 +339,7 @@ const rootRouteChildren: RootRouteChildren = {
   BIndexRoute: BIndexRoute,
   LabIndexRoute: LabIndexRoute,
   FeedBBookIdRoute: FeedBBookIdRoute,
+  LabSlugGlassRoute: LabSlugGlassRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

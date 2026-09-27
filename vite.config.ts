@@ -35,6 +35,9 @@ const getPPages = () => getContentPages("./src/content/p/", "/p");
 const getLabPages = () => [
   { path: "/lab", prerender: { enabled: true } },
   ...lab.map((item) => ({ path: `/lab/${item.slug}`, prerender: { enabled: true } })),
+  ...lab.flatMap((item) =>
+    (item.looks ?? []).map((look) => ({ path: `/lab/${item.slug}/${look}`, prerender: { enabled: true } })),
+  ),
 ];
 
 const config = defineConfig({
