@@ -97,6 +97,14 @@
   ],
   "openSource": [
     {
+      "name": "earshot",
+      "text": "headless React parts for voice-agent UIs, built and published on npm solo, and a call debugger on top (debugger.danolekh.com): reads LiveKit Agents, Pipecat and ElevenLabs calls, puts them on one clock with the recording, runs 12 detectors. 226 library and 62 Playwright tests."
+    },
+    {
+      "name": "cardstock",
+      "text": "headless bank-card parts for React 19 on Base UI, built and published on npm solo (cardstock.danolekh.com): 8 WebGL2 shader backgrounds on one shared context, ~194 tests including SSR, npm trusted publishing with provenance."
+    },
+    {
       "name": "opentui",
       "text": "the terminal-UI library opencode is built on. Merged PR #558: browser-like text selection in textareas and a viewport-change selection bug fix."
     },
@@ -128,7 +136,7 @@
     },
     {
       "area": "Other",
-      "items": "Strapi, Core Web Vitals / performance, SEO, i18n, LLM integration, Vitest, Claude Code daily (1+ yr)"
+      "items": "Strapi, Core Web Vitals / performance, SEO, i18n, LLM integration, Web Audio, Vitest, Playwright, npm packaging, Claude Code daily (1+ yr)"
     }
   ],
   "education": "BSc Computer Science, Taras Shevchenko National University of Kyiv (2022 – 2026)",
