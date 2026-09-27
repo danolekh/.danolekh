@@ -10,6 +10,11 @@ const BLOG_COMPONENTS: Record<string, ComponentType<Record<string, unknown>>> = 
   "doc-index": DocIndexDemo,
   "link-preview": LinkPreviewDemo as ComponentType<Record<string, unknown>>,
   "raiffeisen-card": RaiffeisenCardDemo,
+  // earshot's call inspector on a demo call: heavy (the parts, a trace, a recording), so it loads
+  // with the pitch page that embeds it.
+  "call-inspector": lazy(() => import("@/components/demos/call-inspector-demo")) as unknown as ComponentType<
+    Record<string, unknown>
+  >,
   // Demos kept off git until what they show is released: each src/private/demos/<name>.tsx
   // default-exports its component and is embedded as ```demo:<name>. They load with the page that
   // embeds them, so the other posts don't carry them.
