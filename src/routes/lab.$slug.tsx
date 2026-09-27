@@ -17,7 +17,7 @@ export const Route = createFileRoute("/lab/$slug")({
     if (!loaderData) return { meta: [], links: [] };
     return createMeta({
       title: loaderData.title,
-      description: loaderData.summary,
+      description: loaderData.description,
       url: `${siteConfig.url}/lab/${loaderData.slug}`,
       type: "article",
       publishedTime: loaderData.date,
@@ -54,8 +54,6 @@ function LabPage() {
         <BlogComponent name={item.demo} props={{}} />
 
         <div className="mt-8 space-y-6">
-          <p className="prose lg:prose-lg dark:prose-invert max-w-none">{item.summary}</p>
-
           <div className="space-y-3">
             <p className="text-sm font-medium text-foreground">Get the code</p>
             <pre className="overflow-x-auto rounded-md border border-dashed bg-muted/40 px-4 py-3 text-sm">

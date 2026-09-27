@@ -7,8 +7,8 @@
 export type LabItem = {
   slug: string;
   title: string;
-  /** One or two sentences: what it is and why it's there. */
-  summary: string;
+  /** For search and link previews only. The page shows the thing, not a description of it. */
+  description: string;
   /** The product it was made for, and whether it's a pitch or just for fun. */
   for: { name: string; url: string };
   date: string;
@@ -25,12 +25,11 @@ export const lab: LabItem[] = [
   {
     slug: "price-evidence",
     title: "Where the price comes from",
-    summary:
-      "A suggested price with the sales behind it. Every similar sale drops in as a dot, the count ticks up as they land, and the range settles over the thickest part. Point at a dot, or use the arrow keys, to see that sale.",
+    description: "A suggested price with the sales behind it.",
     for: { name: "Minimist", url: "https://minimist.com" },
     date: "2026-10-01",
     demo: "price-evidence",
-    // Take lab-price-evidence in cardstock's apps/promo, --poster 3.6 (the full plot, one sale read).
+    // Take lab-price-evidence in cardstock's apps/promo, --poster at the full plot with a sale read.
     cover: "/images/covers/lab-price-evidence-dark.webp",
     coverLight: "/images/covers/lab-price-evidence.webp",
     video: "/videos/lab-price-evidence-dark-800.mp4",
