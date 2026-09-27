@@ -4,6 +4,8 @@
 //
 // Plain data, no imports: vite.config.ts reads it to prerender the pages.
 
+type Look = "glass" | "minimist";
+
 export type LabItem = {
   slug: string;
   title: string;
@@ -14,8 +16,10 @@ export type LabItem = {
   date: string;
   /** A ```demo:<name>``` component from src/lib/content/blog-components.tsx. */
   demo: string;
+  /** The demo's look on this page, when it isn't its first one. */
+  look?: Look;
   /** Other looks the demo has, each at /lab/<slug>/<look> (noindexed, linked from nowhere). */
-  looks?: "glass"[];
+  looks?: Look[];
   /** Cover art and a looping clip, dark by default, from cardstock's promo encoder. */
   cover?: string;
   coverLight?: string;
@@ -31,12 +35,12 @@ export const lab: LabItem[] = [
     for: { name: "Minimist", url: "https://minimist.com" },
     date: "2026-10-01",
     demo: "price-evidence",
-    looks: ["glass"],
-    // Take lab-price-evidence in cardstock's apps/promo, --poster at the full plot with a sale read.
-    cover: "/images/covers/lab-price-evidence-dark.webp",
-    coverLight: "/images/covers/lab-price-evidence.webp",
-    video: "/videos/lab-price-evidence-dark-800.mp4",
-    videoLight: "/videos/lab-price-evidence-800.mp4",
+    // Glass here; the Minimist-styled one, for the pitch, at /lab/price-evidence/minimist.
+    look: "glass",
+    looks: ["minimist"],
+    // Take lab-price-evidence-glass in cardstock's apps/promo (encode --loop 0.8 --poster 7.9).
+    cover: "/images/covers/lab-price-evidence-glass.webp",
+    video: "/videos/lab-price-evidence-glass-800.mp4",
   },
 ];
 

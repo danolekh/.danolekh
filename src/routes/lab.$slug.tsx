@@ -5,7 +5,10 @@ import { createMeta } from "@/lib/seo";
 import { siteConfig } from "@/lib/config";
 
 export const Route = createFileRoute("/lab/$slug")({
-  component: () => <LabPage item={Route.useLoaderData()} />,
+  component: () => {
+    const item = Route.useLoaderData();
+    return <LabPage item={item} look={item.look} />;
+  },
   loader: ({ params }) => {
     const item = getLabItem(params.slug);
     if (!item) throw notFound();
