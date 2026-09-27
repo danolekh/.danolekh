@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ResumeRouteImport } from './routes/resume'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as FeedRouteRouteImport } from './routes/feed/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BIndexRouteImport } from './routes/b.index'
@@ -28,6 +29,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const ResumeRoute = ResumeRouteImport.update({
   id: '/resume',
   path: '/resume',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FeedRouteRoute = FeedRouteRouteImport.update({
@@ -74,6 +80,7 @@ const FeedBBookIdModalRoute = FeedBBookIdModalRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/feed': typeof FeedRouteRouteWithChildren
+  '/privacy': typeof PrivacyRoute
   '/resume': typeof ResumeRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/books': typeof ApiBooksRoute
@@ -86,6 +93,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/feed': typeof FeedRouteRouteWithChildren
+  '/privacy': typeof PrivacyRoute
   '/resume': typeof ResumeRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/books': typeof ApiBooksRoute
@@ -99,6 +107,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/feed': typeof FeedRouteRouteWithChildren
+  '/privacy': typeof PrivacyRoute
   '/resume': typeof ResumeRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/books': typeof ApiBooksRoute
@@ -113,6 +122,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/feed'
+    | '/privacy'
     | '/resume'
     | '/sitemap.xml'
     | '/api/books'
@@ -125,6 +135,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/feed'
+    | '/privacy'
     | '/resume'
     | '/sitemap.xml'
     | '/api/books'
@@ -137,6 +148,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/feed'
+    | '/privacy'
     | '/resume'
     | '/sitemap.xml'
     | '/api/books'
@@ -150,6 +162,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   FeedRouteRoute: typeof FeedRouteRouteWithChildren
+  PrivacyRoute: typeof PrivacyRoute
   ResumeRoute: typeof ResumeRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiBooksRoute: typeof ApiBooksRoute
@@ -173,6 +186,13 @@ declare module '@tanstack/react-router' {
       path: '/resume'
       fullPath: '/resume'
       preLoaderRoute: typeof ResumeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/feed': {
@@ -249,6 +269,7 @@ const FeedRouteRouteWithChildren = FeedRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   FeedRouteRoute: FeedRouteRouteWithChildren,
+  PrivacyRoute: PrivacyRoute,
   ResumeRoute: ResumeRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiBooksRoute: ApiBooksRoute,
