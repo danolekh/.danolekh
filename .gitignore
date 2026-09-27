@@ -14,3 +14,13 @@ count.txt
 .vinxi
 todos.json
 repos/
+
+# showreel renders, stills and the soundtrack (see showreel/finish.ts)
+showreel/out/
+
+# Pages and demos built on work that isn't released yet: deployed from this machine, kept off git
+# until launch. Same shapes as src/content/b and src/components/demos (see AGENTS.md).
+src/private/
+
+# Share images for the pages in src/private
+public/private/

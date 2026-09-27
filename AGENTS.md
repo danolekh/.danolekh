@@ -30,6 +30,12 @@ pnpm dlx shadcn@latest add button
   `public/og/`), and check the image.
 - **Pitch pages** for a company are `unlisted: true`, open with "_For the … teams at X._", put the
   live demo first, and end with a disclaimer: a design concept, no logo, not affiliated.
+- **src/private/** (gitignored) holds pitch pages and demos built on work that isn't released yet:
+  `b/<slug>.md` reads like `src/content/b`, `demos/<name>.tsx` default-exports a component for
+  ```demo:<name>` (loaded lazily), and `node_modules/` inside it vendors the unreleased packages.
+  Their share images go in `public/private/` (also ignored). They exist only on this machine: a
+  deploy from anywhere else drops them. Once the work is released, move them into the normal places
+  and commit.
 - **cardstock** is a dependency (`@danolekh/cardstock`); its registry parts live in
   `src/components/payment-card.tsx` and `card-carousel.tsx` (added with the shadcn CLI from
   `https://cardstock.danolekh.com/r/<item>.json`).

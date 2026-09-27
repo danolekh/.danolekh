@@ -20,11 +20,12 @@ export type LinkPreview = {
   videoLight: string | null;
 };
 
-const bFiles = import.meta.glob("/src/content/b/*.md", {
-  query: "?raw",
-  import: "default",
-  eager: true,
-}) as Record<string, string>;
+const bFiles = withPrivate(
+  import.meta.glob("/src/content/b/*.md", { query: "?raw", import: "default", eager: true }) as Record<string, string>,
+  // Pages kept off git until what they show is released (src/private, see AGENTS.md); filed under
+  // the same keys, so they read like any other post.
+  import.meta.glob("/src/private/b/*.md", { query: "?raw", import: "default", eager: true }) as Record<string, string>,
+);
 const pFiles = import.meta.glob("/src/content/p/*.md", {
   query: "?raw",
   import: "default",
@@ -130,4 +131,10 @@ export function markLinkPreviews(
     previews[path] = preview;
     return `${match} data-preview="${path}"`;
   });
+}
+
+function withPrivate(files: Record<string, string>, extra: Record<string, string>) {
+  const out = { ...files };
+  for (const [key, raw] of Object.entries(extra)) out[key.replace("/src/private/b/", "/src/content/b/")] = raw;
+  return out;
 }

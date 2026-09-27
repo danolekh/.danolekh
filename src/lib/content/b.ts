@@ -7,11 +7,12 @@ import { type LinkPreview, markLinkPreviews } from "./previews";
 // Eagerly inline every markdown file's RAW text at build time. Keys look like
 // "/src/content/b/hello-world.md". Lives in a server-only module (only imported by the
 // `createServerFn` handler in the route), so marked/shiki/content never reach the client bundle.
-const rawFiles = import.meta.glob("/src/content/b/*.md", {
-  query: "?raw",
-  import: "default",
-  eager: true,
-}) as Record<string, string>;
+const rawFiles = withPrivate(
+  import.meta.glob("/src/content/b/*.md", { query: "?raw", import: "default", eager: true }) as Record<string, string>,
+  // Pages kept off git until what they show is released (src/private, see AGENTS.md); filed under
+  // the same keys, so they read like any other post.
+  import.meta.glob("/src/private/b/*.md", { query: "?raw", import: "default", eager: true }) as Record<string, string>,
+);
 
 const THEMES = { light: "github-light", dark: "github-dark" } as const;
 const LANGS = ["ts", "tsx", "js", "jsx", "json", "bash", "shell", "md", "css", "html"];
@@ -201,4 +202,10 @@ export function listBPosts(): BPostSummary[] {
 /** Published (non-draft) post slugs. Drafts are still reachable by slug in dev. */
 export function getAllBSlugs(): string[] {
   return listBPosts().map((p) => p.slug);
+}
+
+function withPrivate(files: Record<string, string>, extra: Record<string, string>) {
+  const out = { ...files };
+  for (const [key, raw] of Object.entries(extra)) out[key.replace("/src/private/b/", "/src/content/b/")] = raw;
+  return out;
 }

@@ -28,7 +28,8 @@ function getContentPages(dir: string, routePrefix: string) {
   }
 }
 
-const getBPages = () => getContentPages("./src/content/b/", "/b");
+// src/private/b holds pages kept off git until what they show is released (see AGENTS.md).
+const getBPages = () => [...getContentPages("./src/content/b/", "/b"), ...getContentPages("./src/private/b/", "/b")];
 const getPPages = () => getContentPages("./src/content/p/", "/p");
 
 const config = defineConfig({
