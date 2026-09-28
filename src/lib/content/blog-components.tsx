@@ -17,6 +17,8 @@ const BLOG_COMPONENTS: Record<string, ComponentType<Record<string, unknown>>> = 
   >,
   // The lab's demos (src/data/lab.ts): each part is installed from its registry item and loads
   // with the page that shows it.
+  glass: lazy(() => import("@/components/demos/lab/glass-demo")) as unknown as ComponentType<Record<string, unknown>>,
+  smear: lazy(() => import("@/components/demos/lab/smear-demo")) as unknown as ComponentType<Record<string, unknown>>,
   "price-evidence": lazy(() => import("@/components/demos/lab/price-evidence-demo")) as unknown as ComponentType<
     Record<string, unknown>
   >,

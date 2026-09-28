@@ -11,8 +11,10 @@ export type LabItem = {
   title: string;
   /** For search and link previews only. The page shows the thing, not a description of it. */
   description: string;
-  /** The product it was made for, and whether it's a pitch or just for fun. */
-  for: { name: string; url: string };
+  /** The product it was made for, when it was made for one. */
+  for?: { name: string; url: string };
+  /** The write-up it follows, when it follows one (the page reads "After <name>'s write-up"). */
+  after?: { name: string; url: string };
   date: string;
   /** A ```demo:<name>``` component from src/lib/content/blog-components.tsx. */
   demo: string;
@@ -28,6 +30,28 @@ export type LabItem = {
 };
 
 export const lab: LabItem[] = [
+  {
+    slug: "smear",
+    title: "Type that smears",
+    description: "Headline type that smears, in a shader.",
+    for: { name: "wild", url: "https://wild.as" },
+    date: "2026-09-29",
+    demo: "smear",
+    // Take lab-smear in cardstock's apps/promo (encode --poster 2.6; the page is still, so no --loop).
+    cover: "/images/covers/lab-smear.webp",
+    video: "/videos/lab-smear-800.mp4",
+  },
+  {
+    slug: "glass",
+    title: "Liquid Glass",
+    description: "Liquid Glass on the web, as one React component.",
+    after: { name: "Aave", url: "https://aave.com/design/building-glass-for-the-web" },
+    date: "2026-09-28",
+    demo: "glass",
+    // Take lab-glass in cardstock's apps/promo (encode --poster 3.5; the backdrop is still, so no --loop).
+    cover: "/images/covers/lab-glass.webp",
+    video: "/videos/lab-glass-800.mp4",
+  },
   {
     slug: "price-evidence",
     title: "Where the price comes from",

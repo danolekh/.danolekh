@@ -29,6 +29,9 @@ importers:
       '@effect/workflow':
         specifier: ^0.16.0
         version: 0.16.0(@effect/experimental@0.58.0(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(@effect/platform@0.94.1(effect@3.19.14))(@effect/rpc@0.73.0(@effect/platform@0.94.1(effect@3.19.14))(effect@3.19.14))(effect@3.19.14)
+      '@fontsource-variable/inter-tight':
+        specifier: ^5.3.0
+        version: 5.3.0
       '@fontsource-variable/raleway':
         specifier: ^5.2.8
         version: 5.2.8
@@ -1219,6 +1222,9 @@ packages:
 
   '@floating-ui/utils@0.2.12':
     resolution: {integrity: sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww==}
+
+  '@fontsource-variable/inter-tight@5.3.0':
+    resolution: {integrity: sha512-ZhZZ29sNZ15P1K+cUt13GeBRYON0akgmNiftshUeDLos7X7zGcRgPzt434879Xhq1QbwlW3M/apBMk7jWabwvA==}
 
   '@fontsource-variable/jetbrains-mono@5.3.0':
     resolution: {integrity: sha512-F32xpS2NsGYoQi2ADSkKTgpJj7ozajsGgDJ8woTnqjmIB+dxDIqImjl4pXZVEExu8UFZ2ndhmX18EBS/hdz3Lw==}
@@ -6465,6 +6471,8 @@ snapshots:
       react-dom: 19.2.3(react@19.2.3)
 
   '@floating-ui/utils@0.2.12': {}
+
+  '@fontsource-variable/inter-tight@5.3.0': {}
 
   '@fontsource-variable/jetbrains-mono@5.3.0': {}
 

@@ -68,7 +68,9 @@ function LabCard({ item, priority }: { item: LabItem; priority: boolean }) {
         ) : null}
         <CardHeader>
           <CardTitle className="text-base">{item.title}</CardTitle>
-          <CardDescription>For {item.for.name}</CardDescription>
+          <CardDescription>
+            {item.for ? `For ${item.for.name}` : item.after ? `After ${item.after.name}'s write-up` : null}
+          </CardDescription>
         </CardHeader>
       </Card>
     </Link>

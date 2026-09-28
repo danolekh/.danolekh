@@ -21,11 +21,24 @@ export function LabPage({ item, look }: { item: LabItem; look?: string }) {
         <header className="mt-6 mb-8">
           <h1 className="text-3xl font-semibold tracking-tight text-foreground lg:text-4xl">{item.title}</h1>
           <p className="mt-2 text-sm text-muted-foreground lg:text-base">
-            For{" "}
-            <a href={item.for.url} className="underline underline-offset-4 hover:text-foreground" rel="noopener noreferrer" target="_blank">
-              {item.for.name}
-            </a>{" "}
-            · {formatDate(item.date)}
+            {item.for ? (
+              <>
+                For{" "}
+                <a href={item.for.url} className="underline underline-offset-4 hover:text-foreground" rel="noopener noreferrer" target="_blank">
+                  {item.for.name}
+                </a>{" "}
+                ·{" "}
+              </>
+            ) : item.after ? (
+              <>
+                After{" "}
+                <a href={item.after.url} className="underline underline-offset-4 hover:text-foreground" rel="noopener noreferrer" target="_blank">
+                  {item.after.name}&apos;s write-up
+                </a>{" "}
+                ·{" "}
+              </>
+            ) : null}
+            {formatDate(item.date)}
           </p>
         </header>
 
