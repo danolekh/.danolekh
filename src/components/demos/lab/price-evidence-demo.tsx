@@ -58,25 +58,58 @@ export const ITEMS: Item[] = [
 const RATIO = 0.42;
 const READING_MS = 1200;
 
-/** Behind the glass look: black, with a soft grey light drifting slowly (cardstock's mesh in
- * zinc greys) under a fine grid, whose lines are what the glass visibly bends. */
-const BACKDROP = shaderBackground("mesh", {
-  color: "#09090b",
-  speed: 0.25,
-  params: {
-    colors: ["#050506", "#09090b", "#101013", "#18181c", "#2c2c32"],
-    distortion: 0.6,
-    swirl: 0.3,
-    grain: 0.06,
-  },
-});
+/** Behind the glass look: a soft light drifting slowly (cardstock's mesh in zinc greys) under a fine
+ * grid, whose lines are what the glass visibly bends. Pale in the light theme, black in the dark. */
+const BACKDROP = {
+  dark: shaderBackground("mesh", {
+    color: "#09090b",
+    speed: 0.25,
+    params: {
+      colors: ["#050506", "#09090b", "#101013", "#18181c", "#2c2c32"],
+      distortion: 0.6,
+      swirl: 0.3,
+      grain: 0.06,
+    },
+  }),
+  light: shaderBackground("mesh", {
+    color: "#f1f1f3",
+    speed: 0.25,
+    params: {
+      colors: ["#fbfbfc", "#f4f4f5", "#ececef", "#e4e4e7", "#d4d4d8"],
+      distortion: 0.6,
+      swirl: 0.3,
+      grain: 0.04,
+    },
+  }),
+};
+
+/** The glass look's tints, per theme: the card, the tray, and the little chips. */
+const TINT = {
+  dark: { card: "rgba(10,10,12,0.42)", tray: "rgba(255,255,255,0.10)", chip: "rgba(255,255,255,0.16)" },
+  light: { card: "rgba(255,255,255,0.5)", tray: "rgba(255,255,255,0.45)", chip: "rgba(255,255,255,0.6)" },
+};
+
+/** Follows the `.dark` class on <html>, as the site and the playground set it. */
+function useDark() {
+  const [dark, setDark] = useState(false);
+  useEffect(() => {
+    const html = document.documentElement;
+    const read = () => setDark(html.classList.contains("dark"));
+    read();
+    const watch = new MutationObserver(read);
+    watch.observe(html, { attributes: true, attributeFilter: ["class"] });
+    return () => watch.disconnect();
+  }, []);
+  return dark;
+}
 
 /** The listing's colours: shadcn tokens for the part, set per look. */
 const TOKENS = {
   minimist:
     "[--background:#fff] [--border:#E4E4E7] [--foreground:#141413] [--muted-foreground:#71717A] [--muted:#F4F4F5] [--pe-accent:#141413] [--pe-axis:#9a9aa3] [--pe-band:rgba(20,20,19,.05)] [--popover-foreground:#141413] [--popover:#fff] [--ring:#141413] dark:[--background:#141413] dark:[--border:#27272A] dark:[--foreground:#FAFAF8] dark:[--muted-foreground:#A1A1AA] dark:[--muted:#27272A] dark:[--pe-accent:#FAFAF8] dark:[--pe-band:rgba(250,250,248,.07)] dark:[--popover-foreground:#FAFAF8] dark:[--popover:#18181B] dark:[--ring:#FAFAF8]",
+  // From the glass look's own colours (--g-*, in CSS below), which change with the theme.
   glass:
-    "[--background:rgba(14,14,16,.92)] [--border:rgba(255,255,255,.3)] [--foreground:#fff] [--muted-foreground:rgba(255,255,255,.72)] [--muted:rgba(255,255,255,.14)] [--pe-accent:#fff] [--pe-axis:rgba(255,255,255,.72)] [--pe-band:rgba(255,255,255,.14)] [--popover-foreground:#fff] [--popover:rgba(255,255,255,.16)] [--ring:#fff]",
+    "[--background:var(--g-card)] [--border:var(--g-border)] [--foreground:var(--g-ink)] [--muted-foreground:var(--g-sub)] [--muted:var(--g-band)] [--pe-accent:var(--g-ink)] [--pe-axis:var(--g-sub)] [--pe-band:var(--g-band)] [--popover-foreground:var(--g-ink)] [--popover:var(--g-pop)] [--ring:var(--g-ink)]",
 };
 
 function mulberry32(seed: number) {
@@ -117,6 +150,8 @@ const easeOut = (t: number) => 1 - (1 - t) ** 3;
 
 export default function PriceEvidenceDemo({ look = "minimist" }: { look?: "minimist" | "glass" }) {
   const glass = look === "glass";
+  const dark = useDark();
+  const tint = dark ? TINT.dark : TINT.light;
   const [phase, setPhase] = useState<Phase>("idle");
   const [item, setItem] = useState<Item | null>(null);
   // Photos over the page (held, or on their way to the card or home), by item id.
@@ -411,7 +446,7 @@ export default function PriceEvidenceDemo({ look = "minimist" }: { look?: "minim
           onClick={() => (skipClick.current ? (skipClick.current = false) : add(it))}
           className={
             glass
-              ? "relative size-14 touch-none overflow-hidden rounded-[16px] shadow-[0_8px_20px_-10px_rgba(0,0,0,.55)] outline-none select-none focus-visible:ring-2 focus-visible:ring-white sm:size-16"
+              ? "relative size-14 touch-none overflow-hidden rounded-[16px] shadow-[0_8px_20px_-10px_rgba(0,0,0,.55)] outline-none select-none focus-visible:ring-2 focus-visible:ring-(--g-ink) sm:size-16"
               : "relative size-16 touch-none overflow-hidden rounded-2xl bg-[#f0ebe1] outline-none select-none focus-visible:ring-2 focus-visible:ring-[#141413] focus-visible:ring-offset-2 sm:size-[76px] dark:bg-[#2a2620] dark:focus-visible:ring-[#FAFAF8]"
           }
           style={{ cursor: gone ? "default" : "grab" }}
@@ -421,7 +456,7 @@ export default function PriceEvidenceDemo({ look = "minimist" }: { look?: "minim
             <span
               className={
                 glass
-                  ? "absolute inset-0 rounded-[16px] bg-white/[0.06] ring-1 ring-white/25 ring-inset"
+                  ? "absolute inset-0 rounded-[16px] bg-(--g-fill) ring-1 ring-(--g-rule) ring-inset"
                   : "absolute inset-0 rounded-2xl border-[1.5px] border-dashed border-[#d4d4d8] dark:border-[#3f3f46]"
               }
             />
@@ -434,8 +469,8 @@ export default function PriceEvidenceDemo({ look = "minimist" }: { look?: "minim
 
   const chip = (label: string) =>
     glass ? (
-      <Glass radius={999} bezel={10} depth={4} tint="rgba(255,255,255,0.16)" className="absolute bottom-3 left-3">
-        <span className="block px-3 py-1 text-xs font-medium text-white">{label}</span>
+      <Glass radius={999} bezel={10} depth={4} tint={tint.chip} className="absolute bottom-3 left-3">
+        <span className="block px-3 py-1 text-xs font-medium text-(--g-ink)">{label}</span>
       </Glass>
     ) : (
       <span className="absolute bottom-3 left-3 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-[#141413] shadow-sm backdrop-blur">
@@ -450,7 +485,7 @@ export default function PriceEvidenceDemo({ look = "minimist" }: { look?: "minim
       data-slot="mnm-reset"
       className={
         glass
-          ? "block cursor-pointer px-3 py-1 text-xs font-medium text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+          ? "block cursor-pointer px-3 py-1 text-xs font-medium text-(--g-ink) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--g-ink)"
           : "mnm-rise absolute bottom-3 left-3 cursor-pointer rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-[#141413] shadow-sm backdrop-blur transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
       }
     >
@@ -489,7 +524,7 @@ export default function PriceEvidenceDemo({ look = "minimist" }: { look?: "minim
                 {chip("Reading the photo…")}
               </>
             ) : glass ? (
-              <Glass radius={999} bezel={10} depth={4} tint="rgba(255,255,255,0.16)" className="mnm-rise absolute bottom-3 left-3">
+              <Glass radius={999} bezel={10} depth={4} tint={tint.chip} className="mnm-rise absolute bottom-3 left-3">
                 {resetButton}
               </Glass>
             ) : (
@@ -506,7 +541,7 @@ export default function PriceEvidenceDemo({ look = "minimist" }: { look?: "minim
           >
             <div>
               <span
-                className={`mx-auto grid size-9 place-items-center rounded-full ${glass ? "bg-white/15" : "bg-[#141413]/[0.06] dark:bg-white/[0.08]"}`}
+                className={`mx-auto grid size-9 place-items-center rounded-full ${glass ? "bg-(--g-fill)" : "bg-[#141413]/[0.06] dark:bg-white/[0.08]"}`}
               >
                 <svg viewBox="0 0 16 16" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                   <path d="M8 2.5v8M4.5 7 8 10.5 11.5 7M3 13.5h10" />
@@ -523,7 +558,7 @@ export default function PriceEvidenceDemo({ look = "minimist" }: { look?: "minim
           <>
             <div className="mnm-rise" key={item.id}>
               <p className="truncate text-lg leading-snug font-medium">{item.title}</p>
-              <p className={`truncate text-sm ${glass ? "text-white/70" : "text-[#71717A] dark:text-[#A1A1AA]"}`}>
+              <p className={`truncate text-sm ${glass ? "text-(--g-sub)" : "text-[#71717A] dark:text-[#A1A1AA]"}`}>
                 {item.details}
               </p>
             </div>
@@ -540,7 +575,7 @@ export default function PriceEvidenceDemo({ look = "minimist" }: { look?: "minim
     <div
       className={
         glass
-          ? "mnm-demo mnm-glass relative isolate overflow-hidden rounded-[28px] bg-[#09090b] p-4 text-white sm:p-8"
+          ? "mnm-demo mnm-glass relative isolate overflow-hidden rounded-[28px] bg-(--g-bg) p-4 text-(--g-ink) sm:p-8"
           : "mnm-demo rounded-[28px] bg-[#FAFAF8] p-3 text-[#141413] sm:p-6 dark:bg-[#0E0E10] dark:text-[#FAFAF8]"
       }
       data-phase={phase}
@@ -551,7 +586,7 @@ export default function PriceEvidenceDemo({ look = "minimist" }: { look?: "minim
       </style>
       {glass ? (
         <div aria-hidden data-slot="mnm-backdrop" className="pointer-events-none absolute inset-0 -z-10">
-          <Shader value={BACKDROP} play="always" />
+          <Shader key={dark ? "dark" : "light"} value={dark ? BACKDROP.dark : BACKDROP.light} play="always" />
           <div className="mnm-grid absolute inset-0" />
           <div className="mnm-spot absolute inset-0" />
         </div>
@@ -559,7 +594,7 @@ export default function PriceEvidenceDemo({ look = "minimist" }: { look?: "minim
 
       {glass ? (
         <div className="flex justify-center" data-slot="mnm-tray">
-          <Glass radius={30} bezel={20} depth={8} tint="rgba(255,255,255,0.10)" className="flex gap-3 p-2.5 sm:gap-3.5 sm:p-3">
+          <Glass radius={30} bezel={20} depth={8} tint={tint.tray} className="flex gap-3 p-2.5 sm:gap-3.5 sm:p-3">
             {photos}
           </Glass>
         </div>
@@ -574,7 +609,7 @@ export default function PriceEvidenceDemo({ look = "minimist" }: { look?: "minim
           radius={34}
           bezel={30}
           depth={12}
-          tint="rgba(10,10,12,0.42)"
+          tint={tint.card}
           className="mt-5 grid gap-5 p-4 sm:grid-cols-[5fr_7fr] sm:p-6"
         >
           {card}
@@ -585,7 +620,7 @@ export default function PriceEvidenceDemo({ look = "minimist" }: { look?: "minim
         </div>
       )}
 
-      <p className={glass ? "mt-4 px-2 text-center text-xs text-white/75" : "mt-3 px-2 text-xs text-[#71717A] dark:text-[#A1A1AA]"}>
+      <p className={glass ? "mt-4 px-2 text-center text-xs text-(--g-note)" : "mt-3 px-2 text-xs text-[#71717A] dark:text-[#A1A1AA]"}>
         {glass ? "A design concept for Minimist" : "A design concept in Minimist's style"}, not affiliated with
         Minimist. Photos from Unsplash; the sales are made up.
       </p>
@@ -606,7 +641,7 @@ export default function PriceEvidenceDemo({ look = "minimist" }: { look?: "minim
                 }}
                 aria-hidden
                 data-slot="mnm-ghost"
-                className={`pointer-events-none fixed top-0 left-0 overflow-hidden ${glass ? "rounded-[16px] ring-1 ring-white/45" : "rounded-2xl"}`}
+                className={`pointer-events-none fixed top-0 left-0 overflow-hidden ${glass ? "rounded-[16px] ring-1 ring-black/20 dark:ring-white/45" : "rounded-2xl"}`}
               >
                 <img src={it.photo} alt="" className="size-full object-cover" />
               </div>,
@@ -621,8 +656,8 @@ export default function PriceEvidenceDemo({ look = "minimist" }: { look?: "minim
 
 /** The listing before there is one: the same lines at the same heights, as faint bars. */
 function Skeleton({ glass }: { glass: boolean }) {
-  const label = glass ? "text-white/50" : "text-[#a1a1aa] dark:text-[#52525b]";
-  const faint = glass ? "text-white/30" : "text-[#d4d4d8] dark:text-[#3f3f46]";
+  const label = glass ? "text-(--g-label)" : "text-[#a1a1aa] dark:text-[#52525b]";
+  const faint = glass ? "text-(--g-faint)" : "text-[#d4d4d8] dark:text-[#3f3f46]";
   return (
     <div aria-hidden>
       <p className="text-lg leading-snug">
@@ -645,7 +680,7 @@ function Skeleton({ glass }: { glass: boolean }) {
           </div>
         </div>
         <div className="mt-4 flex items-end" style={{ aspectRatio: `640 / ${RATIO * 640 + 2}` }}>
-          <span className={`block h-px w-full ${glass ? "bg-white/25" : "bg-[#e4e4e7] dark:bg-[#27272a]"}`} />
+          <span className={`block h-px w-full ${glass ? "bg-(--g-rule)" : "bg-[#e4e4e7] dark:bg-[#27272a]"}`} />
         </div>
         <div className="h-6" />
       </div>
@@ -669,12 +704,15 @@ const CSS = `
 .mnm-rise{animation:mnm-rise 420ms cubic-bezier(.2,.8,.2,1) both}
 @keyframes mnm-rise{from{opacity:0;transform:translateY(6px)}}
 @media (prefers-reduced-motion:reduce){.mnm-scan,.mnm-bar,.mnm-rise{animation:none!important}.mnm-scan{display:none}}
-.mnm-grid{background-image:linear-gradient(rgba(255,255,255,.085) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.085) 1px,transparent 1px);background-size:32px 32px;background-position:center;-webkit-mask-image:radial-gradient(ellipse 75% 70% at 50% 45%,#000 35%,transparent 85%);mask-image:radial-gradient(ellipse 75% 70% at 50% 45%,#000 35%,transparent 85%)}
-.mnm-spot{background:radial-gradient(ellipse 55% 45% at 50% -8%,rgba(255,255,255,.16),rgba(255,255,255,.05) 45%,transparent 75%)}
+/* The glass look's colours: dark text on a pale stage in the light theme, white on black in the dark. */
+.mnm-glass{--g-bg:#f1f1f3;--g-ink:#0a0a0b;--g-sub:rgba(10,10,11,.62);--g-note:rgba(10,10,11,.6);--g-label:rgba(10,10,11,.5);--g-faint:rgba(10,10,11,.28);--g-rule:rgba(10,10,11,.18);--g-fill:rgba(10,10,11,.07);--g-band:rgba(10,10,11,.07);--g-card:rgba(255,255,255,.92);--g-border:rgba(10,10,11,.14);--g-pop:rgba(255,255,255,.72);--g-line:rgba(10,10,11,.07);--g-light:rgba(255,255,255,.95);--g-light-2:rgba(255,255,255,.4);--g-well:rgba(255,255,255,.45);--g-well-ring:rgba(10,10,11,.14);--g-well-over:rgba(255,255,255,.7);--g-well-over-ring:rgba(10,10,11,.5);--g-bar:rgba(10,10,11,.06);--g-bar-shine:rgba(10,10,11,.13);--g-hover:rgba(10,10,11,.06)}
+.dark .mnm-glass{--g-bg:#09090b;--g-ink:#fff;--g-sub:rgba(255,255,255,.7);--g-note:rgba(255,255,255,.75);--g-label:rgba(255,255,255,.5);--g-faint:rgba(255,255,255,.3);--g-rule:rgba(255,255,255,.25);--g-fill:rgba(255,255,255,.15);--g-band:rgba(255,255,255,.14);--g-card:rgba(14,14,16,.92);--g-border:rgba(255,255,255,.3);--g-pop:rgba(255,255,255,.16);--g-line:rgba(255,255,255,.085);--g-light:rgba(255,255,255,.16);--g-light-2:rgba(255,255,255,.05);--g-well:rgba(255,255,255,.07);--g-well-ring:rgba(255,255,255,.22);--g-well-over:rgba(255,255,255,.14);--g-well-over-ring:rgba(255,255,255,.75);--g-bar:rgba(255,255,255,.13);--g-bar-shine:rgba(255,255,255,.3);--g-hover:rgba(255,255,255,.14)}
+.mnm-grid{background-image:linear-gradient(var(--g-line) 1px,transparent 1px),linear-gradient(90deg,var(--g-line) 1px,transparent 1px);background-size:32px 32px;background-position:center;-webkit-mask-image:radial-gradient(ellipse 75% 70% at 50% 45%,#000 35%,transparent 85%);mask-image:radial-gradient(ellipse 75% 70% at 50% 45%,#000 35%,transparent 85%)}
+.mnm-spot{background:radial-gradient(ellipse 55% 45% at 50% -8%,var(--g-light),var(--g-light-2) 45%,transparent 75%)}
 .mnm-demo.mnm-glass,.mnm-demo.mnm-glass *{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",system-ui,sans-serif}
-.mnm-glass .mnm-well{background:rgba(255,255,255,.07);box-shadow:inset 0 0 0 1px rgba(255,255,255,.22);color:#fff;transition:background-color .15s,box-shadow .15s,transform .2s}
-.mnm-glass .mnm-zone[data-over] .mnm-well{background:rgba(255,255,255,.14);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.75);transform:scale(.985)}
-.mnm-glass .mnm-bar{background-image:linear-gradient(90deg,rgba(255,255,255,.13) 0%,rgba(255,255,255,.13) 35%,rgba(255,255,255,.3) 50%,rgba(255,255,255,.13) 65%,rgba(255,255,255,.13) 100%)}
-.mnm-glass .pe-plot .z-10{border-radius:999px;border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.16);backdrop-filter:blur(16px) saturate(1.6);-webkit-backdrop-filter:blur(16px) saturate(1.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 8px 24px -8px rgba(0,0,0,.45)}
-.mnm-glass [data-slot=price-evidence-replay]:hover{background:rgba(255,255,255,.14)}
+.mnm-glass .mnm-well{background:var(--g-well);box-shadow:inset 0 0 0 1px var(--g-well-ring);color:var(--g-ink);transition:background-color .15s,box-shadow .15s,transform .2s}
+.mnm-glass .mnm-zone[data-over] .mnm-well{background:var(--g-well-over);box-shadow:inset 0 0 0 1.5px var(--g-well-over-ring);transform:scale(.985)}
+.mnm-glass .mnm-bar{background-image:linear-gradient(90deg,var(--g-bar) 0%,var(--g-bar) 35%,var(--g-bar-shine) 50%,var(--g-bar) 65%,var(--g-bar) 100%)}
+.mnm-glass .pe-plot .z-10{border-radius:999px;border-color:var(--g-border);background:var(--g-pop);backdrop-filter:blur(16px) saturate(1.6);-webkit-backdrop-filter:blur(16px) saturate(1.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 8px 24px -8px rgba(0,0,0,.45)}
+.mnm-glass [data-slot=price-evidence-replay]:hover{background:var(--g-hover)}
 `;

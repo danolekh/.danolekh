@@ -44,18 +44,20 @@ export function LabPage({ item, look }: { item: LabItem; look?: string }) {
 
         <BlogComponent name={item.demo} props={look ? { look } : {}} />
 
-        <div className="mt-8 space-y-6">
-          <div className="space-y-3">
-            <p className="text-sm font-medium text-foreground">Get the code</p>
-            <pre className="overflow-x-auto rounded-md border border-dashed bg-muted/40 px-4 py-3 text-sm">
-              <code>{labInstall(item.slug)}</code>
-            </pre>
-            <Button render={<a href={labSource(item.slug)} rel="noopener noreferrer" target="_blank"></a>} nativeButton={false} variant="link" className="px-0">
-              <IconBrandGithub />
-              Source on GitHub
-            </Button>
+        {item.code === false ? null : (
+          <div className="mt-8 space-y-6">
+            <div className="space-y-3">
+              <p className="text-sm font-medium text-foreground">Get the code</p>
+              <pre className="overflow-x-auto rounded-md border border-dashed bg-muted/40 px-4 py-3 text-sm">
+                <code>{labInstall(item.slug)}</code>
+              </pre>
+              <Button render={<a href={labSource(item.slug)} rel="noopener noreferrer" target="_blank"></a>} nativeButton={false} variant="link" className="px-0">
+                <IconBrandGithub />
+                Source on GitHub
+              </Button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

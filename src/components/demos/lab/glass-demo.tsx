@@ -1,9 +1,9 @@
 import { type CSSProperties, type KeyboardEvent, type PointerEvent, useRef, useState } from "react";
 import { Glass } from "@/components/glass";
 
-/* One lens over big type on a black stage, after Aave's write-up
- * (aave.com/design/building-glass-for-the-web). The backdrop is still, so the promo clip loops as
- * it is.
+/* One lens over big type, after Aave's write-up (aave.com/design/building-glass-for-the-web): black
+ * type on a pale stage in the light theme, white on black in the dark one. The backdrop is still, so
+ * the promo clip loops as it is.
  *
  * The lens's place is kept as a share of the room it has to move in (0 to 1 each way), so it stays
  * inside the stage, holds its spot when the stage resizes, and renders in place on the server. */
@@ -102,14 +102,15 @@ export default function GlassDemo() {
 
 const CSS = `
 .glass-demo{container-type:inline-size}
-.glass-stage{position:relative;isolation:isolate;overflow:hidden;border-radius:28px;background:#09090b;height:clamp(380px,56.25cqi,560px);--lens-w:260px;--lens-h:140px}
+.glass-stage{position:relative;isolation:isolate;overflow:hidden;border-radius:28px;background:#f1f1f3;height:clamp(380px,56.25cqi,560px);--lens-w:260px;--lens-h:140px;--ink:#0a0a0b;--line:rgba(10,10,11,.07);--light:rgba(255,255,255,.95);--light-2:rgba(255,255,255,.4);box-shadow:inset 0 0 0 1px rgba(10,10,11,.06)}
+.dark .glass-stage{background:#09090b;--ink:#fff;--line:rgba(255,255,255,.085);--light:rgba(255,255,255,.16);--light-2:rgba(255,255,255,.05);box-shadow:none}
 @container (max-width:480px){.glass-stage{--lens-w:180px;--lens-h:100px}}
 .glass-grid,.glass-spot,.glass-type{position:absolute;inset:0;pointer-events:none}
-.glass-grid{background-image:linear-gradient(rgba(255,255,255,.085) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.085) 1px,transparent 1px);background-size:32px 32px;background-position:center;-webkit-mask-image:radial-gradient(ellipse 75% 70% at 50% 45%,#000 35%,transparent 85%);mask-image:radial-gradient(ellipse 75% 70% at 50% 45%,#000 35%,transparent 85%)}
-.glass-spot{background:radial-gradient(ellipse 55% 45% at 50% -8%,rgba(255,255,255,.16),rgba(255,255,255,.05) 45%,transparent 75%)}
-.glass-type{display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0;color:#fff;font:700 clamp(60px,20cqi,190px)/.88 -apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",system-ui,sans-serif;letter-spacing:-.045em;text-align:center;user-select:none;-webkit-user-select:none}
+.glass-grid{background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:32px 32px;background-position:center;-webkit-mask-image:radial-gradient(ellipse 75% 70% at 50% 45%,#000 35%,transparent 85%);mask-image:radial-gradient(ellipse 75% 70% at 50% 45%,#000 35%,transparent 85%)}
+.glass-spot{background:radial-gradient(ellipse 55% 45% at 50% -8%,var(--light),var(--light-2) 45%,transparent 75%)}
+.glass-type{display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0;color:var(--ink);font:700 clamp(60px,20cqi,190px)/.88 -apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",system-ui,sans-serif;letter-spacing:-.045em;text-align:center;user-select:none;-webkit-user-select:none}
 .glass-type span{display:block;font-family:inherit}
 .glass-lens{position:absolute;left:calc((100% - var(--lens-w)) * var(--fx));top:calc((100% - var(--lens-h)) * var(--fy));width:var(--lens-w);height:var(--lens-h);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;outline:none}
 .glass-lens[data-dragging]{cursor:grabbing}
-.glass-lens:focus-visible{outline:2px solid rgba(255,255,255,.9);outline-offset:4px}
+.glass-lens:focus-visible{outline:2px solid var(--ink);outline-offset:4px}
 `;

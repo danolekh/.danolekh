@@ -10,6 +10,9 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Demos kept off git until they're released (src/private is gitignored, so Tailwind skips it unless told). */
+@source "./private";
+
 body {
   @apply m-0;
   font-family:

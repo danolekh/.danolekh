@@ -27,9 +27,27 @@ export type LabItem = {
   coverLight?: string;
   video?: string;
   videoLight?: string;
+  /** False while the code isn't out: the page shows the demo but no install line or source link,
+   *  and the demo lives in src/private (gitignored). */
+  code?: false;
 };
 
 export const lab: LabItem[] = [
+  {
+    slug: "reviewer",
+    title: "Where the card goes",
+    description: "A flashcard review screen that shows where each answer sends the card.",
+    for: { name: "Anki", url: "https://apps.ankiweb.net" },
+    date: "2026-09-29",
+    demo: "reviewer",
+    // Not released yet: the demo, its pictures and its audio are in src/private and public/private.
+    code: false,
+    // Take lab-reviewer in cardstock's apps/promo, filmed in both themes (encode --loop 0.8).
+    cover: "/images/covers/lab-reviewer-dark.webp",
+    coverLight: "/images/covers/lab-reviewer.webp",
+    video: "/videos/lab-reviewer-dark-800.mp4",
+    videoLight: "/videos/lab-reviewer-800.mp4",
+  },
   {
     slug: "smear",
     title: "Type that smears",
