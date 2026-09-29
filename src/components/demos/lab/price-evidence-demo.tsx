@@ -5,8 +5,9 @@ import { Shader, shaderBackground } from "@danolekh/cardstock/shader";
 import { Glass } from "@/components/glass";
 import { PriceEvidence, type Sale } from "@/components/price-evidence";
 
-/* The concept, in Minimist's style: a charity shop drops in a photo of a donated item and gets the
- * listing back, with the sales its price is based on. The photos are CC0 from Unsplash (photos.md);
+/* The concept, for Minimist: a charity shop drops in a photo of a donated item and gets the listing
+ * back, with the sales its price is based on. Three looks: Minimist's own, Liquid Glass, and the
+ * site's (its shadcn tokens as they are, square corners, its type). The photos are CC0 from Unsplash (photos.md);
  * the sales are made up (seeded log-normals over the last 90 days). Not affiliated with Minimist.
  *
  * Dragging is pointer events rather than HTML drag and drop, so it works on touch and shows up in a
@@ -103,8 +104,10 @@ function useDark() {
   return dark;
 }
 
-/** The listing's colours: shadcn tokens for the part, set per look. */
+/** The listing's colours: shadcn tokens for the part, set per look. The site's are its own, with the
+ * card's colour as the background the part rings its dots with. */
 const TOKENS = {
+  site: "[--background:var(--card)]",
   minimist:
     "[--background:#fff] [--border:#E4E4E7] [--foreground:#141413] [--muted-foreground:#71717A] [--muted:#F4F4F5] [--pe-accent:#141413] [--pe-axis:#9a9aa3] [--pe-band:rgba(20,20,19,.05)] [--popover-foreground:#141413] [--popover:#fff] [--ring:#141413] dark:[--background:#141413] dark:[--border:#27272A] dark:[--foreground:#FAFAF8] dark:[--muted-foreground:#A1A1AA] dark:[--muted:#27272A] dark:[--pe-accent:#FAFAF8] dark:[--pe-band:rgba(250,250,248,.07)] dark:[--popover-foreground:#FAFAF8] dark:[--popover:#18181B] dark:[--ring:#FAFAF8]",
   // From the glass look's own colours (--g-*, in CSS below), which change with the theme.
@@ -148,8 +151,47 @@ type Flight = Box & { rot: number; lift: number; z: number };
 
 const easeOut = (t: number) => 1 - (1 - t) ** 3;
 
-export default function PriceEvidenceDemo({ look = "minimist" }: { look?: "minimist" | "glass" }) {
+/** The classes that differ between the two flat looks, Minimist's and the site's. */
+const FLAT = {
+  minimist: {
+    demo: "rounded-[28px] bg-[#FAFAF8] p-3 text-[#141413] sm:p-6 dark:bg-[#0E0E10] dark:text-[#FAFAF8]",
+    tray: "gap-3 sm:gap-4",
+    photo:
+      "rounded-2xl bg-[#f0ebe1] focus-visible:ring-2 focus-visible:ring-[#141413] focus-visible:ring-offset-2 dark:bg-[#2a2620] dark:focus-visible:ring-[#FAFAF8]",
+    gone: "rounded-2xl border-[1.5px] border-dashed border-[#d4d4d8] dark:border-[#3f3f46]",
+    label: "text-[#71717A] dark:text-[#A1A1AA]",
+    chip: "rounded-full bg-white/90 text-[#141413] shadow-sm backdrop-blur",
+    reset:
+      "rounded-full bg-white/90 text-[#141413] shadow-sm backdrop-blur hover:bg-white focus-visible:outline-white",
+    zone: "rounded-2xl",
+    drop: "rounded-2xl border-[1.5px]",
+    icon: "rounded-full bg-[#141413]/[0.06] dark:bg-white/[0.08]",
+    details: "text-[#71717A] dark:text-[#A1A1AA]",
+    card: "rounded-3xl border border-[#E4E4E7] bg-white shadow-[0_1px_2px_rgba(20,20,19,.04),0_12px_32px_-12px_rgba(20,20,19,.12)] dark:border-[#27272A] dark:bg-[#141413]",
+    note: "text-[#71717A] dark:text-[#A1A1AA]",
+    ghost: "rounded-2xl",
+  },
+  site: {
+    demo: "bg-muted/30 p-3 text-foreground ring-1 ring-foreground/10 sm:p-6",
+    tray: "gap-3",
+    photo: "bg-muted ring-1 ring-foreground/10 focus-visible:ring-2 focus-visible:ring-ring",
+    gone: "border border-dashed border-foreground/25 bg-muted/40",
+    label: "text-muted-foreground",
+    chip: "bg-background/90 text-foreground ring-1 ring-foreground/10",
+    reset: "h-7 bg-background text-foreground ring-1 ring-foreground/10 hover:bg-muted focus-visible:outline-ring",
+    zone: "",
+    drop: "border",
+    icon: "bg-muted ring-1 ring-foreground/10",
+    details: "text-muted-foreground",
+    card: "bg-card ring-1 ring-foreground/10",
+    note: "text-muted-foreground",
+    ghost: "ring-1 ring-foreground/10",
+  },
+};
+
+export default function PriceEvidenceDemo({ look = "minimist" }: { look?: "minimist" | "glass" | "site" }) {
   const glass = look === "glass";
+  const flat = FLAT[look === "site" ? "site" : "minimist"];
   const dark = useDark();
   const tint = dark ? TINT.dark : TINT.light;
   const [phase, setPhase] = useState<Phase>("idle");
@@ -447,7 +489,7 @@ export default function PriceEvidenceDemo({ look = "minimist" }: { look?: "minim
           className={
             glass
               ? "relative size-14 touch-none overflow-hidden rounded-[16px] shadow-[0_8px_20px_-10px_rgba(0,0,0,.55)] outline-none select-none focus-visible:ring-2 focus-visible:ring-(--g-ink) sm:size-16"
-              : "relative size-16 touch-none overflow-hidden rounded-2xl bg-[#f0ebe1] outline-none select-none focus-visible:ring-2 focus-visible:ring-[#141413] focus-visible:ring-offset-2 sm:size-[76px] dark:bg-[#2a2620] dark:focus-visible:ring-[#FAFAF8]"
+              : `relative size-16 touch-none overflow-hidden outline-none select-none sm:size-[76px] ${flat.photo}`
           }
           style={{ cursor: gone ? "default" : "grab" }}
         >
@@ -457,12 +499,12 @@ export default function PriceEvidenceDemo({ look = "minimist" }: { look?: "minim
               className={
                 glass
                   ? "absolute inset-0 rounded-[16px] bg-(--g-fill) ring-1 ring-(--g-rule) ring-inset"
-                  : "absolute inset-0 rounded-2xl border-[1.5px] border-dashed border-[#d4d4d8] dark:border-[#3f3f46]"
+                  : `absolute inset-0 ${flat.gone}`
               }
             />
           ) : null}
         </button>
-        {glass ? null : <span className="text-xs text-[#71717A] dark:text-[#A1A1AA]">{it.label}</span>}
+        {glass ? null : <span className={`text-xs ${flat.label}`}>{it.label}</span>}
       </div>
     );
   });
@@ -473,7 +515,7 @@ export default function PriceEvidenceDemo({ look = "minimist" }: { look?: "minim
         <span className="block px-3 py-1 text-xs font-medium text-(--g-ink)">{label}</span>
       </Glass>
     ) : (
-      <span className="absolute bottom-3 left-3 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-[#141413] shadow-sm backdrop-blur">
+      <span className={`absolute bottom-3 left-3 px-3 py-1 text-xs font-medium ${flat.chip}`}>
         {label}
       </span>
     );
@@ -486,7 +528,7 @@ export default function PriceEvidenceDemo({ look = "minimist" }: { look?: "minim
       className={
         glass
           ? "block cursor-pointer px-3 py-1 text-xs font-medium text-(--g-ink) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--g-ink)"
-          : "mnm-rise absolute bottom-3 left-3 cursor-pointer rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-[#141413] shadow-sm backdrop-blur transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+          : `mnm-rise absolute bottom-3 left-3 cursor-pointer px-3 py-1 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 ${flat.reset}`
       }
     >
       Try another item
@@ -503,7 +545,7 @@ export default function PriceEvidenceDemo({ look = "minimist" }: { look?: "minim
         onPointerMove={onMove}
         onPointerUp={onUp}
         onPointerCancel={onUp}
-        className={`mnm-zone relative aspect-[4/3] touch-pan-y overflow-hidden select-none sm:aspect-auto sm:h-full ${glass ? "rounded-[22px]" : "rounded-2xl"}`}
+        className={`mnm-zone relative aspect-[4/3] touch-pan-y overflow-hidden select-none sm:aspect-auto sm:h-full ${glass ? "rounded-[22px]" : flat.zone}`}
         style={{ cursor: item && phase !== "idle" ? "grab" : undefined }}
       >
         {intent ? (
@@ -536,12 +578,12 @@ export default function PriceEvidenceDemo({ look = "minimist" }: { look?: "minim
             className={
               glass
                 ? "mnm-well absolute inset-0 grid place-items-center rounded-[22px] px-4 text-center"
-                : "mnm-drop absolute inset-0 grid place-items-center rounded-2xl border-[1.5px] border-dashed px-4 text-center"
+                : `mnm-drop absolute inset-0 grid place-items-center border-dashed px-4 text-center ${flat.drop}`
             }
           >
             <div>
               <span
-                className={`mx-auto grid size-9 place-items-center rounded-full ${glass ? "bg-(--g-fill)" : "bg-[#141413]/[0.06] dark:bg-white/[0.08]"}`}
+                className={`mx-auto grid size-9 place-items-center ${glass ? "rounded-full bg-(--g-fill)" : flat.icon}`}
               >
                 <svg viewBox="0 0 16 16" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                   <path d="M8 2.5v8M4.5 7 8 10.5 11.5 7M3 13.5h10" />
@@ -558,14 +600,14 @@ export default function PriceEvidenceDemo({ look = "minimist" }: { look?: "minim
           <>
             <div className="mnm-rise" key={item.id}>
               <p className="truncate text-lg leading-snug font-medium">{item.title}</p>
-              <p className={`truncate text-sm ${glass ? "text-(--g-sub)" : "text-[#71717A] dark:text-[#A1A1AA]"}`}>
+              <p className={`truncate text-sm ${glass ? "text-(--g-sub)" : flat.details}`}>
                 {item.details}
               </p>
             </div>
             <PriceEvidence key={item.id} sales={sales} ratio={RATIO} className="mt-5" />
           </>
         ) : (
-          <Skeleton glass={glass} />
+          <Skeleton look={look} />
         )}
       </div>
     </>
@@ -576,7 +618,7 @@ export default function PriceEvidenceDemo({ look = "minimist" }: { look?: "minim
       className={
         glass
           ? "mnm-demo mnm-glass relative isolate overflow-hidden rounded-[28px] bg-(--g-bg) p-4 text-(--g-ink) sm:p-8"
-          : "mnm-demo rounded-[28px] bg-[#FAFAF8] p-3 text-[#141413] sm:p-6 dark:bg-[#0E0E10] dark:text-[#FAFAF8]"
+          : `mnm-demo ${flat.demo}`
       }
       data-phase={phase}
       data-look={look}
@@ -599,7 +641,7 @@ export default function PriceEvidenceDemo({ look = "minimist" }: { look?: "minim
           </Glass>
         </div>
       ) : (
-        <div className="flex justify-center gap-3 sm:gap-4" data-slot="mnm-tray">
+        <div className={`flex justify-center ${flat.tray}`} data-slot="mnm-tray">
           {photos}
         </div>
       )}
@@ -615,13 +657,13 @@ export default function PriceEvidenceDemo({ look = "minimist" }: { look?: "minim
           {card}
         </Glass>
       ) : (
-        <div className="mt-4 grid gap-5 rounded-3xl border border-[#E4E4E7] bg-white p-4 shadow-[0_1px_2px_rgba(20,20,19,.04),0_12px_32px_-12px_rgba(20,20,19,.12)] sm:grid-cols-[5fr_7fr] sm:p-6 dark:border-[#27272A] dark:bg-[#141413]">
+        <div className={`mt-4 grid gap-5 p-4 sm:grid-cols-[5fr_7fr] sm:p-6 ${flat.card}`}>
           {card}
         </div>
       )}
 
-      <p className={glass ? "mt-4 px-2 text-center text-xs text-(--g-note)" : "mt-3 px-2 text-xs text-[#71717A] dark:text-[#A1A1AA]"}>
-        {glass ? "A design concept for Minimist" : "A design concept in Minimist's style"}, not affiliated with
+      <p className={glass ? "mt-4 px-2 text-center text-xs text-(--g-note)" : `mt-3 px-2 text-xs ${flat.note}`}>
+        {look === "minimist" ? "A design concept in Minimist's style" : "A design concept for Minimist"}, not affiliated with
         Minimist. Photos from Unsplash; the sales are made up.
       </p>
 
@@ -641,7 +683,7 @@ export default function PriceEvidenceDemo({ look = "minimist" }: { look?: "minim
                 }}
                 aria-hidden
                 data-slot="mnm-ghost"
-                className={`pointer-events-none fixed top-0 left-0 overflow-hidden ${glass ? "rounded-[16px] ring-1 ring-black/20 dark:ring-white/45" : "rounded-2xl"}`}
+                className={`pointer-events-none fixed top-0 left-0 overflow-hidden ${glass ? "rounded-[16px] ring-1 ring-black/20 dark:ring-white/45" : flat.ghost}`}
               >
                 <img src={it.photo} alt="" className="size-full object-cover" />
               </div>,
@@ -655,9 +697,14 @@ export default function PriceEvidenceDemo({ look = "minimist" }: { look?: "minim
 }
 
 /** The listing before there is one: the same lines at the same heights, as faint bars. */
-function Skeleton({ glass }: { glass: boolean }) {
-  const label = glass ? "text-(--g-label)" : "text-[#a1a1aa] dark:text-[#52525b]";
-  const faint = glass ? "text-(--g-faint)" : "text-[#d4d4d8] dark:text-[#3f3f46]";
+const SKELETON = {
+  minimist: { label: "text-[#a1a1aa] dark:text-[#52525b]", faint: "text-[#d4d4d8] dark:text-[#3f3f46]", rule: "bg-[#e4e4e7] dark:bg-[#27272a]" },
+  glass: { label: "text-(--g-label)", faint: "text-(--g-faint)", rule: "bg-(--g-rule)" },
+  site: { label: "text-muted-foreground", faint: "text-muted-foreground/40", rule: "bg-border" },
+};
+
+function Skeleton({ look }: { look: keyof typeof SKELETON }) {
+  const { label, faint, rule } = SKELETON[look];
   return (
     <div aria-hidden>
       <p className="text-lg leading-snug">
@@ -680,7 +727,7 @@ function Skeleton({ glass }: { glass: boolean }) {
           </div>
         </div>
         <div className="mt-4 flex items-end" style={{ aspectRatio: `640 / ${RATIO * 640 + 2}` }}>
-          <span className={`block h-px w-full ${glass ? "bg-(--g-rule)" : "bg-[#e4e4e7] dark:bg-[#27272a]"}`} />
+          <span className={`block h-px w-full ${rule}`} />
         </div>
         <div className="h-6" />
       </div>
@@ -689,7 +736,7 @@ function Skeleton({ glass }: { glass: boolean }) {
 }
 
 const CSS = `
-.mnm-demo,.mnm-demo *{font-family:"Rubik Variable",Rubik,sans-serif}
+.mnm-demo[data-look=minimist],.mnm-demo[data-look=minimist] *{font-family:"Rubik Variable",Rubik,sans-serif}
 .mnm-drop{border-color:#d4d4d8;background:#fafafa;color:#141413;transition:border-color .15s,background-color .15s,transform .2s}
 .dark .mnm-drop{border-color:#3f3f46;background:#18181b;color:#fafaf8}
 .mnm-zone[data-over] .mnm-drop{border-style:solid;border-color:#141413;background:#f4f4f5;transform:scale(.985)}
@@ -703,6 +750,11 @@ const CSS = `
 .mnm-demo [data-slot=price-evidence]>div:first-child{flex-direction:column;align-items:flex-start}
 .mnm-rise{animation:mnm-rise 420ms cubic-bezier(.2,.8,.2,1) both}
 @keyframes mnm-rise{from{opacity:0;transform:translateY(6px)}}
+/* The site's look: its own tokens, square corners, and its type (the page's). */
+.mnm-demo[data-look=site] .mnm-drop{border-color:color-mix(in oklab,var(--foreground) 25%,transparent);background:color-mix(in oklab,var(--muted) 40%,transparent);color:var(--foreground)}
+.mnm-demo[data-look=site] .mnm-zone[data-over] .mnm-drop{border-style:solid;border-color:var(--foreground);background:var(--muted)}
+.mnm-demo[data-look=site] .mnm-bar{background-image:linear-gradient(90deg,var(--muted) 0%,var(--muted) 35%,color-mix(in oklab,var(--muted) 45%,var(--card)) 50%,var(--muted) 65%,var(--muted) 100%)}
+.mnm-demo[data-look=site] .mnm-bar,.mnm-demo[data-look=site] .pe-plot .z-10{border-radius:0}
 @media (prefers-reduced-motion:reduce){.mnm-scan,.mnm-bar,.mnm-rise{animation:none!important}.mnm-scan{display:none}}
 /* The glass look's colours: dark text on a pale stage in the light theme, white on black in the dark. */
 .mnm-glass{--g-bg:#f1f1f3;--g-ink:#0a0a0b;--g-sub:rgba(10,10,11,.62);--g-note:rgba(10,10,11,.6);--g-label:rgba(10,10,11,.5);--g-faint:rgba(10,10,11,.28);--g-rule:rgba(10,10,11,.18);--g-fill:rgba(10,10,11,.07);--g-band:rgba(10,10,11,.07);--g-card:rgba(255,255,255,.92);--g-border:rgba(10,10,11,.14);--g-pop:rgba(255,255,255,.72);--g-line:rgba(10,10,11,.07);--g-light:rgba(255,255,255,.95);--g-light-2:rgba(255,255,255,.4);--g-well:rgba(255,255,255,.45);--g-well-ring:rgba(10,10,11,.14);--g-well-over:rgba(255,255,255,.7);--g-well-over-ring:rgba(10,10,11,.5);--g-bar:rgba(10,10,11,.06);--g-bar-shine:rgba(10,10,11,.13);--g-hover:rgba(10,10,11,.06)}

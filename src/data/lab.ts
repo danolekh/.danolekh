@@ -4,7 +4,7 @@
 //
 // Plain data, no imports: vite.config.ts reads it to prerender the pages.
 
-type Look = "glass" | "minimist";
+type Look = "glass" | "minimist" | "site";
 
 export type LabItem = {
   slug: string;
@@ -77,9 +77,11 @@ export const lab: LabItem[] = [
     for: { name: "Minimist", url: "https://minimist.com" },
     date: "2026-10-01",
     demo: "price-evidence",
-    // Glass here; the Minimist-styled one, for the pitch, at /lab/price-evidence/minimist.
-    look: "glass",
-    looks: ["minimist"],
+    // The site's own look here (the glass one made the page lag in Chromium); the glass one stays at
+    // /lab/price-evidence/glass for the X post, and the Minimist-styled one, for the pitch, at
+    // /lab/price-evidence/minimist.
+    look: "site",
+    looks: ["glass", "minimist"],
     // Take lab-price-evidence-glass in cardstock's apps/promo (encode --loop 0.8 --poster 7.9).
     cover: "/images/covers/lab-price-evidence-glass.webp",
     video: "/videos/lab-price-evidence-glass-800.mp4",
