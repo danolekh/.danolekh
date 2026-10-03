@@ -45,8 +45,8 @@ export default function Hero() {
                   <>
                     <p className="mb-2">
                       I build products that hold money correctly: three years of TypeScript
-                      full-stack work, most recently the wallet, ledger and withdrawal services of a
-                      live iGaming platform.
+                      full-stack work, most recently the payment and ledger services of a
+                      multi-brand platform.
                     </p>
                     <p className="mb-2">
                       Since September 2026 I build on EVM: a USDC milestone escrow on Base, a

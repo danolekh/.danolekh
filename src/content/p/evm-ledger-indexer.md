@@ -36,7 +36,7 @@ The point is the same as in a bank ledger: at any moment you can ask "how much d
 hold, according to us" and "how did it get there", and the two answers agree with each other and
 with the chain.
 
-This is the same shape of problem I worked on in the wallet and withdrawal services of an iGaming
+This is the same shape of problem I worked on in the payment and ledger services of a multi-brand
 platform. The chain adds one thing that a database does not: the past can change.
 
 ## How reorgs are handled
