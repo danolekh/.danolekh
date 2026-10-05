@@ -4,7 +4,7 @@
 //
 // Plain data, no imports: vite.config.ts reads it to prerender the pages.
 
-type Look = "glass" | "minimist" | "site";
+type Look = "glass" | "minimist" | "retinsight" | "site";
 
 export type LabItem = {
   slug: string;
@@ -33,6 +33,18 @@ export type LabItem = {
 };
 
 export const lab: LabItem[] = [
+  {
+    slug: "fluid-visits",
+    title: "Visit by visit",
+    description: "An eye's retinal fluid over its visits: a synthetic OCT scan and the volumes, scrubbed by date.",
+    for: { name: "RetInSight", url: "https://www.retinsight.com" },
+    date: "2026-10-06",
+    demo: "fluid-visits",
+    // The site's look here, as with price-evidence; the RetInSight-styled one, for the pitch, at
+    // /lab/fluid-visits/retinsight.
+    look: "site",
+    looks: ["retinsight"],
+  },
   {
     slug: "reviewer",
     title: "Where the card goes",
