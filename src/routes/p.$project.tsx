@@ -98,7 +98,7 @@ function RouteComponent() {
               <KickerArrow />
               <span className="label">Case study{project.year ? ` · ${project.year}` : ""}</span>
             </div>
-            <h1 className="display mt-5 text-balance text-[clamp(44px,7vw,84px)]">{project.title}</h1>
+            <h1 className="display mt-5 text-balance text-[clamp(40px,5.6vw,68px)]">{project.title}</h1>
             {project.subtitle ? (
               <p className="mt-5 max-w-[40rem] text-xl leading-normal">{project.subtitle}</p>
             ) : null}

@@ -63,7 +63,7 @@ function FeedPage() {
             <KickerArrow />
             <span className="label">Books, notes and highlights</span>
           </div>
-          <h1 className="display mt-4 text-[clamp(64px,11vw,132px)]">Feed</h1>
+          <h1 className="display mt-4 text-[clamp(48px,7vw,88px)]">Feed</h1>
         </header>
         <div className="max-w-2xl">
           {books.length === 0 ? (

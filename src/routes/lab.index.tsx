@@ -27,7 +27,7 @@ function LabIndex() {
           <KickerArrow />
           <span className="label">Small interface things</span>
         </div>
-        <h1 className="display mt-4 text-[clamp(64px,11vw,132px)]">Lab</h1>
+        <h1 className="display mt-4 text-[clamp(48px,7vw,88px)]">Lab</h1>
         <p className="mt-5 max-w-[40rem] text-xl leading-normal">
           Small interface things, each one built for a product I like. The code is open and each
           one installs with the shadcn CLI.

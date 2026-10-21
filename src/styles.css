@@ -394,10 +394,8 @@ samp {
   color: var(--pink);
 }
 
-/* Portraits in a smooth blue duotone (the filter lives in __root). Never in halftone dots. */
-.face {
-  filter: url(#duo-face);
-}
+/* Portraits are /images/me-duo.jpg: the photo baked into a smooth blue duotone (blue shadows,
+   paper light). Never in halftone dots. */
 
 /* Paper grain over the whole page, printed in the blue ink: a pre-rendered tile on its own layer
    with plain alpha, so hovering anything never repaints the viewport. */

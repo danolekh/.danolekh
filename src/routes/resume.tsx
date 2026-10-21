@@ -69,7 +69,7 @@ function ResumePage() {
         <header className="print:mt-0">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div className="min-w-0">
-              <h1 className="display text-[clamp(48px,8vw,88px)] print:text-[34px]">{resume.name}</h1>
+              <h1 className="display text-[clamp(44px,6.4vw,76px)] print:text-[34px]">{resume.name}</h1>
               <p className="mt-3 text-lg">{resume.headline}</p>
             </div>
             <Button

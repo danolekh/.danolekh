@@ -24,16 +24,22 @@ export function PostAuthor({
       aria-label="Dan Olekh — back to the home page"
       className={cn("group flex min-w-0 items-center", compact ? "gap-2" : "gap-3", className)}
     >
-      <img
-        src="/images/me-face.jpg"
-        alt="Dan Olekh"
-        width={compact ? 28 : 44}
-        height={compact ? 28 : 44}
+      {/* The outline is a border inside the circle, not a ring outside it, so a scrolling rail
+          can't shave it off at the edges. */}
+      <span
         className={cn(
-          "face shrink-0 rounded-full object-cover ring-[1.5px] ring-current",
+          "shrink-0 overflow-hidden rounded-full border-[1.5px] border-current",
           compact ? "size-7" : "size-11",
         )}
-      />
+      >
+        <img
+          src="/images/me-duo.jpg"
+          alt="Dan Olekh"
+          width={compact ? 28 : 44}
+          height={compact ? 28 : 44}
+          className="size-full object-cover"
+        />
+      </span>
       <span className="flex min-w-0 flex-col leading-tight">
         <span
           className={cn(

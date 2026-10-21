@@ -35,7 +35,7 @@ function PrivacyPage() {
             <KickerArrow />
             <span className="label">Last updated September 25, 2026</span>
           </div>
-          <h1 className="display mt-4 text-[clamp(56px,9vw,104px)]">Privacy</h1>
+          <h1 className="display mt-4 text-[clamp(48px,7vw,88px)]">Privacy</h1>
         </header>
 
         <div className="space-y-8">

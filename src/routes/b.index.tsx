@@ -39,7 +39,7 @@ function WritingIndex() {
           <KickerArrow />
           <span className="label">Notes and write-ups</span>
         </div>
-        <h1 className="display mt-4 text-[clamp(64px,11vw,132px)]">Writing</h1>
+        <h1 className="display mt-4 text-[clamp(48px,7vw,88px)]">Writing</h1>
       </header>
 
       <SectionHead label="All posts" note={String(posts.length).padStart(2, "0")} />

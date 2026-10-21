@@ -12,19 +12,19 @@ const CONTACTS = [
   { label: "X", href: siteConfig.links.twitter },
 ];
 
-/* The masthead of the home page: my portrait in a registration frame, printed in blue duotone, and
+/* The masthead of the home page: my portrait in a registration frame, in blue duotone, and
  * my name in the poster face with the surname in pink. Then the same few lines as always. */
 export default function Hero() {
   return (
     <section className="px-6 pt-12 pb-8 md:px-12 md:pt-16">
       <div className="grid items-end gap-8 sm:grid-cols-[auto_1fr] md:gap-12">
-        <div className="reg w-40 sm:w-52 md:w-60">
+        <div className="reg w-36 sm:w-44 md:w-48">
           <img
-            src="/images/me-face.jpg"
+            src="/images/me-duo.jpg"
             alt="Dan Olekh"
             width={480}
             height={480}
-            className="face aspect-square w-full object-cover"
+            className="aspect-square w-full object-cover"
             fetchPriority="high"
           />
         </div>
@@ -36,7 +36,7 @@ export default function Hero() {
               {WEB3_LIVE ? "Software engineer · TypeScript · EVM" : "Software engineer · Vienna"}
             </span>
           </div>
-          <h1 className="display mt-4 text-[clamp(76px,15vw,184px)]">
+          <h1 className="display mt-4 text-[clamp(56px,9vw,112px)]">
             <span className="block">Dan</span>
             <span className="block text-signal mix-blend-multiply dark:mix-blend-normal">Olekh</span>
           </h1>

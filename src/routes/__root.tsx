@@ -7,7 +7,7 @@ import { createMeta, siteJsonLd } from "@/lib/seo";
 import { ThemeProvider } from "next-themes";
 import { CustomCursor } from "@/components/custom-cursor";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { DuotoneFilter, SiteFooter, SiteHeader } from "@/components/site-frame";
+import { SiteFooter, SiteHeader } from "@/components/site-frame";
 
 export const Route = createRootRoute({
   head: () => {
@@ -47,7 +47,6 @@ export const Route = createRootRoute({
 function RootComponent() {
   return (
     <div className="flex min-h-dvh flex-col">
-      <DuotoneFilter />
       <SiteHeader />
       <main className="w-full flex-1">
         <div className="mx-auto w-full max-w-6xl overflow-x-clip">
