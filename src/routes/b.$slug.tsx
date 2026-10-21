@@ -5,6 +5,8 @@ import { useAutoplayVideos } from "@/hooks/use-autoplay-videos";
 import { Schema } from "effect";
 import { Button } from "@/components/ui/button";
 import { IconArrowLeft } from "@tabler/icons-react";
+import { KickerArrow } from "@/components/site-frame";
+import { PostAuthor } from "@/components/post-author";
 import { getBPostBySlug } from "@/lib/content/b";
 import { BlogComponent } from "@/lib/content/blog-components";
 import { createArticleMeta } from "@/lib/seo";
@@ -45,53 +47,70 @@ function formatDate(date: string | null): string | null {
   return d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
 }
 
+/** Minutes to read, from the rendered prose at ~230 words a minute. */
+function readingMinutes(nodes: { type: string; html?: string }[]): number {
+  const words = nodes
+    .map((n) => (n.type === "html" && n.html ? n.html.replace(/<pre[\s\S]*?<\/pre>|<[^>]+>/g, " ") : ""))
+    .join(" ")
+    .split(/\s+/)
+    .filter(Boolean).length;
+  return Math.max(1, Math.round(words / 230));
+}
+
 function RouteComponent() {
   const post = Route.useLoaderData();
   const date = formatDate(post.date);
   useAutoplayVideos(post.slug);
+  const minutes = readingMinutes(post.nodes);
 
   return (
-    <div className="min-h-dvh px-6 py-12">
-      <div className="max-w-3xl mx-auto">
-        <Button render={<Link to="/b"></Link>} nativeButton={false} variant="link" className="px-0">
-          <IconArrowLeft />
-          All writing
-        </Button>
-
-        <header className="mt-6 mb-8 space-y-6">
-          {post.cover && post.video ? (
-            <HeroVideo
-              art={{ title: post.title, cover: post.cover, coverLight: post.coverLight }}
-              video={{ src: post.video, srcLight: post.videoLight }}
-              className="w-full border border-dashed object-cover"
-              sizes="(min-width: 816px) 768px, 100vw"
-              priority
-            />
-          ) : post.cover ? (
-            <Cover
-              art={{ title: post.title, cover: post.cover, coverLight: post.coverLight }}
-              className="w-full border border-dashed object-cover"
-              sizes="(min-width: 816px) 768px, 100vw"
-              priority
-            />
-          ) : null}
-          <div>
-            <h1 className="text-3xl font-semibold tracking-tight text-foreground lg:text-4xl">
-              {post.title}
-            </h1>
-            {date ? (
-              <p className="mt-2 text-sm text-muted-foreground lg:text-base">{date}</p>
-            ) : null}
+    <div className="px-6 pt-12 md:px-12 md:pt-16">
+      <article className="mx-auto max-w-[45rem]">
+        <header className="mb-10">
+          <div className="kicker">
+            <span className="dot" />
+            <KickerArrow />
+            <span className="label">
+              Writing{date ? ` · ${date}` : ""} · {minutes} min
+            </span>
           </div>
+          <h1 className="display mt-5 text-balance text-[clamp(34px,4.6vw,54px)] leading-[0.92]">
+            {post.title}
+          </h1>
+          {post.description ? (
+            <p className="mt-5 text-xl leading-normal">{post.description}</p>
+          ) : null}
+          <PostAuthor className="mt-6" />
         </header>
 
+        {post.cover ? (
+          <div className="reg mb-10">
+            {post.video ? (
+              <HeroVideo
+                art={{ title: post.title, cover: post.cover, coverLight: post.coverLight }}
+                video={{ src: post.video, srcLight: post.videoLight }}
+                className="w-full object-cover"
+                sizes="(min-width: 816px) 720px, 100vw"
+                priority
+              />
+            ) : (
+              <Cover
+                art={{ title: post.title, cover: post.cover, coverLight: post.coverLight }}
+                className="w-full object-cover"
+                sizes="(min-width: 816px) 720px, 100vw"
+                priority
+              />
+            )}
+          </div>
+        ) : null}
+
         <LinkPreviews previews={post.previews}>
-          <div className="space-y-8">
+          <div className="riso-body space-y-8">
             {post.nodes.map((node, i) =>
               node.type === "html" ? (
-                <article
+                <div
                   key={i}
-                  className="prose lg:prose-lg dark:prose-invert max-w-none"
+                  className="prose prose-lg max-w-none dark:prose-invert"
                   dangerouslySetInnerHTML={{ __html: node.html }}
                 />
               ) : (
@@ -101,18 +120,13 @@ function RouteComponent() {
           </div>
         </LinkPreviews>
 
-        <div className="mt-10 text-right">
-          <Button
-            render={<Link to="/b"></Link>}
-            nativeButton={false}
-            variant="link"
-            className="px-0"
-          >
-            <IconArrowLeft />
+        <footer className="mt-16 flex flex-col gap-6 border-t-[1.5px] border-current pt-6 sm:flex-row sm:items-center sm:justify-between">
+          <PostAuthor />
+          <Link to="/b" className="ink-link text-lg">
             All writing
-          </Button>
-        </div>
-      </div>
+          </Link>
+        </footer>
+      </article>
     </div>
   );
 }

@@ -3,8 +3,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { useAutoplayVideos } from "@/hooks/use-autoplay-videos";
 import { Schema } from "effect";
-import { Button } from "@/components/ui/button";
-import { IconArrowLeft, IconExternalLink } from "@tabler/icons-react";
+import { IconExternalLink } from "@tabler/icons-react";
 import { getPProjectBySlug } from "@/lib/content/p";
 import { PortfolioBlock } from "@/lib/content/portfolio-components";
 import { createProjectMeta } from "@/lib/seo";
@@ -12,6 +11,7 @@ import { getProject, projects } from "@/data/projects";
 import { PostToc } from "@/components/post-toc";
 import { PostAuthor } from "@/components/post-author";
 import { Cover } from "@/components/project-cover";
+import { KickerArrow } from "@/components/site-frame";
 import { HeroVideo } from "@/components/cover-video";
 import { WEB3_LIVE, siteConfig } from "@/lib/config";
 
@@ -56,13 +56,15 @@ function clientName(client: string | null): string | undefined {
 
 function BackHome() {
   return (
-    <Button render={<Link to="/"></Link>} nativeButton={false} variant="link" className="px-0">
-      <IconArrowLeft />
+    <Link to="/" className="ink-link text-lg">
       Back home
-    </Button>
+    </Link>
   );
 }
 
+/* A case study: the contents rail in the left margin on wide screens (a sticky bar with a dropdown
+ * below that), then the kicker, the title in the poster face, the cover on a registration plate,
+ * the client/role/year line, and the write-up. */
 function RouteComponent() {
   const project = Route.useLoaderData();
   useAutoplayVideos(project.slug);
@@ -71,75 +73,72 @@ function RouteComponent() {
   const art = meta ?? (project.cover ? { ...project, cover: project.cover } : null);
 
   return (
-    <div className="min-h-dvh px-6 py-12">
-      {/* On wide screens the contents rail sits in the left margin; below xl it collapses away and
-          the article keeps the same measure it always had. */}
-      <div className="mx-auto grid max-w-6xl gap-8 xl:grid-cols-[12rem_minmax(0,1fr)]">
+    <div className="px-6 pt-10 md:px-12 md:pt-14">
+      <div className="mx-auto grid gap-12 xl:grid-cols-[15rem_minmax(0,1fr)]">
         <aside className="hidden xl:block">
-          {/* The article's own backdrop fades out over the outer 15% of the page, and the rail
-              lives in exactly that band — so the decorative dots behind it show through the text.
-              It gets its own scrim, matching the one the mobile trigger already uses. */}
-          <div className="sticky top-12 max-h-[calc(100dvh-6rem)] overflow-y-auto rounded-lg bg-background/75 p-3 backdrop-blur-sm">
-            <PostAuthor className="mb-3 border-b border-dashed pb-3" />
+          <div className="sticky top-8 max-h-[calc(100dvh-4rem)] space-y-8 overflow-y-auto pb-4">
+            <PostAuthor />
             <PostToc entries={project.toc} />
           </div>
         </aside>
 
-        <div className="max-w-208 mx-auto w-full min-w-0">
+        <div className="mx-auto w-full max-w-[52rem] min-w-0">
           {/* Below xl the rail has no margin to live in, so the contents collapse into a
               dropdown that rides along at the top of the screen, with the way home beside it. */}
-          <div className="sticky top-0 z-30 -mx-6 mb-2 flex items-center justify-between gap-3 bg-background/85 px-6 py-2 backdrop-blur xl:hidden">
+          <div className="sticky top-0 z-30 -mx-6 mb-4 flex items-center justify-between gap-3 bg-background/90 px-6 py-2.5 backdrop-blur xl:hidden">
             <PostAuthor variant="bar" className="shrink-0" />
-            {/* The trigger takes whatever room is left and shortens its label; the author stays. */}
             <div className="flex min-w-0 flex-1 justify-end">
               <PostToc entries={project.toc} variant="dropdown" />
             </div>
           </div>
 
-          <header className="mt-6 mb-8 space-y-4">
-            {art && meta?.video?.hero ? (
-              <HeroVideo
-                art={art}
-                video={{ src: meta.video.hero, srcLight: meta.video.heroLight }}
-                className="w-full border border-dashed object-cover"
-                sizes="(min-width: 880px) 832px, 100vw"
-                priority
-              />
-            ) : art ? (
-              <Cover
-                art={art}
-                className="w-full border border-dashed object-cover"
-                sizes="(min-width: 880px) 832px, 100vw"
-                priority
-              />
+          <header className="mb-10">
+            <div className="kicker">
+              <span className="dot" />
+              <KickerArrow />
+              <span className="label">Case study{project.year ? ` · ${project.year}` : ""}</span>
+            </div>
+            <h1 className="display mt-5 text-balance text-[clamp(44px,7vw,84px)]">{project.title}</h1>
+            {project.subtitle ? (
+              <p className="mt-5 max-w-[40rem] text-xl leading-normal">{project.subtitle}</p>
             ) : null}
 
-            <div className="flex flex-wrap items-end justify-between gap-3">
-              <div>
-                <h1 className="text-3xl font-semibold tracking-tight text-foreground lg:text-4xl">
-                  {project.title}
-                </h1>
-                {project.subtitle ? (
-                  <p className="mt-2 text-muted-foreground lg:text-lg">{project.subtitle}</p>
-                ) : null}
+            {art ? (
+              <div className="reg mt-9">
+                {meta?.video?.hero ? (
+                  <HeroVideo
+                    art={art}
+                    video={{ src: meta.video.hero, srcLight: meta.video.heroLight }}
+                    className="w-full object-cover"
+                    sizes="(min-width: 880px) 780px, 100vw"
+                    priority
+                  />
+                ) : (
+                  <Cover
+                    art={art}
+                    className="w-full object-cover"
+                    sizes="(min-width: 880px) 780px, 100vw"
+                    priority
+                  />
+                )}
               </div>
-              {project.liveUrl ? (
-                <a
-                  href={project.liveUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-sm text-primary underline underline-offset-4 hover:text-primary/80"
-                >
-                  Visit site <IconExternalLink className="size-4" />
-                </a>
-              ) : null}
-            </div>
+            ) : null}
 
-            {(project.client || project.role || project.year) && (
-              <dl className="flex flex-wrap gap-x-8 gap-y-2 border-t border-dashed pt-4 text-sm">
+            {(project.client || project.role || project.year || project.liveUrl) && (
+              <dl className="mt-8 flex flex-wrap items-end gap-x-10 gap-y-4 border-t-[1.5px] border-current pt-4">
                 {project.client ? <MetaItem label="Client" value={project.client} /> : null}
                 {project.role ? <MetaItem label="Role" value={project.role} /> : null}
                 {project.year ? <MetaItem label="Year" value={project.year} /> : null}
+                {project.liveUrl ? (
+                  <a
+                    href={project.liveUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="ink-link ml-auto inline-flex items-center gap-1"
+                  >
+                    Visit site <IconExternalLink className="size-4" />
+                  </a>
+                ) : null}
               </dl>
             )}
           </header>
@@ -147,12 +146,12 @@ function RouteComponent() {
           {/* Not every case study is in English; `lang` scopes the right one to the body copy so
               crawlers and screen readers do not inherit the document's `lang="en"`. */}
           <LinkPreviews previews={project.previews}>
-            <div className="space-y-8" lang={project.lang}>
+            <div className="riso-body space-y-8" lang={project.lang}>
               {project.nodes.map((node, i) =>
                 node.type === "html" ? (
                   <article
                     key={i}
-                    className="prose lg:prose-lg dark:prose-invert max-w-none"
+                    className="prose prose-lg max-w-none dark:prose-invert"
                     dangerouslySetInnerHTML={{ __html: node.html }}
                   />
                 ) : (
@@ -182,22 +181,17 @@ function MoreCaseStudies({ currentSlug }: { currentSlug: string }) {
   if (others.length === 0) return null;
 
   return (
-    <nav aria-label="More case studies" className="mt-14 border-t border-dashed pt-6">
-      <h2 className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">
-        More case studies
-      </h2>
-      <ul className="mt-3 space-y-2">
+    <nav aria-label="More case studies" className="mt-16">
+      <div className="mb-5 flex items-center gap-4">
+        <h2 className="label">More case studies</h2>
+        <span className="h-[1.5px] flex-1 bg-current" aria-hidden />
+      </div>
+      <ul className="grid gap-x-8 gap-y-5 sm:grid-cols-2">
         {others.map((p) => (
           <li key={p.slug}>
-            <Link
-              to="/p/$project"
-              params={{ project: p.slug }}
-              className="group flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-2"
-            >
-              <span className="font-medium text-primary underline-offset-4 group-hover:underline">
-                {p.title}
-              </span>
-              <span className="text-sm text-muted-foreground">{p.subtitle}</span>
+            <Link to="/p/$project" params={{ project: p.slug }} className="group block">
+              <span className="display block text-[28px] group-hover:text-signal">{p.title}</span>
+              <span className="mt-1.5 block text-[15px] leading-normal">{p.subtitle}</span>
             </Link>
           </li>
         ))}
@@ -209,8 +203,8 @@ function MoreCaseStudies({ currentSlug }: { currentSlug: string }) {
 function MetaItem({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <dt className="text-xs uppercase tracking-wide text-muted-foreground">{label}</dt>
-      <dd className="font-medium">{value}</dd>
+      <dt className="label opacity-80">{label}</dt>
+      <dd className="mt-1 font-medium">{value}</dd>
     </div>
   );
 }

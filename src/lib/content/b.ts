@@ -2,6 +2,7 @@ import matter from "gray-matter";
 import { Marked } from "marked";
 import { createHighlighter, type Highlighter } from "shiki";
 import { createJavaScriptRegexEngine } from "shiki/engine/javascript";
+import { RISO_THEMES, risoLight, risoNight } from "./riso-shiki";
 import { type LinkPreview, markLinkPreviews } from "./previews";
 
 // Eagerly inline every markdown file's RAW text at build time. Keys look like
@@ -14,7 +15,7 @@ const rawFiles = withPrivate(
   import.meta.glob("/src/private/b/*.md", { query: "?raw", import: "default", eager: true }) as Record<string, string>,
 );
 
-const THEMES = { light: "github-light", dark: "github-dark" } as const;
+const THEMES = RISO_THEMES;
 const LANGS = ["ts", "tsx", "js", "jsx", "json", "bash", "shell", "md", "css", "html"];
 
 export type JsonValue =
@@ -106,7 +107,7 @@ function getMarked(): Promise<Marked> {
   if (!markedPromise) {
     markedPromise = (async () => {
       const highlighter: Highlighter = await createHighlighter({
-        themes: [THEMES.light, THEMES.dark],
+        themes: [risoLight, risoNight],
         langs: LANGS,
         engine: createJavaScriptRegexEngine(),
       });

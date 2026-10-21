@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import { Button } from "@/components/ui/button";
-import { IconArrowLeft } from "@tabler/icons-react";
+import { KickerArrow, SectionHead } from "@/components/site-frame";
 import { listBPosts } from "@/lib/content/b";
 import { createMeta } from "@/lib/seo";
 import { siteConfig } from "@/lib/config";
@@ -33,63 +32,57 @@ function WritingIndex() {
   const posts = Route.useLoaderData();
 
   return (
-    <div className="min-h-dvh px-6 py-12">
-      <div className="max-w-3xl mx-auto">
-        <Button render={<Link to="/"></Link>} nativeButton={false} variant="link" className="px-0">
-          <IconArrowLeft />
-          Back home
-        </Button>
+    <div className="px-6 pt-12 md:px-12 md:pt-16">
+      <header className="mb-12">
+        <div className="kicker">
+          <span className="dot" />
+          <KickerArrow />
+          <span className="label">Notes and write-ups</span>
+        </div>
+        <h1 className="display mt-4 text-[clamp(64px,11vw,132px)]">Writing</h1>
+      </header>
 
-        <header className="mt-6 mb-8">
-          <h1 className="text-3xl font-semibold tracking-tight text-foreground lg:text-4xl">
-            Writing
-          </h1>
-        </header>
-
-        {posts.length === 0 ? (
-          <p className="text-lg font-light italic text-muted-foreground">Nothing here yet.</p>
-        ) : (
-          <ul className="divide-y divide-dashed">
-            {posts.map((post) => {
-              const date = formatDate(post.date);
-              return (
-                <li key={post.slug}>
-                  <Link
-                    to="/b/$slug"
-                    params={{ slug: post.slug }}
-                    className="group flex flex-col gap-4 py-5 first:pt-0 sm:flex-row-reverse sm:items-start sm:gap-6"
-                  >
-                    {post.cover ? (
-                      <div className="shrink-0 overflow-hidden border border-dashed sm:w-56">
-                        <Cover
-                          art={{
-                            title: post.title,
-                            cover: post.cover,
-                            coverLight: post.coverLight,
-                          }}
-                          className="w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-                          sizes="(min-width: 640px) 224px, 100vw"
-                        />
-                      </div>
+      <SectionHead label="All posts" note={String(posts.length).padStart(2, "0")} />
+      {posts.length === 0 ? (
+        <p className="text-lg italic">Nothing here yet.</p>
+      ) : (
+        <ul>
+          {posts.map((post, i) => {
+            const date = formatDate(post.date);
+            return (
+              <li key={post.slug} className="border-b-[1.5px] border-border last:border-0">
+                <Link
+                  to="/b/$slug"
+                  params={{ slug: post.slug }}
+                  className="group grid gap-5 py-7 sm:grid-cols-[3rem_minmax(0,1fr)_16rem] sm:gap-8"
+                >
+                  <span className="label pt-1.5">{String(posts.length - i).padStart(2, "0")}</span>
+                  <div className="min-w-0">
+                    {date ? <p className="label opacity-80">{date}</p> : null}
+                    <h2 className="display mt-2 text-balance text-[clamp(28px,3.4vw,38px)] leading-[0.92] group-hover:text-signal">
+                      {post.title}
+                    </h2>
+                    {post.description ? (
+                      <p className="mt-3 max-w-[38rem] leading-relaxed">{post.description}</p>
                     ) : null}
-                    <div className="min-w-0 flex-1">
-                      <h2 className="text-xl font-semibold tracking-tight text-foreground underline-offset-4 group-hover:underline">
-                        {post.title}
-                      </h2>
-                      {date ? <p className="mt-1 text-sm text-muted-foreground">{date}</p> : null}
-                      {post.description ? (
-                        <p className="mt-2 leading-relaxed text-muted-foreground">
-                          {post.description}
-                        </p>
-                      ) : null}
+                  </div>
+                  {post.cover ? (
+                    <div className="reg self-start [--d:7px] [--p:7px] p-5 sm:order-none">
+                      <Cover
+                        art={{ title: post.title, cover: post.cover, coverLight: post.coverLight }}
+                        className="w-full object-cover"
+                        sizes="(min-width: 640px) 216px, 100vw"
+                      />
                     </div>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </div>
+                  ) : (
+                    <span className="hidden sm:block" />
+                  )}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </div>
   );
 }

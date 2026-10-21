@@ -1,5 +1,5 @@
 import * as React from "react";
-import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { db } from "@/lib/db";
 import type { Book } from "@/lib/db/schema";
@@ -8,8 +8,7 @@ import { isReview } from "./_components/-review-chunk";
 import { createMeta } from "@/lib/seo";
 import { siteConfig } from "@/lib/config";
 import { BookFeedChunk, FeedChunk } from "./_components/-feed-chunk";
-import { Button } from "@/components/ui/button";
-import { IconArrowLeft } from "@tabler/icons-react";
+import { KickerArrow } from "@/components/site-frame";
 
 const getFeedItems = createServerFn({ method: "GET" }).handler(async () => {
   const recentBooks = await db.query.books.findMany({
@@ -57,37 +56,30 @@ function FeedPage() {
 
   return (
     <React.Fragment>
-      <div className="min-h-screen p-6 md:p-8">
-        <div className="flex-1 max-w-2xl mx-auto space-y-4">
-          <Button render={<Link to="/"></Link>} nativeButton={false} variant={"link"}>
-            <IconArrowLeft />
-            Back to Home
-          </Button>
-          {books.length === 0 && (
-            <div className="h-full text-center py-12 text-muted-foreground">
-              <p className="text-lg md:text-xl font-light italic">No activity yet</p>
+      <div className="px-6 pt-12 md:px-12 md:pt-16">
+        <header className="mb-12">
+          <div className="kicker">
+            <span className="dot" />
+            <KickerArrow />
+            <span className="label">Books, notes and highlights</span>
+          </div>
+          <h1 className="display mt-4 text-[clamp(64px,11vw,132px)]">Feed</h1>
+        </header>
+        <div className="max-w-2xl">
+          {books.length === 0 ? (
+            <p className="py-12 text-lg italic">No activity yet</p>
+          ) : (
+            <div className="space-y-8">
+              {books.map((book) => (
+                <BookBlock
+                  key={book.id}
+                  book={book}
+                  feedChunks={[...book.reviews, ...book.notes].sort(
+                    (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+                  )}
+                />
+              ))}
             </div>
-          )}
-          {books.length > 0 && (
-            <>
-              <div className="space-y-6">
-                {books.map((book) => (
-                  <BookBlock
-                    key={book.id}
-                    book={book}
-                    feedChunks={[...book.reviews, ...book.notes].sort(
-                      (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
-                    )}
-                  />
-                ))}
-              </div>
-              <div className="text-right">
-                <Button render={<Link to="/"></Link>} nativeButton={false} variant={"link"}>
-                  <IconArrowLeft />
-                  Back to Home
-                </Button>
-              </div>
-            </>
           )}
         </div>
       </div>
@@ -101,7 +93,7 @@ function BookBlock({ book, feedChunks }: { book: Book; feedChunks: BookFeedChunk
 
   return (
     <div
-      className="p-4 space-y-4 border border-dashed bg-background"
+      className="reg cursor-pointer space-y-5 [--d:7px] [--p:8px] transition-[translate,box-shadow] duration-150 hover:-translate-x-[3px] hover:-translate-y-[3px] hover:shadow-[7px_7px_0_var(--signal)]"
       onClick={() => {
         navigate({
           resetScroll: false,
@@ -112,17 +104,15 @@ function BookBlock({ book, feedChunks }: { book: Book; feedChunks: BookFeedChunk
         });
       }}
     >
-      <div className="flex gap-2">
-        <div>
-          <img
-            src={getBookCoverUrl(book, "M")}
-            alt={book.title}
-            className="w-16 h-24 object-cover rounded"
-          />
-        </div>
-        <div>
-          <h3 className="text-lg font-medium">{book.title}</h3>
-          <p className="text-muted-foreground text-sm">{book.author}</p>
+      <div className="flex gap-4">
+        <img
+          src={getBookCoverUrl(book, "M")}
+          alt={book.title}
+          className="h-24 w-16 shrink-0 object-cover"
+        />
+        <div className="min-w-0 pt-1">
+          <h3 className="display text-[28px]">{book.title}</h3>
+          <p className="label mt-2 opacity-80">{book.author}</p>
         </div>
       </div>
       <div className="space-y-6">

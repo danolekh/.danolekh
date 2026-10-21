@@ -6,8 +6,6 @@
 
 @import "shadcn/tailwind.css";
 
-@import "@fontsource-variable/raleway";
-
 @custom-variant dark (&:is(.dark *));
 
 /* Demos kept off git until they're released (src/private is gitignored, so Tailwind skips it unless told). */
@@ -15,95 +13,105 @@
 
 body {
   @apply m-0;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell",
-    "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+code,
+kbd,
+pre,
+samp {
+  font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace;
 }
 
-/* Text selection: a translucent periwinkle wash, lighter on dark backgrounds so it tints the text
-   instead of drowning it. */
+/* Selecting text prints it in pink. */
 ::selection {
-  background: #79a1ff99;
-}
-.dark ::selection {
-  background: #79a1ff33;
+  background: var(--pink);
+  color: var(--paper);
 }
 
+/* ── Riso: three inks ────────────────────────────────────────────────────────
+   Paper, blue and pink, as on a two-drum risograph: blue carries every word, pink is the signal
+   (display type, the mark, link underlines; never small text, it's 3.7:1 on paper), and where the
+   two overlap they multiply into plum, which is also the night theme's paper. */
 :root {
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.141 0.005 285.823);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.141 0.005 285.823);
-  --primary: oklch(0.21 0.006 285.885);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.967 0.001 286.375);
-  --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.21 0.006 285.885);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.577 0.245 27.325);
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.705 0.015 286.067);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-primary: oklch(0.21 0.006 285.885);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.21 0.006 285.885);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.705 0.015 286.067);
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.141 0.005 285.823);
+  --paper: #eaebdc;
+  --stock: #f4f3ee;
+  --blue: #2d4b8f;
+  --pink: #c8497f;
+  --plum: #231547;
+  --signal: var(--pink);
+  --grain: url("/images/grain.png");
+
+  --background: var(--stock);
+  --foreground: var(--blue);
+  --card: var(--paper);
+  --card-foreground: var(--blue);
+  --popover: var(--stock);
+  --popover-foreground: var(--blue);
+  --primary: var(--blue);
+  --primary-foreground: var(--stock);
+  --secondary: var(--paper);
+  --secondary-foreground: var(--blue);
+  --muted: var(--paper);
+  --muted-foreground: #4f679e;
+  --accent: var(--paper);
+  --accent-foreground: var(--blue);
+  --destructive: #b3261e;
+  --destructive-foreground: #b3261e;
+  --border: rgb(45 75 143 / 0.28);
+  --input: rgb(45 75 143 / 0.32);
+  --ring: var(--pink);
+  --chart-1: var(--blue);
+  --chart-2: var(--pink);
+  --chart-3: var(--plum);
+  --chart-4: #7d93c4;
+  --chart-5: #e39ab8;
+  --radius: 0.125rem;
+  --sidebar: var(--paper);
+  --sidebar-foreground: var(--blue);
+  --sidebar-primary: var(--blue);
+  --sidebar-primary-foreground: var(--stock);
+  --sidebar-accent: var(--paper);
+  --sidebar-accent-foreground: var(--blue);
+  --sidebar-border: rgb(45 75 143 / 0.28);
+  --sidebar-ring: var(--pink);
 }
 
+/* Night: plum paper, paper-coloured ink, pink kept as the signal. */
 .dark {
-  --background: oklch(0.141 0.005 285.823);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.21 0.006 285.885);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.21 0.006 285.885);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.92 0.004 286.32);
-  --primary-foreground: oklch(0.21 0.006 285.885);
-  --secondary: oklch(0.274 0.006 286.033);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.274 0.006 286.033);
-  --muted-foreground: oklch(0.705 0.015 286.067);
-  --accent: oklch(0.92 0.004 286.32);
-  --accent-foreground: oklch(0.21 0.006 285.885);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.552 0.016 285.938);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.21 0.006 285.885);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.92 0.004 286.32);
-  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.552 0.016 285.938);
+  --background: var(--plum);
+  --foreground: var(--paper);
+  --card: #2e2059;
+  --card-foreground: var(--paper);
+  --popover: #2e2059;
+  --popover-foreground: var(--paper);
+  --primary: var(--paper);
+  --primary-foreground: var(--plum);
+  --secondary: #2e2059;
+  --secondary-foreground: var(--paper);
+  --muted: #2e2059;
+  --muted-foreground: #bdbcc4;
+  --accent: #3a2b6b;
+  --accent-foreground: var(--paper);
+  --destructive: #ff8a80;
+  --destructive-foreground: #ff8a80;
+  --border: rgb(234 235 220 / 0.22);
+  --input: rgb(234 235 220 / 0.28);
+  --ring: var(--pink);
+  --chart-1: var(--paper);
+  --chart-2: #e0739f;
+  --chart-3: #9fb2e0;
+  --chart-4: #7d93c4;
+  --chart-5: #e39ab8;
+  --sidebar: #2e2059;
+  --sidebar-foreground: var(--paper);
+  --sidebar-primary: var(--paper);
+  --sidebar-primary-foreground: var(--plum);
+  --sidebar-accent: #3a2b6b;
+  --sidebar-accent-foreground: var(--paper);
+  --sidebar-border: rgb(234 235 220 / 0.22);
+  --sidebar-ring: var(--pink);
 }
 
 @theme inline {
@@ -143,7 +151,14 @@ code {
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  --font-sans: "Raleway", sans-serif;
+  --font-sans: "Archivo", "Nunito Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --color-paper: var(--paper);
+  --color-stock: var(--stock);
+  --color-blue: var(--blue);
+  --color-pink: var(--pink);
+  --color-plum: var(--plum);
+  --color-signal: var(--signal);
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
@@ -152,15 +167,71 @@ code {
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
     @apply font-sans bg-background text-foreground;
   }
   html {
     @apply font-sans;
   }
+}
+
+/* Archivo, variable in weight and width (62–125%): one family for the narrow poster display, the
+   wide labels and the reading text. Latin is preloaded from __root; latin-ext and italic load only
+   when a page needs them. Archivo has no Cyrillic, so Nunito Sans below stands in for it. */
+@font-face {
+  font-family: "Archivo";
+  src: url("/fonts/archivo-latin.woff2") format("woff2-variations");
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  font-style: normal;
+  font-display: swap;
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Archivo";
+  src: url("/fonts/archivo-latin-ext.woff2") format("woff2-variations");
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  font-style: normal;
+  font-display: swap;
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+1EF2-1EFF,
+    U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Archivo";
+  src: url("/fonts/archivo-latin-italic.woff2") format("woff2-variations");
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  font-style: italic;
+  font-display: swap;
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("/fonts/plex-mono-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("/fonts/plex-mono-400-italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("/fonts/plex-mono-600.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
 }
 
 /* Nunito Sans, variable weight. Built by scripts/build-fonts.py from the full TTFs in
@@ -206,67 +277,295 @@ code {
   unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
 }
 
-/* Apply Nunito Sans to all elements on this page */
-* {
-  font-family: "Nunito Sans", Helvetica, Arial, sans-serif;
+
+/* ── Riso devices ────────────────────────────────────────────────────────────
+   Shared by every page: the poster display face, the wide labels, the kicker (● ——→ LABEL), the
+   registration-dot frame, the mark (one dot printed twice, a little off) and the paper grain. */
+
+.display {
+  font-stretch: 62%;
+  font-weight: 900;
+  text-transform: uppercase;
+  line-height: 0.86;
+  letter-spacing: -0.005em;
+}
+.label {
+  font-stretch: 115%;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  line-height: 1.25;
+}
+.kicker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.kicker .dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+}
+.kicker svg {
+  width: 56px;
+  height: 8px;
+  flex: none;
+  color: var(--signal);
 }
 
-/* ── Themed markdown prose (/b/:slug) ─────────────────────────────────────────
-   Bind Tailwind Typography's prose variables to the site's design tokens. The tokens
-   already flip under `.dark`, so the dark block can repeat the same var references. */
+/* Four registration dots around anything worth looking at, on a paper plate. */
+.reg {
+  --d: 9px;
+  --p: 10px;
+  --dot: var(--blue);
+  padding: calc(var(--p) * 2 + var(--d));
+  background-color: var(--paper);
+  background-image:
+    radial-gradient(closest-side, var(--dot) 92%, transparent 100%),
+    radial-gradient(closest-side, var(--dot) 92%, transparent 100%),
+    radial-gradient(closest-side, var(--dot) 92%, transparent 100%),
+    radial-gradient(closest-side, var(--dot) 92%, transparent 100%);
+  background-size: var(--d) var(--d);
+  background-repeat: no-repeat;
+  background-position:
+    var(--p) var(--p),
+    calc(100% - var(--p)) var(--p),
+    var(--p) calc(100% - var(--p)),
+    calc(100% - var(--p)) calc(100% - var(--p));
+}
+.dark .reg {
+  background-color: #2e2059;
+  --dot: var(--paper);
+}
+
+.mark {
+  --s: 24px;
+  position: relative;
+  display: inline-block;
+  width: var(--s);
+  height: var(--s);
+  flex: none;
+}
+.mark::before,
+.mark::after {
+  content: "";
+  position: absolute;
+  width: 82%;
+  height: 82%;
+  border-radius: 50%;
+  mix-blend-mode: multiply;
+}
+.mark::before {
+  right: 0;
+  bottom: 0;
+  background: var(--pink);
+}
+.mark::after {
+  left: 0;
+  top: 0;
+  background: var(--blue);
+}
+.dark .mark::before,
+.dark .mark::after {
+  mix-blend-mode: normal;
+}
+.dark .mark::after {
+  background: var(--paper);
+  opacity: 0.92;
+}
+
+/* A word printed twice: a pink impression under the ink, a hair off register. */
+.misreg {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+}
+.misreg > span {
+  position: relative;
+}
+.misreg::before {
+  content: attr(data-text);
+  position: absolute;
+  left: 0.04em;
+  top: 0.035em;
+  color: var(--pink);
+}
+
+/* Portraits in a smooth blue duotone (the filter lives in __root). Never in halftone dots. */
+.face {
+  filter: url(#duo-face);
+}
+
+/* Paper grain over the whole page, printed in the blue ink: a pre-rendered tile on its own layer
+   with plain alpha, so hovering anything never repaints the viewport. */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  background-image: var(--grain);
+  background-size: 128px 128px;
+  opacity: 0.4;
+  transform: translateZ(0);
+}
+.dark .grain {
+  opacity: 0.18;
+}
+
+/* A link in running text: pink underline; hover snaps to a pink block, no fade to trail behind. */
+.ink-link {
+  text-decoration: underline;
+  text-decoration-color: var(--signal);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+.ink-link:hover {
+  background: var(--signal);
+  color: var(--paper);
+}
+
+/* ── Prose (/b/:slug, /p/:project) ───────────────────────────────────────────
+   Tailwind Typography bound to the inks, then the riso details on top. */
 .prose,
 .prose.prose-invert,
 .dark .prose {
   --tw-prose-body: var(--foreground);
   --tw-prose-headings: var(--foreground);
   --tw-prose-lead: var(--muted-foreground);
-  --tw-prose-links: var(--primary);
+  --tw-prose-links: var(--foreground);
   --tw-prose-bold: var(--foreground);
-  --tw-prose-counters: var(--muted-foreground);
-  --tw-prose-bullets: var(--border);
+  --tw-prose-counters: var(--foreground);
+  --tw-prose-bullets: var(--signal);
   --tw-prose-hr: var(--border);
   --tw-prose-quotes: var(--foreground);
-  --tw-prose-quote-borders: var(--border);
+  --tw-prose-quote-borders: var(--signal);
   --tw-prose-captions: var(--muted-foreground);
   --tw-prose-code: var(--foreground);
   --tw-prose-pre-code: var(--foreground);
   --tw-prose-pre-bg: var(--muted);
-  --tw-prose-th-borders: var(--border);
+  --tw-prose-th-borders: var(--foreground);
   --tw-prose-td-borders: var(--border);
 }
+.prose {
+  line-height: 1.68;
+}
+.prose a {
+  font-weight: inherit;
+  text-decoration-color: var(--signal);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+.prose a:hover {
+  background: var(--signal);
+  color: var(--paper);
+}
+.prose a[data-preview] {
+  text-decoration-style: dotted;
+}
 
-/* ── Shiki code blocks inside prose ──────────────────────────────────────────
-   Scope under `.prose pre.shiki` (specificity 0,2,1) so it wins over prose's own
-   `.prose pre` rules for padding/background, and force a monospace family so the
-   global `* { font-family: "Nunito Sans" }` rule above doesn't bleed into code. */
+/* Section heads: a rule, a number, then the title in the poster face. The counter is reset on the
+   post's body wrapper (.riso-body), since each run of prose is its own <article>. */
+.riso-body {
+  counter-reset: section;
+}
+.prose h2 {
+  counter-increment: section;
+  margin-top: 2.4em;
+  padding-top: 0.75em;
+  border-top: 1.5px solid currentColor;
+  font-stretch: 62%;
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: clamp(1.75rem, 3.4vw, 2.25rem);
+  line-height: 0.92;
+  letter-spacing: -0.005em;
+}
+.prose h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 0.7rem;
+  font-stretch: 115%;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.09em;
+  line-height: 1;
+  opacity: 0.8;
+}
+.prose h3 {
+  font-weight: 700;
+}
+.prose :is(h2, h3, h4) {
+  scroll-margin-top: 5rem;
+}
+.prose blockquote {
+  border-left-width: 4px;
+  font-style: normal;
+}
+.prose ul > li::marker {
+  content: "■  ";
+  font-size: 0.7em;
+}
+.prose hr {
+  height: 10px;
+  border: 0;
+  background:
+    radial-gradient(circle 5px at calc(50% - 28px) 50%, var(--foreground) 98%, transparent),
+    radial-gradient(circle 5px at 50% 50%, var(--signal) 98%, transparent),
+    radial-gradient(circle 5px at calc(50% + 28px) 50%, var(--foreground) 98%, transparent);
+}
+.prose small {
+  display: block;
+  line-height: 1.55;
+  opacity: 0.85;
+}
+.prose :where(code):not(:where(pre *)) {
+  background: var(--muted);
+  padding: 0.08em 0.28em;
+  font-weight: 400;
+}
+.prose :where(code):not(:where(pre *))::before,
+.prose :where(code):not(:where(pre *))::after {
+  content: none;
+}
+.prose :where(video, img) {
+  border-radius: 0 !important;
+}
+
+/* Code blocks: the theme's paper (or night) plate, a blue rule down the left. */
 .prose pre.shiki {
-  margin: 1.5em 0;
-  padding: 1.25rem 1.5rem;
-  border-radius: var(--radius);
+  margin: 1.6em 0;
+  padding: 1.1rem 1.4rem;
+  border-radius: 0;
+  border-left: 4px solid var(--foreground);
   overflow-x: auto;
-  font-size: 0.875em;
-  line-height: 1.6;
+  font-size: 0.84em;
+  line-height: 1.65;
   background-color: var(--shiki-light-bg);
 }
 .dark .prose pre.shiki {
   background-color: var(--shiki-dark-bg);
 }
 .prose :where(code, pre.shiki, pre.shiki span) {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace;
 }
-/* Dual-theme token colors: light vars by default, dark vars under `.dark` (set on <html>). */
 .prose pre.shiki,
 .prose pre.shiki span {
   color: var(--shiki-light);
+  font-weight: var(--shiki-light-font-weight, inherit);
+  font-style: var(--shiki-light-font-style, inherit);
 }
 .dark .prose pre.shiki,
 .dark .prose pre.shiki span {
   color: var(--shiki-dark);
-}
-
-/* Anchored jumps from the contents rail shouldn't tuck the heading against the viewport edge. */
-.prose :is(h2, h3, h4) {
-  scroll-margin-top: 5rem;
+  font-weight: var(--shiki-dark-font-weight, inherit);
+  font-style: var(--shiki-dark-font-style, inherit);
 }
 
 /* Printing (the resume, mostly): light colours whatever the theme, no fixed background layers. */
@@ -288,6 +587,7 @@ code {
     font-size: 10pt;
   }
   .fixed,
+  .grain,
   canvas {
     display: none !important;
   }
@@ -301,9 +601,3 @@ code {
   mix-blend-mode: normal;
 }
 
-/* Links in posts and case studies that show a preview card on hover (src/components/link-previews.tsx):
- * a dotted underline says there's something to see before you go. */
-.prose a[data-preview] {
-  text-decoration-style: dotted;
-  text-underline-offset: 0.2em;
-}

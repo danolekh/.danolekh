@@ -5,18 +5,18 @@
 
 export const COVERS = {
   "oasi-kadir": {
-    glow: { light: "rgb(233 190 108 / 0.42)", dark: "rgb(233 190 108 / 0.16)" },
+    glow: { light: "rgb(233 190 108 / 0.3)", dark: "rgb(233 190 108 / 0.16)" },
     laptop: { box: { left: 200, top: 150, width: 1000 }, screen: { src: "oasi-home-desktop.jpg" } },
     phone: { box: { left: 1130, top: 262, width: 270 }, screen: { src: "oasi-events-mobile.jpg" } },
   },
   consolline: {
-    glow: { light: "rgb(184 240 58 / 0.34)", dark: "rgb(184 240 58 / 0.12)" },
+    glow: { light: "rgb(184 240 58 / 0.22)", dark: "rgb(184 240 58 / 0.12)" },
     laptop: { box: { left: 200, top: 150, width: 1000 }, screen: { src: "cl-home-desktop.jpg" } },
     phone: { box: { left: 1130, top: 262, width: 270 }, screen: { src: "cl-route-mobile.jpg" } },
   },
   sportmagaz: {
     // The shop on the laptop and the phone; its admin panel, built alongside it, stands behind.
-    glow: { light: "rgb(255 210 0 / 0.36)", dark: "rgb(255 210 0 / 0.12)" },
+    glow: { light: "rgb(255 210 0 / 0.24)", dark: "rgb(255 210 0 / 0.12)" },
     window: { box: { left: 760, top: 70, width: 700 }, screen: { src: "sm-admin-editor.jpg" } },
     laptop: { box: { left: 150, top: 190, width: 960 }, screen: { src: "sm-category-desktop.jpg" } },
     phone: { box: { left: 1120, top: 300, width: 250 }, screen: { src: "sm-product-mobile.jpg" } },

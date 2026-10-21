@@ -1,7 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import type { ComponentType, ReactNode } from "react";
 import {
-  IconArrowLeft,
   IconBrandGithub,
   IconBrandLinkedin,
   IconBrandTelegram,
@@ -29,7 +28,7 @@ const ICONS: Record<string, ComponentType<{ className?: string }>> = {
   telegram: IconBrandTelegram,
 };
 
-const LINK = "underline decoration-foreground/30 underline-offset-2 hover:decoration-foreground";
+const LINK = "underline decoration-signal decoration-2 underline-offset-2 hover:bg-signal hover:text-paper print:decoration-1";
 
 // Bare domains in the text ("sportmagaz.com.ua", "danolekh.com/p/oasi-kadir") become links, like
 // in the PDF. Links to this site stay on it.
@@ -56,10 +55,8 @@ function linkify(text: string): ReactNode[] {
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <section className="border-t border-dashed pt-6 print:pt-3">
-      <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-        {title}
-      </h2>
+    <section className="border-t-[1.5px] border-current pt-5 print:border-t print:pt-3">
+      <h2 className="label">{title}</h2>
       <div className="mt-4 print:mt-2">{children}</div>
     </section>
   );
@@ -67,31 +64,19 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 
 function ResumePage() {
   return (
-    <div className="min-h-dvh px-6 py-12 print:p-0">
+    <div className="px-6 pt-12 md:px-12 md:pt-16 print:p-0">
       <div className="mx-auto max-w-3xl">
-        <Button
-          render={<Link to="/"></Link>}
-          nativeButton={false}
-          variant="link"
-          className="px-0 print:hidden"
-        >
-          <IconArrowLeft />
-          Back home
-        </Button>
-
-        <header className="mt-6 print:mt-0">
+        <header className="print:mt-0">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div className="min-w-0">
-              <h1 className="text-3xl font-semibold tracking-tight text-foreground lg:text-4xl">
-                {resume.name}
-              </h1>
-              <p className="mt-1 text-lg text-muted-foreground">{resume.headline}</p>
+              <h1 className="display text-[clamp(48px,8vw,88px)] print:text-[34px]">{resume.name}</h1>
+              <p className="mt-3 text-lg">{resume.headline}</p>
             </div>
             <Button
               render={<a href={resume.pdf} download="Dan-Olekh-Resume.pdf"></a>}
               nativeButton={false}
               variant="outline"
-              className="print:hidden"
+              className="label rounded-none border-[1.5px] border-current bg-transparent text-[12px] hover:bg-signal hover:text-paper hover:border-signal print:hidden"
             >
               <IconDownload />
               Download PDF

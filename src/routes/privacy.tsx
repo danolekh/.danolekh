@@ -1,7 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { IconArrowLeft } from "@tabler/icons-react";
-import { Button } from "@/components/ui/button";
+import { KickerArrow } from "@/components/site-frame";
 import { createMeta } from "@/lib/seo";
 import { siteConfig } from "@/lib/config";
 
@@ -19,27 +18,24 @@ export const Route = createFileRoute("/privacy")({
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <section className="border-t border-dashed pt-6">
-      <h2 className="text-xl font-semibold tracking-tight text-foreground">{title}</h2>
-      <div className="mt-3 space-y-3 leading-relaxed text-muted-foreground">{children}</div>
+    <section className="border-t-[1.5px] border-current pt-5">
+      <h2 className="display text-[28px]">{title}</h2>
+      <div className="mt-3 space-y-3 leading-relaxed">{children}</div>
     </section>
   );
 }
 
 function PrivacyPage() {
   return (
-    <div className="min-h-dvh px-6 py-12">
-      <div className="max-w-3xl mx-auto">
-        <Button render={<Link to="/"></Link>} nativeButton={false} variant="link" className="px-0">
-          <IconArrowLeft />
-          Back home
-        </Button>
-
-        <header className="mt-6 mb-8">
-          <h1 className="text-3xl font-semibold tracking-tight text-foreground lg:text-4xl">
-            Privacy
-          </h1>
-          <p className="mt-2 text-sm text-muted-foreground">Last updated September 25, 2026</p>
+    <div className="px-6 pt-12 md:px-12 md:pt-16">
+      <div className="mx-auto max-w-3xl">
+        <header className="mb-10">
+          <div className="kicker">
+            <span className="dot" />
+            <KickerArrow />
+            <span className="label">Last updated September 25, 2026</span>
+          </div>
+          <h1 className="display mt-4 text-[clamp(56px,9vw,104px)]">Privacy</h1>
         </header>
 
         <div className="space-y-8">
@@ -70,7 +66,7 @@ function PrivacyPage() {
               the{" "}
               <a
                 href="https://developers.google.com/terms/api-services-user-data-policy"
-                className="underline decoration-foreground/30 underline-offset-2 hover:decoration-foreground"
+                className="ink-link"
               >
                 Google API Services User Data Policy
               </a>
@@ -83,7 +79,7 @@ function PrivacyPage() {
               Access can be removed at any time at{" "}
               <a
                 href="https://myaccount.google.com/permissions"
-                className="underline decoration-foreground/30 underline-offset-2 hover:decoration-foreground"
+                className="ink-link"
               >
                 myaccount.google.com/permissions
               </a>
@@ -95,7 +91,7 @@ function PrivacyPage() {
             <p>
               <a
                 href={`mailto:${siteConfig.email}`}
-                className="underline decoration-foreground/30 underline-offset-2 hover:decoration-foreground"
+                className="ink-link"
               >
                 {siteConfig.email}
               </a>

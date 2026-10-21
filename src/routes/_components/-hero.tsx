@@ -1,7 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { WEB3_LIVE, siteConfig } from "@/lib/config";
+import { KickerArrow } from "@/components/site-frame";
 
-const LINK = "underline underline-offset-4 text-primary hover:text-primary/80 transition-colors";
+const LINK = "ink-link";
 
 // How to reach me, in the order people usually want them.
 const CONTACTS = [
@@ -11,93 +12,90 @@ const CONTACTS = [
   { label: "X", href: siteConfig.links.twitter },
 ];
 
+/* The masthead of the home page: my portrait in a registration frame, printed in blue duotone, and
+ * my name in the poster face with the surname in pink. Then the same few lines as always. */
 export default function Hero() {
   return (
-    <section className="relative pt-12 pb-8 md:pt-24 md:pb-12 px-6 md:px-12 overflow-hidden">
-      <div className="max-w-208 mx-auto z-10 w-full relative">
-        <div className="flex flex-col items-start gap-10">
-          <div className="flex gap-5 sm:gap-8">
-            <div className="relative w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 shrink-0">
-              <img
-                src="/images/me.jpeg"
-                alt="Dan Olekh"
-                className="object-cover rounded-2xl shadow-lg"
-              />
-            </div>
-
-            <div className="flex min-w-0 flex-col justify-between py-1">
-              <div>
-                <div className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight">
-                  Dan Olekh
-                </div>
-                <p className="text-base sm:text-lg text-muted-foreground">
-                  {WEB3_LIVE ? "Software engineer · TypeScript · EVM" : "Software engineer"}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Content */}
-          <div className="flex flex-col items-start space-y-8">
-            <div>
-              <div className="text-lg leading-relaxed max-w-full">
-                {WEB3_LIVE ? (
-                  <>
-                    <p className="mb-2">
-                      I build products that hold money correctly: three years of TypeScript
-                      full-stack work, most recently the payment and ledger services of a
-                      multi-brand platform.
-                    </p>
-                    <p className="mb-2">
-                      Since September 2026 I build on EVM: a USDC milestone escrow on Base, a
-                      ledger-grade event indexer in Effect, and effect-viem.
-                    </p>
-                    <p>Contracts are verified, tests are public, write-ups are below.</p>
-                  </>
-                ) : (
-                  <>
-                    <p className="mb-2">
-                      I'm an engineer who loves building fast, user-loved platforms. I love working
-                      with TypeScript and Zig.
-                    </p>
-                    <p>My goal is to build scalable products that look great and feel natural.</p>
-                  </>
-                )}
-              </div>
-              <p className="text-lg mt-4">
-                Check out my{" "}
-                <Link to="/feed" className={LINK}>
-                  feed
-                </Link>{" "}
-                for what I've been reading and thinking about, my{" "}
-                <Link to="/b" className={LINK}>
-                  writing
-                </Link>
-                , or the{" "}
-                <Link to="/lab" className={LINK}>
-                  lab
-                </Link>
-                , small interface things I build for products I like.
-              </p>
-              <p className="text-lg mt-4">
-                Open to full-time or contract work, remote from Vienna. Here's my{" "}
-                <Link to="/resume" className={LINK}>
-                  resume
-                </Link>
-                .
-              </p>
-              <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-lg">
-                {CONTACTS.map((c) => (
-                  <li key={c.label}>
-                    <a href={c.href} className={LINK}>
-                      {c.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
+    <section className="px-6 pt-12 pb-8 md:px-12 md:pt-16">
+      <div className="grid items-end gap-8 sm:grid-cols-[auto_1fr] md:gap-12">
+        <div className="reg w-40 sm:w-52 md:w-60">
+          <img
+            src="/images/me-face.jpg"
+            alt="Dan Olekh"
+            width={480}
+            height={480}
+            className="face aspect-square w-full object-cover"
+            fetchPriority="high"
+          />
         </div>
+        <div>
+          <div className="kicker">
+            <span className="dot" />
+            <KickerArrow />
+            <span className="label">
+              {WEB3_LIVE ? "Software engineer · TypeScript · EVM" : "Software engineer · Vienna"}
+            </span>
+          </div>
+          <h1 className="display mt-4 text-[clamp(76px,15vw,184px)]">
+            <span className="block">Dan</span>
+            <span className="block text-signal mix-blend-multiply dark:mix-blend-normal">Olekh</span>
+          </h1>
+        </div>
+      </div>
+
+      <div className="mt-12 max-w-[42rem] space-y-3 text-lg leading-relaxed">
+        {WEB3_LIVE ? (
+          <>
+            <p>
+              I build products that hold money correctly: three years of TypeScript full-stack
+              work, most recently the payment and ledger services of a multi-brand platform.
+            </p>
+            <p>
+              Since September 2026 I build on EVM: a USDC milestone escrow on Base, a ledger-grade
+              event indexer in Effect, and effect-viem.
+            </p>
+            <p>Contracts are verified, tests are public, write-ups are below.</p>
+          </>
+        ) : (
+          <>
+            <p>
+              I'm an engineer who loves building fast, user-loved platforms. I love working with
+              TypeScript and Zig.
+            </p>
+            <p>My goal is to build scalable products that look great and feel natural.</p>
+          </>
+        )}
+        <p className="pt-2">
+          Check out my{" "}
+          <Link to="/feed" className={LINK}>
+            feed
+          </Link>{" "}
+          for what I've been reading and thinking about, my{" "}
+          <Link to="/b" className={LINK}>
+            writing
+          </Link>
+          , or the{" "}
+          <Link to="/lab" className={LINK}>
+            lab
+          </Link>
+          , small interface things I build for products I like.
+        </p>
+        <p className="pt-2">
+          Open to full-time or contract work, remote from Vienna. Here's my{" "}
+          <Link to="/resume" className={LINK}>
+            resume
+          </Link>
+          .
+        </p>
+        <ul className="flex flex-wrap gap-x-5 gap-y-1 pt-1">
+          {CONTACTS.map((c) => (
+            <li key={c.label}>
+              <a href={c.href} className={LINK}>
+                {c.label}
+              </a>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );

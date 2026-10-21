@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { IconArrowLeft } from "@tabler/icons-react";
-import { Button } from "@/components/ui/button";
+import { KickerArrow } from "@/components/site-frame";
 import { BlogComponent } from "@/lib/content/blog-components";
 import { lab } from "@/data/lab";
 import { createMeta } from "@/lib/seo";
@@ -21,33 +20,37 @@ export const Route = createFileRoute("/lab/")({
 function LabIndex() {
   const items = [...lab].sort((a, b) => b.date.localeCompare(a.date));
   return (
-    <div className="min-h-dvh px-4 py-12 sm:px-6">
-      <div className="max-w-3xl mx-auto">
-        <Button render={<Link to="/"></Link>} nativeButton={false} variant="link" className="px-0">
-          <IconArrowLeft />
-          Back home
-        </Button>
-
-        <header className="mt-6 mb-12">
-          <h1 className="text-3xl font-semibold tracking-tight text-foreground lg:text-4xl">Lab</h1>
-          <p className="mt-3 text-lg text-muted-foreground">
-            Small interface things, each one built for a product I like. The code is open and
-            each one installs with the shadcn CLI.
-          </p>
-        </header>
-
-        <div className="space-y-16">
-          {items.map((item) => (
-            <section key={item.slug} data-item={item.slug}>
-              <h2 className="mb-4 font-mono text-sm font-normal text-muted-foreground">
-                <Link to="/lab/$slug" params={{ slug: item.slug }} className="hover:text-foreground">
-                  {item.slug}
-                </Link>
-              </h2>
-              <BlogComponent name={item.demo} props={item.look ? { look: item.look } : {}} />
-            </section>
-          ))}
+    <div className="px-6 pt-12 md:px-12 md:pt-16">
+      <header className="mb-12">
+        <div className="kicker">
+          <span className="dot" />
+          <KickerArrow />
+          <span className="label">Small interface things</span>
         </div>
+        <h1 className="display mt-4 text-[clamp(64px,11vw,132px)]">Lab</h1>
+        <p className="mt-5 max-w-[40rem] text-xl leading-normal">
+          Small interface things, each one built for a product I like. The code is open and each
+          one installs with the shadcn CLI.
+        </p>
+      </header>
+
+      <div className="max-w-3xl space-y-16">
+        {items.map((item, i) => (
+          <section key={item.slug} data-item={item.slug}>
+            <div className="mb-5 flex items-center gap-4">
+              <span className="label">{String(items.length - i).padStart(2, "0")}</span>
+              <Link
+                to="/lab/$slug"
+                params={{ slug: item.slug }}
+                className="display text-[28px] hover:text-signal"
+              >
+                {item.title}
+              </Link>
+              <span className="h-[1.5px] flex-1 bg-current" aria-hidden />
+            </div>
+            <BlogComponent name={item.demo} props={item.look ? { look: item.look } : {}} />
+          </section>
+        ))}
       </div>
     </div>
   );

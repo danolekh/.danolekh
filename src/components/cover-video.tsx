@@ -191,7 +191,7 @@ export function HeroVideo({ art, video, className, sizes, priority }: CoverProps
             aria-hidden
             tabIndex={-1}
             onPlaying={() => setShown(true)}
-            className={cn(VIDEO, "border border-dashed", shown ? "opacity-100" : "opacity-0")}
+            className={cn(VIDEO, shown ? "opacity-100" : "opacity-0")}
           />
           <button
             type="button"

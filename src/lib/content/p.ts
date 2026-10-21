@@ -2,6 +2,7 @@ import matter from "gray-matter";
 import { Marked } from "marked";
 import { createHighlighter, type Highlighter } from "shiki";
 import { createJavaScriptRegexEngine } from "shiki/engine/javascript";
+import { RISO_THEMES, risoLight, risoNight } from "./riso-shiki";
 import { type LinkPreview, markLinkPreviews } from "./previews";
 
 // Portfolio case studies. Mirrors `src/lib/content/b.ts` (the blog loader): markdown files are
@@ -18,7 +19,7 @@ const rawFiles = import.meta.glob("/src/content/p/*.md", {
   eager: true,
 }) as Record<string, string>;
 
-const THEMES = { light: "github-light", dark: "github-dark" } as const;
+const THEMES = RISO_THEMES;
 
 // Inline code that is really a confidence label, and the chip it becomes. Keyed on the exact text
 // used in the posts; extend here rather than inventing per-post syntax.
@@ -138,7 +139,7 @@ function getMarked(): Promise<Marked> {
   if (!markedPromise) {
     markedPromise = (async () => {
       const highlighter: Highlighter = await createHighlighter({
-        themes: [THEMES.light, THEMES.dark],
+        themes: [risoLight, risoNight],
         langs: LANGS,
         engine: createJavaScriptRegexEngine(),
       });

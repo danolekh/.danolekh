@@ -14,10 +14,12 @@
       body {
         background: #888;
       }
+      /* Grounds are the riso paper (light) and the night plate (dark), so a cover sits flush on the
+         site's registration frame. */
       .page {
-        --ground: #f3f3f1;
+        --ground: #eaebdc;
         --rim: #c9c9cc;
-        --shadow: rgb(20 20 30 / 0.2);
+        --shadow: rgb(35 21 71 / 0.22);
         position: relative;
         width: 1600px;
         height: 900px;
@@ -27,9 +29,9 @@
           var(--ground);
       }
       .page.dark {
-        --ground: #111113;
-        --rim: #3a3a40;
-        --shadow: rgb(0 0 0 / 0.55);
+        --ground: #2e2059;
+        --rim: #4a4a55;
+        --shadow: rgb(10 5 25 / 0.55);
       }
       /* A soft floor under the devices, so they stand on something. */
       .page::after {

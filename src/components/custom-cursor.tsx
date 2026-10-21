@@ -3,7 +3,7 @@ import { useEffect } from "react";
 /* Custom OS-style cursor, reverse-engineered from micka.design.
  *
  * Two shapes: a classic arrow (everything) and a pointing hand (interactive elements).
- * Two themes: filled black + white outline on dark, filled white + black outline on light.
+ * Two themes, in the site's inks: paper with a blue outline on light, plum with a paper outline on dark.
  * Two press states: on mousedown both shapes render ~10% smaller, which reads as a click.
  *
  * The arrow goes on `documentElement.style.cursor` so it inherits everywhere; the hand goes in an
@@ -45,8 +45,8 @@ function arrowCursor(dark: boolean, pressed: boolean) {
     viewBox: "0 0 20 24",
     width: pressed ? 18 : 20,
     height: pressed ? 22 : 24,
-    fill: dark ? "black" : "white",
-    stroke: dark ? "white" : "black",
+    fill: dark ? "%23231547" : "%23f4f3ee",
+    stroke: dark ? "%23eaebdc" : "%232d4b8f",
     strokeWidth: dark ? 1.5 : 1.2,
     hotspotX: 1,
     hotspotY: 1,
@@ -60,8 +60,8 @@ function handCursor(dark: boolean, pressed: boolean) {
     viewBox: "0 0 17 22",
     width: pressed ? 15 : 17,
     height: pressed ? 20 : 22,
-    fill: dark ? "black" : "white",
-    stroke: dark ? "white" : "black",
+    fill: dark ? "%23231547" : "%23f4f3ee",
+    stroke: dark ? "%23eaebdc" : "%232d4b8f",
     strokeWidth: dark ? 1.2 : 1,
     // Hotspot tracks the fingertip, so it moves in with the smaller pressed artwork.
     hotspotX: pressed ? 5 : 6,

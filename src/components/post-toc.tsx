@@ -100,7 +100,7 @@ export function PostToc({
       <DropdownMenu>
         <DropdownMenuTrigger
           className={cn(
-            "inline-flex max-w-full items-center gap-2 rounded-md border border-dashed px-2.5 py-1.5 text-sm text-muted-foreground hover:text-foreground",
+            "label inline-flex max-w-full items-center gap-2 border-[1.5px] border-current px-2.5 py-1.5 hover:text-signal",
             className,
           )}
         >
@@ -117,7 +117,7 @@ export function PostToc({
                     className={cn(
                       "block whitespace-normal leading-snug",
                       e.level === 3 && "pl-3 text-xs text-muted-foreground",
-                      e.id === activeId && "font-medium text-primary",
+                      e.id === activeId && "font-medium text-signal",
                     )}
                   >
                     {e.text}
@@ -133,21 +133,20 @@ export function PostToc({
 
   return (
     <nav aria-label="Contents" className={className}>
-      <p className="mb-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-        Contents
-      </p>
-      <ul className="space-y-1 border-l border-dashed text-sm">
+      <p className="label mb-3">Contents</p>
+      <ul className="space-y-1.5 border-l-[1.5px] border-current text-sm">
         {entries.map((e) => (
           <li key={e.id}>
             <a
               href={`#${e.id}`}
               aria-current={e.id === activeId ? "location" : undefined}
               className={cn(
-                "-ml-px block border-l py-0.5 transition-colors",
-                e.level === 2 ? "pl-3 font-medium" : "pl-6 text-[13px]",
+                // The section you're in gets a pink bar on the rule and its name in pink.
+                "-ml-[1.5px] block border-l-[3px] py-0.5 leading-snug",
+                e.level === 2 ? "pl-3" : "pl-6 text-[13px] opacity-85",
                 e.id === activeId
-                  ? "border-primary text-primary"
-                  : "border-transparent text-muted-foreground hover:text-foreground",
+                  ? "border-signal text-signal"
+                  : "border-transparent hover:text-signal",
               )}
             >
               {e.text}
