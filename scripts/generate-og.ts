@@ -1,127 +1,43 @@
 import sharp from "sharp";
+import { chromium } from "playwright";
 import { existsSync, mkdirSync, readFileSync, readdirSync } from "node:fs";
 import matter from "gray-matter";
 import { projects } from "../src/data/projects";
 import { lab } from "../src/data/lab";
+import { H, ORIGIN, W, siteCard, workCard } from "./og/cards";
 
-/* Social cards. Every page used to point og:image at /og.jpg, which was never in `public/` — so
- * Google, X, LinkedIn and Telegram all got a 404 where the preview should be. This writes the one
- * site-wide card plus a per-case-study card cut from the cover art that already exists.
+/* Social cards, 1200x630 (the 1.91:1 Open Graph asks for), in the riso look:
  *
- *   bun run scripts/generate-og.ts
+ *   public/og.jpg              the site card, for /, /b and anything without art of its own
+ *   public/og/<slug>.jpg       a case study (src/data/projects.ts, or src/content/p with a cover)
+ *   public/og/b-<slug>.jpg     a post with a cover (a post's explicit `image` still wins at render)
+ *   public/og/lab-<slug>.jpg   a lab item with a cover, and lab-<slug>-<look>.jpg per extra look
  *
- * Output is committed; it only needs re-running when a cover changes or a project is added.
+ *   bun run scripts/generate-og.ts            # all of them
+ *   bun run scripts/generate-og.ts lab- og    # only outputs whose name contains one of the words
  *
- * Text is drawn as SVG, which sharp hands to librsvg — and librsvg resolves families through the
- * system font list, not through `public/Nunito_Sans`. So the cards use a system sans rather than the
- * site's typeface; matching it would mean shipping a text-to-path step for two lines of copy.
+ * Output is committed; re-run when a cover or a title changes or a page is added. The templates are
+ * in scripts/og/cards.ts; headless Chromium renders them because the type needs Archivo's width axis.
  */
 
-// 1.91:1, the ratio Open Graph asks for. 1200x630 is the size every scraper caches at full width.
-const W = 1200;
-const H = 630;
+type Card = { out: string; html: string };
 
 const OUT_DIR = "public/og";
-const AVATAR = "public/images/me.jpeg";
-const FONT = "Helvetica Neue, Helvetica, Arial, sans-serif";
 
-const BG = "#0b0b0b"; // --background in the dark theme
-const FG = "#fafafa";
-const MUTED = "#a1a1aa";
-const ACCENT = "#3b82f6";
+/** The light cut of a cover when it exists on disk, else the dark one: the cards are printed on paper. */
+const lightest = (cover: string, light?: unknown) =>
+  typeof light === "string" && existsSync(`public${light}`) ? light : cover;
 
-function escapeXml(s: string): string {
-  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
+function cards(): Card[] {
+  const list: Card[] = [{ out: "public/og.jpg", html: siteCard() }];
+  const work = (out: string, title: string, kind: string, art: string) =>
+    list.push({ out: `${OUT_DIR}/${out}.jpg`, html: workCard({ title, kind, art }) });
 
-/** The card for `/`, `/b` and anything without art of its own: avatar, name, one line of what I do. */
-async function siteCard() {
-  const size = 220;
-  const avatar = await sharp(AVATAR)
-    .resize(size, size, { fit: "cover" })
-    .composite([
-      {
-        input: Buffer.from(
-          `<svg width="${size}" height="${size}"><rect width="${size}" height="${size}" rx="40" ry="40" fill="#fff"/></svg>`,
-        ),
-        blend: "dest-in",
-      },
-    ])
-    .png()
-    .toBuffer();
-
-  // Faint dot grid, the same texture the site's background effect draws.
-  const dots = Array.from({ length: 8 }, (_, row) =>
-    Array.from(
-      { length: 15 },
-      (_, col) => `<circle cx="${60 + col * 80}" cy="${55 + row * 80}" r="1.5" fill="#ffffff" />`,
-    ).join(""),
-  ).join("");
-
-  const svg = `<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
-  <rect width="${W}" height="${H}" fill="${BG}"/>
-  <g opacity="0.10">${dots}</g>
-  <rect x="0" y="0" width="${W}" height="8" fill="${ACCENT}"/>
-  <g font-family="${FONT}">
-    <text x="350" y="272" font-size="78" font-weight="700" fill="${FG}" letter-spacing="-2">Dan Olekh</text>
-    <text x="350" y="326" font-size="34" font-weight="400" fill="${MUTED}">Software engineer</text>
-    <text x="90" y="546" font-size="26" font-weight="600" fill="${ACCENT}">danolekh.com</text>
-    <text x="278" y="546" font-size="26" font-weight="400" fill="${MUTED}">case studies · writing · TypeScript</text>
-  </g>
-</svg>`;
-
-  mkdirSync("public", { recursive: true });
-  await sharp(Buffer.from(svg))
-    .composite([{ input: avatar, left: 90, top: 180 }])
-    .jpeg({ quality: 88, mozjpeg: true })
-    .toFile("public/og.jpg");
-  console.log("Generated: public/og.jpg");
-}
-
-/* A case study's card is its cover art, cropped to 1.91:1 with the title and my name burned into a
- * bottom band — the cover already reads as the project, the band tells a scroller whose work it is. */
-async function projectCard(
-  slug: string,
-  title: string,
-  cover: string,
-  kind = "Case study",
-  out = slug,
-) {
-  const art = await sharp(`public${cover}`).resize(W, H, { fit: "cover" }).toBuffer();
-  // Post titles run long; bold Helvetica averages ~0.56em a character, so shrink to fit the band.
-  const size = Math.min(62, Math.floor((W - 128) / (title.length * 0.56)));
-
-  const band = `<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="${BG}" stop-opacity="0"/>
-      <stop offset="0.55" stop-color="${BG}" stop-opacity="0.82"/>
-      <stop offset="1" stop-color="${BG}" stop-opacity="0.97"/>
-    </linearGradient>
-  </defs>
-  <rect x="0" y="${H - 240}" width="${W}" height="240" fill="url(#fade)"/>
-  <g font-family="${FONT}">
-    <text x="64" y="${H - 92}" font-size="${size}" font-weight="700" fill="${FG}" letter-spacing="-1.5">${escapeXml(title)}</text>
-    <text x="64" y="${H - 44}" font-size="27" font-weight="400" fill="${MUTED}">${kind} · Dan Olekh · danolekh.com</text>
-  </g>
-</svg>`;
-
-  mkdirSync(OUT_DIR, { recursive: true });
-  await sharp(art)
-    .composite([{ input: Buffer.from(band) }])
-    .jpeg({ quality: 88, mozjpeg: true })
-    .toFile(`${OUT_DIR}/${out}.jpg`);
-  console.log(`Generated: ${OUT_DIR}/${out}.jpg`);
-}
-
-async function main() {
-  await siteCard();
   for (const p of projects) {
-    if (!p.internal) continue;
-    await projectCard(p.slug, p.title, p.cover);
+    if (p.internal) work(p.slug, p.title, "Case study", lightest(p.cover, p.coverLight));
   }
   // Markdown with its own `cover` in frontmatter: unlisted case studies (/og/<slug>.jpg) and posts
-  // (/og/b-<slug>.jpg). A post's explicit `image` still wins at render time.
+  // (/og/b-<slug>.jpg).
   const listed = new Set(projects.map((p) => p.slug));
   for (const [dir, kind, prefix] of [
     ["src/content/p", "Case study", ""],
@@ -131,18 +47,64 @@ async function main() {
       const slug = file.slice(0, -3);
       const { data } = matter(readFileSync(`${dir}/${file}`, "utf8"));
       if (typeof data.cover !== "string" || data.draft === true || listed.has(slug)) continue;
-      await projectCard(slug, String(data.title ?? slug), data.cover, kind, `${prefix}${slug}`);
+      work(
+        `${prefix}${slug}`,
+        String(data.title ?? slug),
+        kind,
+        lightest(data.cover, data.coverLight),
+      );
     }
   }
-  // The lab's pages (/og/lab-<slug>.jpg), once an item has a cover.
+  // The lab's pages, once an item has a cover; its other looks (/lab/<slug>/<look>) from a cover
+  // named after the look when there is one.
   for (const item of lab) {
-    if (item.cover) await projectCard(item.slug, item.title, item.cover, "Lab", `lab-${item.slug}`);
-    // Its other looks (/lab/<slug>/<look>), from a cover named after the look when there is one.
+    if (item.cover)
+      work(`lab-${item.slug}`, item.title, "Lab", lightest(item.cover, item.coverLight));
     for (const look of item.looks ?? []) {
       const cover = `/images/covers/lab-${item.slug}-${look}.webp`;
-      if (existsSync(`public${cover}`)) await projectCard(item.slug, item.title, cover, "Lab", `lab-${item.slug}-${look}`);
+      if (existsSync(`public${cover}`)) work(`lab-${item.slug}-${look}`, item.title, "Lab", cover);
     }
   }
+  return list;
+}
+
+async function main() {
+  const only = process.argv.slice(2);
+  const todo = cards().filter((c) => only.length === 0 || only.some((w) => c.out.includes(w)));
+  mkdirSync(OUT_DIR, { recursive: true });
+
+  const browser = await chromium.launch({ headless: true });
+  const context = await browser.newContext({
+    viewport: { width: W, height: H },
+    deviceScaleFactor: 1,
+  });
+  // The card's HTML is served at ORIGIN/card; every other path there is a file on disk.
+  let html = "";
+  await context.route(`${ORIGIN}/**`, (route) => {
+    const path = decodeURIComponent(new URL(route.request().url()).pathname);
+    return path === "/card"
+      ? route.fulfill({ body: html, contentType: "text/html; charset=utf-8" })
+      : route.fulfill({ path });
+  });
+  const page = await context.newPage();
+
+  let failed = 0;
+  for (const card of todo) {
+    html = card.html;
+    await page.goto(`${ORIGIN}/card`, { waitUntil: "load" });
+    await page.waitForSelector("body[data-ready]");
+    const spill = await page.evaluate(() => document.body.dataset.spill);
+    const png = await page.screenshot({ type: "png" });
+    await sharp(png)
+      .jpeg({ quality: 86, mozjpeg: true, chromaSubsampling: "4:4:4" })
+      .toFile(card.out);
+    if (spill) {
+      failed++;
+      console.error(`Clipped: ${card.out} → ${spill}`);
+    } else console.log(`Generated: ${card.out}`);
+  }
+  await browser.close();
+  if (failed) process.exit(1);
   console.log("Done!");
 }
 

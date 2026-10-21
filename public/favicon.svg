@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <style>
+    .plate { display: none }
+    @media (prefers-color-scheme: dark) {
+      .plate { display: inline }
+      .bare { display: none }
+    }
+  </style>
+  <g class="bare"><clipPath id="a"><circle cx="12.59" cy="12.59" r="12.09"/></clipPath><circle cx="12.59" cy="12.59" r="12.09" fill="#2d4b8f"/><circle cx="19.41" cy="19.41" r="12.09" fill="#c8497f"/><circle cx="19.41" cy="19.41" r="12.09" fill="#231547" clip-path="url(#a)"/></g>
+  <g class="plate"><rect width="32" height="32" rx="7" fill="#eaebdc"/><clipPath id="b"><circle cx="13.14" cy="13.14" r="10.14"/></clipPath><circle cx="13.14" cy="13.14" r="10.14" fill="#2d4b8f"/><circle cx="18.86" cy="18.86" r="10.14" fill="#c8497f"/><circle cx="18.86" cy="18.86" r="10.14" fill="#231547" clip-path="url(#b)"/></g>
+</svg>

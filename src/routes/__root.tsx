@@ -18,6 +18,9 @@ export const Route = createRootRoute({
       meta: [
         { charSet: "utf-8" },
         { name: "viewport", content: "width=device-width, initial-scale=1" },
+        // Browser chrome in the page's paper: stock by day, plum at night.
+        { name: "theme-color", content: "#f4f3ee", media: "(prefers-color-scheme: light)" },
+        { name: "theme-color", content: "#231547", media: "(prefers-color-scheme: dark)" },
         ...seo.meta,
       ],
       links: [

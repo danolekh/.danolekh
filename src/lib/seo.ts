@@ -137,6 +137,8 @@ export function createMeta(props: CreateMetaProps = {}): HeadConfig {
       type: "image/png",
       sizes: "16x16",
     },
+    // The mark as a vector, for browsers that take one; it switches to a paper plate in dark mode.
+    { rel: "icon", href: "/favicon.svg", type: "image/svg+xml", sizes: "any" },
     {
       rel: "apple-touch-icon",
       href: "/apple-touch-icon.png",
