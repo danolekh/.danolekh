@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Product cover</title>
+    <style>
+      /* A case-study cover: the product's real screens in device frames, on a quiet ground tinted
+         with the product's own accent. No words, no badges, no arrows. render.mjs prints this at
+         1600×900 for ?id=<slug>&theme=light|dark. */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+      body {
+        background: #888;
+      }
+      .page {
+        --ground: #f3f3f1;
+        --rim: #c9c9cc;
+        --shadow: rgb(20 20 30 / 0.2);
+        position: relative;
+        width: 1600px;
+        height: 900px;
+        overflow: hidden;
+        background:
+          radial-gradient(ellipse 70% 60% at var(--gx, 50%) 62%, var(--glow) 0%, transparent 72%),
+          var(--ground);
+      }
+      .page.dark {
+        --ground: #111113;
+        --rim: #3a3a40;
+        --shadow: rgb(0 0 0 / 0.55);
+      }
+      /* A soft floor under the devices, so they stand on something. */
+      .page::after {
+        content: "";
+        position: absolute;
+        left: 12%;
+        right: 12%;
+        bottom: 46px;
+        height: 60px;
+        border-radius: 50%;
+        background: var(--shadow);
+        filter: blur(30px);
+        opacity: 0.55;
+      }
+
+      .screen {
+        position: relative;
+        overflow: hidden;
+        background: #fff;
+      }
+      .screen img {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: auto;
+      }
+
+      .laptop {
+        position: absolute;
+        z-index: 2;
+        filter: drop-shadow(0 30px 34px var(--shadow));
+      }
+      .laptop .lid {
+        position: relative;
+        background: #141416;
+        border-radius: 24px 24px 5px 5px;
+        padding: 16px 16px 24px;
+        box-shadow: inset 0 0 0 2px var(--rim);
+      }
+      .laptop .lid::before {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 6px;
+        width: 5px;
+        height: 5px;
+        margin-left: -2.5px;
+        border-radius: 50%;
+        background: #2f2f35;
+      }
+      .laptop .screen {
+        aspect-ratio: 16 / 10;
+        border-radius: 4px;
+      }
+      .laptop .base {
+        position: relative;
+        height: 18px;
+        margin: 0 -7%;
+        border-radius: 2px 2px 16px 16px;
+        background: linear-gradient(#e6e6ea, #c4c4ca 55%, #9b9ba2);
+      }
+      .laptop .base::before {
+        content: "";
+        position: absolute;
+        left: 42%;
+        right: 42%;
+        top: 0;
+        height: 6px;
+        border-radius: 0 0 7px 7px;
+        background: #a3a3aa;
+      }
+
+      .phone {
+        position: absolute;
+        z-index: 3;
+        background: #111114;
+        border-radius: 44px;
+        padding: 10px;
+        box-shadow:
+          inset 0 0 0 2px var(--rim),
+          0 30px 50px -20px var(--shadow);
+      }
+      .phone .screen {
+        aspect-ratio: 390 / 844;
+        border-radius: 35px;
+      }
+      .phone .status {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        z-index: 1;
+      }
+      .phone .island {
+        position: absolute;
+        top: 19px;
+        left: 50%;
+        width: 31%;
+        height: 21px;
+        translate: -50% 0;
+        border-radius: 12px;
+        background: #000;
+        z-index: 4;
+      }
+
+      /* A browser window standing behind the laptop: the product's other half (an admin panel). */
+      .window {
+        position: absolute;
+        z-index: 1;
+        border-radius: 14px;
+        overflow: hidden;
+        background: #fff;
+        box-shadow:
+          0 0 0 1px rgb(0 0 0 / 0.08),
+          0 30px 60px -24px var(--shadow);
+      }
+      .dark .window {
+        box-shadow:
+          0 0 0 1px rgb(255 255 255 / 0.1),
+          0 30px 60px -24px var(--shadow);
+      }
+      .window .bar {
+        height: 34px;
+        background: #ececee;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 14px;
+      }
+      .window .bar i {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        background: #d0d0d4;
+      }
+      .window .screen {
+        aspect-ratio: 16 / 10;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page" id="page"></div>
+    <script type="module">
+      import { COVERS } from "./covers.js"
+      const q = new URLSearchParams(location.search)
+      const c = COVERS[q.get("id")]
+      const theme = q.get("theme") || "light"
+      const page = document.getElementById("page")
+      page.classList.add(theme)
+      page.style.setProperty("--glow", c.glow[theme])
+      if (c.glowX) page.style.setProperty("--gx", c.glowX)
+
+      const el = (tag, cls) => {
+        const e = document.createElement(tag)
+        if (cls) e.className = cls
+        return e
+      }
+      const place = (node, box) => {
+        for (const [k, v] of Object.entries(box)) node.style[k] = typeof v === "number" ? `${v}px` : v
+        return node
+      }
+      const screens = []
+      // A screen shows its capture from y down (y in the capture's own pixels). Phones start below a
+      // status bar painted in the page's own top colour, so the island never sits on content.
+      function screen(s, statusBar = 0) {
+        const box = el("div", "screen")
+        const img = new Image()
+        img.src = `shots/${s.src}`
+        img.alt = ""
+        box.append(img)
+        screens.push({ box, img, s, statusBar })
+        return box
+      }
+      if (c.window) {
+        const w = el("div", "window")
+        const bar = el("div", "bar")
+        bar.append(el("i"), el("i"), el("i"))
+        w.append(bar, screen(c.window.screen))
+        page.append(place(w, c.window.box))
+      }
+      {
+        const d = el("div", "laptop")
+        const lid = el("div", "lid")
+        lid.append(screen(c.laptop.screen))
+        d.append(lid, el("div", "base"))
+        page.append(place(d, c.laptop.box))
+      }
+      if (c.phone) {
+        const d = el("div", "phone")
+        d.append(el("i", "island"), screen(c.phone.screen, 46))
+        page.append(place(d, c.phone.box))
+      }
+
+      await Promise.all(screens.map((s) => s.img.decode()))
+      const probe = document.createElement("canvas").getContext("2d", { willReadFrequently: true })
+      for (const { box, img, s, statusBar } of screens) {
+        const x = s.x ?? 0
+        const w = s.w ?? img.naturalWidth
+        const k = box.clientWidth / w
+        img.style.width = `${img.naturalWidth * k}px`
+        img.style.left = `${-x * k}px`
+        img.style.top = `${statusBar - (s.y ?? 0) * k}px`
+        if (statusBar) {
+          probe.drawImage(img, x + 4, (s.y ?? 0) + 4, 1, 1, 0, 0, 1, 1)
+          const [r, g, b] = probe.getImageData(0, 0, 1, 1).data
+          const bar = el("i", "status")
+          bar.style.height = `${statusBar}px`
+          bar.style.background = s.bar ?? `rgb(${r} ${g} ${b})`
+          box.append(bar)
+        }
+      }
+      document.body.dataset.ready = "1"
+    </script>
+  </body>
+</html>

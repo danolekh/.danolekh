@@ -60,12 +60,14 @@ export const projects: Project[] = [
     href: "https://github.com/danolekh/effect-viem",
     draft: true,
   },
+  // Oasi Kadir, Consolline and SportMagaz show the live product in device frames, printed by
+  // scripts/product-covers (captures of the real sites, no text on the art).
   {
     slug: "oasi-kadir",
     title: "Oasi Kadir",
     subtitle: "Bilingual agriturismo site — Astro + Strapi on Cloudflare, with native bookings",
-    cover: "/images/covers/oasi-kadir-dark.webp",
-    coverLight: "/images/covers/oasi-kadir-light.webp",
+    cover: "/images/covers/oasi-kadir-product-dark.webp",
+    coverLight: "/images/covers/oasi-kadir-product-light.webp",
     internal: true,
   },
   {
@@ -73,8 +75,8 @@ export const projects: Project[] = [
     title: "Consolline",
     subtitle:
       "Four-language logistics site in Astro — WebGL globe and halftone shaders, built from Figma",
-    cover: "/images/covers/consolline-dark.webp",
-    coverLight: "/images/covers/consolline-light.webp",
+    cover: "/images/covers/consolline-product-dark.webp",
+    coverLight: "/images/covers/consolline-product-light.webp",
     internal: true,
   },
   {
@@ -82,8 +84,8 @@ export const projects: Project[] = [
     title: "SportMagaz",
     subtitle:
       "Sports-equipment store for Ukraine with its own admin panel — Next.js, then static Astro",
-    cover: "/images/covers/sportmagaz-dark.webp",
-    coverLight: "/images/covers/sportmagaz-light.webp",
+    cover: "/images/covers/sportmagaz-product-dark.webp",
+    coverLight: "/images/covers/sportmagaz-product-light.webp",
     internal: true,
   },
 ];
