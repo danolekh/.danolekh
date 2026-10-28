@@ -1,4 +1,4 @@
-import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
+import { HeadContent, Outlet, Scripts, createRootRoute, useMatches } from "@tanstack/react-router";
 import { Suspense, lazy, useCallback, useEffect, useState } from "react";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanStackDevtools } from "@tanstack/react-devtools";
@@ -14,6 +14,14 @@ import { useHeavyEffectsAllowed } from "@/lib/use-heavy-effects";
 // in the single entry bundle, which meant every visitor downloaded and parsed them — including the
 // weak devices that now skip the effect, where that parse cost is itself a main source of jank.
 const PixelBlast = lazy(() => import("@/components/pixel-blasts"));
+
+declare module "@tanstack/react-router" {
+  interface StaticDataRouteOption {
+    /** The page brings its own frame: full width, no WebGL background, no floating theme toggle
+     *  (the /m replay watch page, where the videos are the content and need the GPU). */
+    bare?: boolean;
+  }
+}
 
 export const Route = createRootRoute({
   head: () => {
@@ -46,6 +54,7 @@ export const Route = createRootRoute({
 });
 
 function RootComponent() {
+  const bare = useMatches({ select: (matches) => matches.some((match) => match.staticData.bare) });
   // Use `resolvedTheme` (not `theme`, which is "system" by default with enableSystem) and only mount
   // the WebGL background once the client knows the resolved theme. Keying on resolvedTheme remounts
   // PixelBlast on theme change so its deferred init paints the correct color (white on dark, blue on
@@ -72,12 +81,20 @@ function RootComponent() {
 
   // Weak devices skip the WebGL background entirely: the wrapper below already paints
   // `bg-background`, so dropping it costs nothing visually and buys back the frame budget.
-  const heavyEffectsAllowed = useHeavyEffectsAllowed();
+  const heavyEffectsAllowed = useHeavyEffectsAllowed() && !bare;
 
   // Latched, so a device whose frame rate already proved too low doesn't get the effect handed
   // back on the next theme change (which remounts PixelBlast via its `key`).
   const [tooSlow, setTooSlow] = useState(false);
   const handleTooSlow = useCallback(() => setTooSlow(true), []);
+
+  if (bare) {
+    return (
+      <div className="min-h-dvh bg-background text-foreground">
+        <Outlet />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-dvh flex flex-col items-center">

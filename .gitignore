@@ -24,3 +24,6 @@ src/private/
 
 # Share images for the pages in src/private
 public/private/
+
+# Local test runs for /m (scripts/replays-fixtures.ts), served by `vite dev` at /__replays
+fixtures/

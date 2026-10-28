@@ -17,9 +17,12 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as LabIndexRouteImport } from './routes/lab.index'
 import { Route as BIndexRouteImport } from './routes/b.index'
 import { Route as PProjectRouteImport } from './routes/p.$project'
+import { Route as MRunIdRouteImport } from './routes/m.$runId'
 import { Route as LabSlugRouteImport } from './routes/lab.$slug'
 import { Route as BSlugRouteImport } from './routes/b.$slug'
 import { Route as ApiBooksRouteImport } from './routes/api/books'
+import { Route as MRunIdIndexRouteImport } from './routes/m.$runId.index'
+import { Route as MRunIdNickRouteImport } from './routes/m.$runId.$nick'
 import { Route as LabSlugLookRouteImport } from './routes/lab.$slug_.$look'
 import { Route as FeedBBookIdRouteImport } from './routes/feed_.b.$bookId'
 import { Route as FeedBBookIdModalRouteImport } from './routes/feed/b/$bookId/modal'
@@ -64,6 +67,11 @@ const PProjectRoute = PProjectRouteImport.update({
   path: '/p/$project',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MRunIdRoute = MRunIdRouteImport.update({
+  id: '/m/$runId',
+  path: '/m/$runId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LabSlugRoute = LabSlugRouteImport.update({
   id: '/lab/$slug',
   path: '/lab/$slug',
@@ -78,6 +86,16 @@ const ApiBooksRoute = ApiBooksRouteImport.update({
   id: '/api/books',
   path: '/api/books',
   getParentRoute: () => rootRouteImport,
+} as any)
+const MRunIdIndexRoute = MRunIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => MRunIdRoute,
+} as any)
+const MRunIdNickRoute = MRunIdNickRouteImport.update({
+  id: '/$nick',
+  path: '/$nick',
+  getParentRoute: () => MRunIdRoute,
 } as any)
 const LabSlugLookRoute = LabSlugLookRouteImport.update({
   id: '/lab/$slug_/$look',
@@ -104,11 +122,14 @@ export interface FileRoutesByFullPath {
   '/api/books': typeof ApiBooksRoute
   '/b/$slug': typeof BSlugRoute
   '/lab/$slug': typeof LabSlugRoute
+  '/m/$runId': typeof MRunIdRouteWithChildren
   '/p/$project': typeof PProjectRoute
   '/b/': typeof BIndexRoute
   '/lab/': typeof LabIndexRoute
   '/feed/b/$bookId': typeof FeedBBookIdRoute
   '/lab/$slug/$look': typeof LabSlugLookRoute
+  '/m/$runId/$nick': typeof MRunIdNickRoute
+  '/m/$runId/': typeof MRunIdIndexRoute
   '/feed/b/$bookId/modal': typeof FeedBBookIdModalRoute
 }
 export interface FileRoutesByTo {
@@ -125,6 +146,8 @@ export interface FileRoutesByTo {
   '/lab': typeof LabIndexRoute
   '/feed/b/$bookId': typeof FeedBBookIdRoute
   '/lab/$slug/$look': typeof LabSlugLookRoute
+  '/m/$runId/$nick': typeof MRunIdNickRoute
+  '/m/$runId': typeof MRunIdIndexRoute
   '/feed/b/$bookId/modal': typeof FeedBBookIdModalRoute
 }
 export interface FileRoutesById {
@@ -137,11 +160,14 @@ export interface FileRoutesById {
   '/api/books': typeof ApiBooksRoute
   '/b/$slug': typeof BSlugRoute
   '/lab/$slug': typeof LabSlugRoute
+  '/m/$runId': typeof MRunIdRouteWithChildren
   '/p/$project': typeof PProjectRoute
   '/b/': typeof BIndexRoute
   '/lab/': typeof LabIndexRoute
   '/feed_/b/$bookId': typeof FeedBBookIdRoute
   '/lab/$slug_/$look': typeof LabSlugLookRoute
+  '/m/$runId/$nick': typeof MRunIdNickRoute
+  '/m/$runId/': typeof MRunIdIndexRoute
   '/feed/b/$bookId/modal': typeof FeedBBookIdModalRoute
 }
 export interface FileRouteTypes {
@@ -155,11 +181,14 @@ export interface FileRouteTypes {
     | '/api/books'
     | '/b/$slug'
     | '/lab/$slug'
+    | '/m/$runId'
     | '/p/$project'
     | '/b/'
     | '/lab/'
     | '/feed/b/$bookId'
     | '/lab/$slug/$look'
+    | '/m/$runId/$nick'
+    | '/m/$runId/'
     | '/feed/b/$bookId/modal'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -176,6 +205,8 @@ export interface FileRouteTypes {
     | '/lab'
     | '/feed/b/$bookId'
     | '/lab/$slug/$look'
+    | '/m/$runId/$nick'
+    | '/m/$runId'
     | '/feed/b/$bookId/modal'
   id:
     | '__root__'
@@ -187,11 +218,14 @@ export interface FileRouteTypes {
     | '/api/books'
     | '/b/$slug'
     | '/lab/$slug'
+    | '/m/$runId'
     | '/p/$project'
     | '/b/'
     | '/lab/'
     | '/feed_/b/$bookId'
     | '/lab/$slug_/$look'
+    | '/m/$runId/$nick'
+    | '/m/$runId/'
     | '/feed/b/$bookId/modal'
   fileRoutesById: FileRoutesById
 }
@@ -204,6 +238,7 @@ export interface RootRouteChildren {
   ApiBooksRoute: typeof ApiBooksRoute
   BSlugRoute: typeof BSlugRoute
   LabSlugRoute: typeof LabSlugRoute
+  MRunIdRoute: typeof MRunIdRouteWithChildren
   PProjectRoute: typeof PProjectRoute
   BIndexRoute: typeof BIndexRoute
   LabIndexRoute: typeof LabIndexRoute
@@ -269,6 +304,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PProjectRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/m/$runId': {
+      id: '/m/$runId'
+      path: '/m/$runId'
+      fullPath: '/m/$runId'
+      preLoaderRoute: typeof MRunIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lab/$slug': {
       id: '/lab/$slug'
       path: '/lab/$slug'
@@ -289,6 +331,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/books'
       preLoaderRoute: typeof ApiBooksRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/m/$runId/': {
+      id: '/m/$runId/'
+      path: '/'
+      fullPath: '/m/$runId/'
+      preLoaderRoute: typeof MRunIdIndexRouteImport
+      parentRoute: typeof MRunIdRoute
+    }
+    '/m/$runId/$nick': {
+      id: '/m/$runId/$nick'
+      path: '/$nick'
+      fullPath: '/m/$runId/$nick'
+      preLoaderRoute: typeof MRunIdNickRouteImport
+      parentRoute: typeof MRunIdRoute
     }
     '/lab/$slug_/$look': {
       id: '/lab/$slug_/$look'
@@ -326,6 +382,19 @@ const FeedRouteRouteWithChildren = FeedRouteRoute._addFileChildren(
   FeedRouteRouteChildren,
 )
 
+interface MRunIdRouteChildren {
+  MRunIdNickRoute: typeof MRunIdNickRoute
+  MRunIdIndexRoute: typeof MRunIdIndexRoute
+}
+
+const MRunIdRouteChildren: MRunIdRouteChildren = {
+  MRunIdNickRoute: MRunIdNickRoute,
+  MRunIdIndexRoute: MRunIdIndexRoute,
+}
+
+const MRunIdRouteWithChildren =
+  MRunIdRoute._addFileChildren(MRunIdRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   FeedRouteRoute: FeedRouteRouteWithChildren,
@@ -335,6 +404,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiBooksRoute: ApiBooksRoute,
   BSlugRoute: BSlugRoute,
   LabSlugRoute: LabSlugRoute,
+  MRunIdRoute: MRunIdRouteWithChildren,
   PProjectRoute: PProjectRoute,
   BIndexRoute: BIndexRoute,
   LabIndexRoute: LabIndexRoute,
