@@ -28,6 +28,8 @@ import {
 } from "@/lib/replays/meta";
 import { useSync, useSyncState } from "./sync-context";
 
+const HLS_CONFIG = { liveDurationInfinity: false };
+
 /* Every player is rendered once, into a detached <div> (its host), and the layouts only move that
  * host into whichever panel shows it. Switching who's big, reordering, or rotating a phone across
  * the breakpoint then moves a playing <video> instead of mounting a new one, so nothing reloads
@@ -125,6 +127,12 @@ export function PlayerView({
             // hls.js wherever it runs (Safari too): one behaviour to keep in sync, the quality
             // menu everywhere, and no native live-edge jumps on playlists still being rendered.
             preferPlayback="mse"
+            // A run still rendering is an EVENT playlist: a recording that grows, not a live
+            // window. Treated as live, its duration is Infinity and the seekable end sits ~3
+            // segments short of what's rendered, where the view would park. As on-demand with a
+            // finite duration, hls.js still refreshes the playlist and the duration grows.
+            streamType="on-demand"
+            _hlsConfig={HLS_CONFIG}
             poster={player.poster ?? undefined}
             // Side panels are small: no need to pull 1080p into a 300 px tile.
             capRenditionToPlayerSize
