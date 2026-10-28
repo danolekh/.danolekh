@@ -120,8 +120,8 @@ function RunNotFound() {
           size="sm"
           nativeButton={false}
           render={
-            <Link to="/">
-              <IconArrowLeft /> danolekh.com
+            <Link to="/m">
+              <IconArrowLeft /> All runs
             </Link>
           }
         />

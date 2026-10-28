@@ -4,10 +4,12 @@ import viteReact from "@vitejs/plugin-react";
 import viteTsConfigPaths from "vite-tsconfig-paths";
 import tailwindcss from "@tailwindcss/vite";
 import { cloudflare } from "@cloudflare/vite-plugin";
+import { execFile } from "node:child_process";
 import { createReadStream, readdirSync, readFileSync, statSync } from "node:fs";
 import { extname, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { Readable } from "node:stream";
+import { promisify } from "node:util";
 import matter from "gray-matter";
 import { lab } from "./src/data/lab";
 
@@ -47,10 +49,67 @@ const getLabPages = () => [
   ),
 ];
 
+/* `vite dev` only: lists the real bucket, which its public URL can't do and the emulated R2 doesn't
+ * hold, through the Cloudflare API with wrangler's own login (`wrangler auth token`). Answers like
+ * R2's `list()`: `{ delimitedPrefixes, truncated, cursor }`. */
+const BUCKET = "danolekh-bucket";
+let cloudflareLogin: Promise<{ token: string; account: string }> | null = null;
+let cloudflareLoginAt = 0;
+
+function cloudflareAuth() {
+  // wrangler refreshes its OAuth token when it's asked for one; it lasts about an hour.
+  if (!cloudflareLogin || Date.now() - cloudflareLoginAt > 10 * 60_000) {
+    cloudflareLoginAt = Date.now();
+    cloudflareLogin = (async () => {
+      const wrangler = fileURLToPath(new URL("./node_modules/.bin/wrangler", import.meta.url));
+      const { stdout } = await promisify(execFile)(wrangler, ["auth", "token", "--json"]);
+      const token = (JSON.parse(stdout) as { token?: string }).token;
+      if (!token) throw new Error("wrangler auth token gave no token (wrangler login?)");
+      let account: string | undefined = process.env.CLOUDFLARE_ACCOUNT_ID;
+      if (!account) {
+        const response = await fetch("https://api.cloudflare.com/client/v4/accounts?per_page=1", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        account = ((await response.json()) as { result?: { id: string }[] }).result?.[0]?.id;
+      }
+      if (!account) throw new Error("no Cloudflare account");
+      return { token, account };
+    })();
+    cloudflareLogin.catch(() => (cloudflareLogin = null));
+  }
+  return cloudflareLogin;
+}
+
+async function listRealBucket(query: URLSearchParams) {
+  const { token, account } = await cloudflareAuth();
+  const url = new URL(
+    `https://api.cloudflare.com/client/v4/accounts/${account}/r2/buckets/${BUCKET}/objects`,
+  );
+  for (const key of ["prefix", "delimiter", "cursor"]) {
+    const value = query.get(key);
+    if (value) url.searchParams.set(key, value);
+  }
+  url.searchParams.set("per_page", "1000");
+  const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+  const body = (await response.json()) as {
+    success?: boolean;
+    errors?: unknown;
+    result_info?: { delimited?: string[]; is_truncated?: boolean; cursor?: string };
+  };
+  if (!body.success) throw new Error(`R2 list: ${JSON.stringify(body.errors)}`);
+  const info = body.result_info ?? {};
+  return {
+    delimitedPrefixes: info.delimited ?? [],
+    truncated: info.is_truncated === true,
+    cursor: info.cursor,
+  };
+}
+
 // `vite dev` only: the local test runs for /m (scripts/replays-fixtures.ts) at /__replays, standing
 // in for bucket.danolekh.com/runs. Their meta.json files sit in the emulated R2 next to them.
 // /__bucket proxies the real bucket, so real runs play in dev from any origin (localhost, the
 // tailnet) without the bucket having to allow it in CORS; see src/lib/replays/get-run.ts.
+// /__bucket-list lists it, so /m in dev shows the real runs next to the fixtures.
 function replayFixtures(): Plugin {
   const root = fileURLToPath(new URL("./fixtures/replays/", import.meta.url));
   const types: Record<string, string> = {
@@ -64,6 +123,16 @@ function replayFixtures(): Plugin {
     name: "replay-fixtures",
     apply: "serve",
     configureServer(server) {
+      server.middlewares.use("/__bucket-list", async (req, res) => {
+        try {
+          const page = await listRealBucket(new URL(req.url ?? "/", "http://dev").searchParams);
+          res.setHeader("Content-Type", "application/json");
+          res.end(JSON.stringify(page));
+        } catch (error) {
+          res.statusCode = 502;
+          res.end(error instanceof Error ? error.message : String(error));
+        }
+      });
       server.middlewares.use("/__bucket", async (req, res) => {
         const upstream = `https://bucket.danolekh.com${req.url ?? "/"}`;
         try {

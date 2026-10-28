@@ -10,15 +10,12 @@ import {
   IconGripVertical,
   IconLayoutGrid,
   IconMinus,
-  IconSkull,
-  IconTrophy,
 } from "@tabler/icons-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { getRunMeta } from "@/lib/replays/get-run";
 import {
   chapterCues,
   findPlayer,
-  formatRunTime,
   isRunSettling,
   runOutcome,
   runStartedLabel,
@@ -26,6 +23,7 @@ import {
 } from "@/lib/replays/meta";
 import { SyncGroup } from "@/lib/replays/sync";
 import { cn } from "@/lib/utils";
+import { Outcome } from "./outcome";
 import { createHost, FitBox, PlayerSlot, PlayerView } from "./player";
 import { PanelStage, type TileControls } from "./stage";
 import { SyncContext, useMediaQuery, useMounted, useSyncState } from "./sync-context";
@@ -212,8 +210,9 @@ function Header({ meta, focus }: { meta: RunMeta; focus: string | null }) {
     <header className="flex shrink-0 flex-wrap items-center gap-x-5 gap-y-2 px-3 pt-3 pb-2 sm:px-4">
       <div className="flex min-w-0 items-center gap-3">
         <Link
-          to="/"
-          aria-label="danolekh.com"
+          to="/m"
+          aria-label="All runs"
+          title="All runs"
           className="grid size-8 shrink-0 place-items-center text-muted-foreground transition-colors hover:text-foreground"
         >
           <IconArrowLeft className="size-4" />
@@ -223,7 +222,7 @@ function Header({ meta, focus }: { meta: RunMeta; focus: string | null }) {
             <h1 className="text-base font-semibold tracking-tight sm:text-lg">
               {started ?? meta.runId}
             </h1>
-            <Outcome meta={meta} />
+            <Outcome outcome={runOutcome(meta)} />
           </div>
           <p className="flex flex-wrap items-center gap-x-1.5 text-xs text-muted-foreground">
             <span>Speedrun replay</span>
@@ -254,50 +253,6 @@ function Header({ meta, focus }: { meta: RunMeta; focus: string | null }) {
       <ThemeToggle className="hidden size-8 shadow-none md:inline-flex" />
     </header>
   );
-}
-
-function Outcome({ meta }: { meta: RunMeta }) {
-  const outcome = runOutcome(meta);
-  const base = "inline-flex items-center gap-1.5 text-sm whitespace-nowrap";
-  switch (outcome.kind) {
-    case "live":
-      return (
-        <span className={cn(base, "font-medium text-red-600 dark:text-red-400")}>
-          <span className="size-2 animate-pulse rounded-full bg-current" />
-          live
-        </span>
-      );
-    case "win":
-      return (
-        <span className={cn(base, "text-foreground")}>
-          <IconTrophy className="size-4 text-amber-600 dark:text-amber-400" />
-          Win
-          {outcome.timeMs !== null && (
-            <span className="font-mono tabular-nums">{formatRunTime(outcome.timeMs, 3)}</span>
-          )}
-        </span>
-      );
-    case "death":
-      return (
-        <span className={cn(base, "text-foreground")}>
-          <IconSkull className="size-4 text-destructive" />
-          {outcome.name} died at{" "}
-          <span className="font-mono tabular-nums">{formatRunTime(outcome.timeMs, 0)}</span>
-        </span>
-      );
-    case "ended":
-      return (
-        <span className={cn(base, "text-muted-foreground")}>
-          {outcome.result === "abandoned" ? "Abandoned" : "Failed"}
-          {outcome.timeMs !== null && (
-            <>
-              {" "}
-              at <span className="font-mono tabular-nums">{formatRunTime(outcome.timeMs, 0)}</span>
-            </>
-          )}
-        </span>
-      );
-  }
 }
 
 function Seed({ seed }: { seed: string }) {

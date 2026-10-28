@@ -14,9 +14,11 @@ import { Route as ResumeRouteImport } from './routes/resume'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as FeedRouteRouteImport } from './routes/feed/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MIndexRouteImport } from './routes/m.index'
 import { Route as LabIndexRouteImport } from './routes/lab.index'
 import { Route as BIndexRouteImport } from './routes/b.index'
 import { Route as PProjectRouteImport } from './routes/p.$project'
+import { Route as MLatestRouteImport } from './routes/m.latest'
 import { Route as MRunIdRouteImport } from './routes/m.$runId'
 import { Route as LabSlugRouteImport } from './routes/lab.$slug'
 import { Route as BSlugRouteImport } from './routes/b.$slug'
@@ -52,6 +54,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MIndexRoute = MIndexRouteImport.update({
+  id: '/m/',
+  path: '/m/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LabIndexRoute = LabIndexRouteImport.update({
   id: '/lab/',
   path: '/lab/',
@@ -65,6 +72,11 @@ const BIndexRoute = BIndexRouteImport.update({
 const PProjectRoute = PProjectRouteImport.update({
   id: '/p/$project',
   path: '/p/$project',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MLatestRoute = MLatestRouteImport.update({
+  id: '/m/latest',
+  path: '/m/latest',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MRunIdRoute = MRunIdRouteImport.update({
@@ -123,9 +135,11 @@ export interface FileRoutesByFullPath {
   '/b/$slug': typeof BSlugRoute
   '/lab/$slug': typeof LabSlugRoute
   '/m/$runId': typeof MRunIdRouteWithChildren
+  '/m/latest': typeof MLatestRoute
   '/p/$project': typeof PProjectRoute
   '/b/': typeof BIndexRoute
   '/lab/': typeof LabIndexRoute
+  '/m/': typeof MIndexRoute
   '/feed/b/$bookId': typeof FeedBBookIdRoute
   '/lab/$slug/$look': typeof LabSlugLookRoute
   '/m/$runId/$nick': typeof MRunIdNickRoute
@@ -141,9 +155,11 @@ export interface FileRoutesByTo {
   '/api/books': typeof ApiBooksRoute
   '/b/$slug': typeof BSlugRoute
   '/lab/$slug': typeof LabSlugRoute
+  '/m/latest': typeof MLatestRoute
   '/p/$project': typeof PProjectRoute
   '/b': typeof BIndexRoute
   '/lab': typeof LabIndexRoute
+  '/m': typeof MIndexRoute
   '/feed/b/$bookId': typeof FeedBBookIdRoute
   '/lab/$slug/$look': typeof LabSlugLookRoute
   '/m/$runId/$nick': typeof MRunIdNickRoute
@@ -161,9 +177,11 @@ export interface FileRoutesById {
   '/b/$slug': typeof BSlugRoute
   '/lab/$slug': typeof LabSlugRoute
   '/m/$runId': typeof MRunIdRouteWithChildren
+  '/m/latest': typeof MLatestRoute
   '/p/$project': typeof PProjectRoute
   '/b/': typeof BIndexRoute
   '/lab/': typeof LabIndexRoute
+  '/m/': typeof MIndexRoute
   '/feed_/b/$bookId': typeof FeedBBookIdRoute
   '/lab/$slug_/$look': typeof LabSlugLookRoute
   '/m/$runId/$nick': typeof MRunIdNickRoute
@@ -182,9 +200,11 @@ export interface FileRouteTypes {
     | '/b/$slug'
     | '/lab/$slug'
     | '/m/$runId'
+    | '/m/latest'
     | '/p/$project'
     | '/b/'
     | '/lab/'
+    | '/m/'
     | '/feed/b/$bookId'
     | '/lab/$slug/$look'
     | '/m/$runId/$nick'
@@ -200,9 +220,11 @@ export interface FileRouteTypes {
     | '/api/books'
     | '/b/$slug'
     | '/lab/$slug'
+    | '/m/latest'
     | '/p/$project'
     | '/b'
     | '/lab'
+    | '/m'
     | '/feed/b/$bookId'
     | '/lab/$slug/$look'
     | '/m/$runId/$nick'
@@ -219,9 +241,11 @@ export interface FileRouteTypes {
     | '/b/$slug'
     | '/lab/$slug'
     | '/m/$runId'
+    | '/m/latest'
     | '/p/$project'
     | '/b/'
     | '/lab/'
+    | '/m/'
     | '/feed_/b/$bookId'
     | '/lab/$slug_/$look'
     | '/m/$runId/$nick'
@@ -239,9 +263,11 @@ export interface RootRouteChildren {
   BSlugRoute: typeof BSlugRoute
   LabSlugRoute: typeof LabSlugRoute
   MRunIdRoute: typeof MRunIdRouteWithChildren
+  MLatestRoute: typeof MLatestRoute
   PProjectRoute: typeof PProjectRoute
   BIndexRoute: typeof BIndexRoute
   LabIndexRoute: typeof LabIndexRoute
+  MIndexRoute: typeof MIndexRoute
   FeedBBookIdRoute: typeof FeedBBookIdRoute
   LabSlugLookRoute: typeof LabSlugLookRoute
 }
@@ -283,6 +309,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/m/': {
+      id: '/m/'
+      path: '/m'
+      fullPath: '/m/'
+      preLoaderRoute: typeof MIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lab/': {
       id: '/lab/'
       path: '/lab'
@@ -302,6 +335,13 @@ declare module '@tanstack/react-router' {
       path: '/p/$project'
       fullPath: '/p/$project'
       preLoaderRoute: typeof PProjectRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/m/latest': {
+      id: '/m/latest'
+      path: '/m/latest'
+      fullPath: '/m/latest'
+      preLoaderRoute: typeof MLatestRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/m/$runId': {
@@ -405,9 +445,11 @@ const rootRouteChildren: RootRouteChildren = {
   BSlugRoute: BSlugRoute,
   LabSlugRoute: LabSlugRoute,
   MRunIdRoute: MRunIdRouteWithChildren,
+  MLatestRoute: MLatestRoute,
   PProjectRoute: PProjectRoute,
   BIndexRoute: BIndexRoute,
   LabIndexRoute: LabIndexRoute,
+  MIndexRoute: MIndexRoute,
   FeedBBookIdRoute: FeedBBookIdRoute,
   LabSlugLookRoute: LabSlugLookRoute,
 }
