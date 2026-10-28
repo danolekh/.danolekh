@@ -24,6 +24,7 @@ import { useDirection } from "@/components/ui/direction";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSub,
@@ -273,7 +274,7 @@ function MediaPlayerImpl(props: MediaPlayerProps) {
 
   const isVideo =
     (typeof HTMLVideoElement !== "undefined" && mediaRef.current instanceof HTMLVideoElement) ||
-    mediaRef.current?.tagName?.toLowerCase() === "mux-player";
+    ["mux-player", "mux-video"].includes(mediaRef.current?.tagName?.toLowerCase() ?? "");
 
   const onControlsShow = React.useCallback(() => {
     store.setState("controlsVisible", true);
@@ -2478,7 +2479,8 @@ function MediaPlayerPiP(props: MediaPlayerPiPProps) {
 
       const mediaElement = context.mediaRef.current;
 
-      if (mediaElement instanceof HTMLVideoElement) {
+      // <mux-video> isn't an HTMLVideoElement, but it passes PiP on to the one inside it.
+      if (mediaElement && "requestPictureInPicture" in mediaElement) {
         if (isPictureInPicture) {
           document.exitPictureInPicture().catch((error) => {
             onPipError?.(error, "exit");
@@ -2745,104 +2747,107 @@ function MediaPlayerSettings(props: MediaPlayerSettingsProps) {
         container={context.portalContainer}
         className="w-56 data-[side=top]:mb-3.5"
       >
-        <DropdownMenuLabel className="sr-only">Settings</DropdownMenuLabel>
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger>
-            <span className="flex-1">Speed</span>
-            <Badge variant="outline" className="rounded-none">
-              {mediaPlaybackRate}x
-            </Badge>
-          </DropdownMenuSubTrigger>
-          <DropdownMenuSubContent container={context.portalContainer}>
-            {speeds.map((speed) => (
-              <DropdownMenuItem
-                key={speed}
-                className="justify-between"
-                onClick={() => onPlaybackRateChange(speed)}
-              >
-                {speed}x{mediaPlaybackRate === speed && <IconCheck />}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuSubContent>
-        </DropdownMenuSub>
-        {context.isVideo && mediaRenditionList.length > 0 && (
+        {/* Base UI wants a group label inside a group; without one, opening the menu throws. */}
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="sr-only">Settings</DropdownMenuLabel>
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>
-              <span className="flex-1">Quality</span>
+              <span className="flex-1">Speed</span>
               <Badge variant="outline" className="rounded-none">
-                {selectedRenditionLabel}
+                {mediaPlaybackRate}x
               </Badge>
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent container={context.portalContainer}>
-              <DropdownMenuItem
-                className="justify-between"
-                onClick={() => onRenditionChange("auto")}
-              >
-                Auto
-                {!selectedRenditionId && <IconCheck />}
-              </DropdownMenuItem>
-              {mediaRenditionList
-                .slice()
-                .sort((a, b) => {
-                  const aHeight = a.height ?? 0;
-                  const bHeight = b.height ?? 0;
-                  return bHeight - aHeight;
-                })
-                .map((rendition) => {
-                  const label = rendition.height
-                    ? `${rendition.height}p`
-                    : rendition.width
-                      ? `${rendition.width}p`
-                      : (rendition.id ?? "Unknown");
-
-                  const selected = rendition.id === selectedRenditionId;
-
-                  return (
-                    <DropdownMenuItem
-                      key={rendition.id}
-                      className="justify-between"
-                      onClick={() => onRenditionChange(rendition.id ?? "")}
-                    >
-                      {label}
-                      {selected && <IconCheck />}
-                    </DropdownMenuItem>
-                  );
-                })}
+              {speeds.map((speed) => (
+                <DropdownMenuItem
+                  key={speed}
+                  className="justify-between"
+                  onClick={() => onPlaybackRateChange(speed)}
+                >
+                  {speed}x{mediaPlaybackRate === speed && <IconCheck />}
+                </DropdownMenuItem>
+              ))}
             </DropdownMenuSubContent>
           </DropdownMenuSub>
-        )}
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger>
-            <span className="flex-1">Captions</span>
-            <Badge variant="outline" className="rounded-none">
-              {selectedSubtitleLabel}
-            </Badge>
-          </DropdownMenuSubTrigger>
-          <DropdownMenuSubContent container={context.portalContainer}>
-            <DropdownMenuItem className="justify-between" onClick={onSubtitlesToggle}>
-              Off
-              {!isSubtitlesActive && <IconCheck />}
-            </DropdownMenuItem>
-            {mediaSubtitlesList.map((subtitleTrack) => {
-              const isSelected = mediaSubtitlesShowing.some(
-                (showingSubtitle) => showingSubtitle.label === subtitleTrack.label,
-              );
-              return (
+          {context.isVideo && mediaRenditionList.length > 0 && (
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <span className="flex-1">Quality</span>
+                <Badge variant="outline" className="rounded-none">
+                  {selectedRenditionLabel}
+                </Badge>
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent container={context.portalContainer}>
                 <DropdownMenuItem
-                  key={`${subtitleTrack.kind}-${subtitleTrack.label}-${subtitleTrack.language}`}
                   className="justify-between"
-                  onClick={() => onShowSubtitleTrack(subtitleTrack)}
+                  onClick={() => onRenditionChange("auto")}
                 >
-                  {subtitleTrack.label}
-                  {isSelected && <IconCheck />}
+                  Auto
+                  {!selectedRenditionId && <IconCheck />}
                 </DropdownMenuItem>
-              );
-            })}
-            {mediaSubtitlesList.length === 0 && (
-              <DropdownMenuItem disabled>No captions available</DropdownMenuItem>
-            )}
-          </DropdownMenuSubContent>
-        </DropdownMenuSub>
+                {mediaRenditionList
+                  .slice()
+                  .sort((a, b) => {
+                    const aHeight = a.height ?? 0;
+                    const bHeight = b.height ?? 0;
+                    return bHeight - aHeight;
+                  })
+                  .map((rendition) => {
+                    const label = rendition.height
+                      ? `${rendition.height}p`
+                      : rendition.width
+                        ? `${rendition.width}p`
+                        : (rendition.id ?? "Unknown");
+
+                    const selected = rendition.id === selectedRenditionId;
+
+                    return (
+                      <DropdownMenuItem
+                        key={rendition.id}
+                        className="justify-between"
+                        onClick={() => onRenditionChange(rendition.id ?? "")}
+                      >
+                        {label}
+                        {selected && <IconCheck />}
+                      </DropdownMenuItem>
+                    );
+                  })}
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+          )}
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>
+              <span className="flex-1">Captions</span>
+              <Badge variant="outline" className="rounded-none">
+                {selectedSubtitleLabel}
+              </Badge>
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent container={context.portalContainer}>
+              <DropdownMenuItem className="justify-between" onClick={onSubtitlesToggle}>
+                Off
+                {!isSubtitlesActive && <IconCheck />}
+              </DropdownMenuItem>
+              {mediaSubtitlesList.map((subtitleTrack) => {
+                const isSelected = mediaSubtitlesShowing.some(
+                  (showingSubtitle) => showingSubtitle.label === subtitleTrack.label,
+                );
+                return (
+                  <DropdownMenuItem
+                    key={`${subtitleTrack.kind}-${subtitleTrack.label}-${subtitleTrack.language}`}
+                    className="justify-between"
+                    onClick={() => onShowSubtitleTrack(subtitleTrack)}
+                  >
+                    {subtitleTrack.label}
+                    {isSelected && <IconCheck />}
+                  </DropdownMenuItem>
+                );
+              })}
+              {mediaSubtitlesList.length === 0 && (
+                <DropdownMenuItem disabled>No captions available</DropdownMenuItem>
+              )}
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
+        </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   );

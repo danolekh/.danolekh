@@ -58,6 +58,8 @@ class FakeMedia implements SyncMedia {
   seekLatency = 80;
   stalled = false;
   refuseUnmuted = false;
+  /** Freezes while its rate is off 1x, like WebKit's MSE playback did. */
+  stallsOnRateChange = false;
   /** Data starts this late (WebKit reports a stream's first frame at 0.1 s): paused at 0, the
    *  element never gets past HAVE_CURRENT_DATA; playing, it jumps the gap. */
   startGap = 0;
@@ -169,6 +171,7 @@ class FakeMedia implements SyncMedia {
 
   step(ms: number) {
     if (this.paused || this.seeking || this.stalled || this.readyState < 3) return;
+    if (this.stallsOnRateChange && this.rate !== 1) return;
     this.t += (ms / 1000) * this.rate * this.skew;
     this.sinceTimeupdate += ms;
     if (this.t >= this.duration) {
@@ -410,6 +413,23 @@ describe("SyncGroup", () => {
     for (const m of media) expect(m.paused).toBe(false);
     world.advance(3000, group);
     expect(world.spread()).toBeLessThan(0.06);
+  });
+
+  it("keeps a video whose rate can't change in line by seeking", () => {
+    const { world, group, media } = setup(2);
+    media[1].stallsOnRateChange = true;
+    media[1].skew = 0.995;
+    group.play();
+    // The first nudge stalls it; that's how the group finds out (one excursion, then a seek).
+    world.advance(15_000, group);
+    let worst = 0;
+    for (let i = 0; i < 160; i++) {
+      world.advance(250, group);
+      worst = Math.max(worst, world.spread());
+      expect(media[1].playbackRate).toBe(1);
+    }
+    expect(worst).toBeLessThan(0.2);
+    expect(media[1].currentTime).toBeGreaterThan(50);
   });
 
   it("follows another video when the leader can't play there", () => {

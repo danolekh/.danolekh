@@ -7,7 +7,9 @@
  *    viewer's actions from our own is the whole trick: each call we make on an element is noted
  *    first (`expectPlay`, `seeksPending`, the `rate` we set), and the event it causes is dropped.
  *  - Drift: off by more than 50 ms, a follower runs 2–5% fast or slow until it's back within 15 ms;
- *    more than 500 ms, it's seeked (a little ahead, by how long its last catch-up took).
+ *    more than 500 ms, it's seeked, ahead by where its last catch-up actually landed. A video
+ *    that stalls instead of speeding up when its rate changes (seen in WebKit's MSE) is caught
+ *    doing so and from then on kept in line by seeks alone, past 150 ms.
  *  - Buffering: while one video can't play, the others wait for it (up to `holdTimeout`; after that
  *    it's left behind and caught up once it recovers). A video still being rendered stops just
  *    short of its last segment instead of stalling, and is out of the game until it has more.
@@ -96,6 +98,13 @@ const LIVE_EDGE_JUMP_MS = 600;
 const MAX_GAP = 0.3;
 /** Buffered this far ahead counts as ready to play. */
 const ENOUGH_AHEAD = 0.5;
+/** A nudge is checked after this long: a follower that moved less than half as far as the
+ *  leader is stalled by it (ms). */
+const NUDGE_CHECK_MS = 400;
+/** Followers that can't be nudged are seeked past this drift (s). */
+const SEEK_ONLY_ABOVE = 0.15;
+/** How long after a catch-up its landing is measured (ms). */
+const LANDING_MS = 400;
 
 const EVENTS = [
   "play",
@@ -131,11 +140,18 @@ interface Entry {
   nudge: -1 | 0 | 1;
   /** Seeked by drift correction while the rest play on: not waited for. */
   catchingUp: boolean;
-  catchUpStartedAt: number;
+  /** How far ahead of the leader a catch-up seeks it (s): a seek takes a while to play again. */
+  lead: number;
+  /** When its last catch-up became ready; its drift a little later corrects `lead`. */
+  landedAt: number | null;
   /** Kept the others waiting past holdTimeout; left behind until it can play. */
   stuck: boolean;
   /** When it last started playing: a live (EVENT) stream may jump to its live edge then. */
   playedAt: number;
+  /** While nudged: where it and the leader were when the nudge was last checked. */
+  nudgeCheck: { at: number; self: number; leader: number } | null;
+  /** Rate changes stall it: corrected by seeking only. */
+  seekOnly: boolean;
   off: () => void;
 }
 
@@ -150,8 +166,6 @@ export class SyncGroup {
   private holdingSince: number | null = null;
   private preferred: string | null = null;
   private leaderId: string | null = null;
-  /** How long a catch-up seek took last time (s): followers are seeked this far ahead. */
-  private catchUpLead = 0.15;
   private reconciling = false;
   private lastTick = Number.NEGATIVE_INFINITY;
   private snapshot: SyncSnapshot;
@@ -188,9 +202,12 @@ export class SyncGroup {
       nudge: 0,
       // A video added while the others already play joins them when it's ready.
       catchingUp: this.intent && this.holdingSince === null && this.entries.size > 0,
-      catchUpStartedAt: this.options.now(),
+      lead: 0.15,
+      landedAt: null,
       stuck: false,
       playedAt: Number.NEGATIVE_INFINITY,
+      nudgeCheck: null,
+      seekOnly: false,
       off: () => {},
     };
     const handlers = EVENTS.map((type) => {
@@ -504,27 +521,45 @@ export class SyncGroup {
       if (entry.catchingUp) {
         if (!this.isReady(entry)) continue;
         entry.catchingUp = false;
-        // Next time, seek ahead by what this catch-up cost.
-        const took = (now - entry.catchUpStartedAt) / 1000;
-        this.catchUpLead = Math.min(1.5, Math.max(0.05, this.catchUpLead * 0.5 + took * 0.5));
+        entry.landedAt = now;
       }
-      const drift = entry.media.currentTime - lead;
+      const self = entry.media.currentTime;
+      const drift = self - lead;
       const size = Math.abs(drift);
-      if (size > seekAbove) {
+      if (entry.landedAt !== null) {
+        // Let it get going, then see where the catch-up really put it: some browsers report a
+        // seeked video ready well before it plays again. Next time it's seeked that much further.
+        if (now - entry.landedAt < LANDING_MS) continue;
+        entry.landedAt = null;
+        entry.lead = Math.min(1.5, Math.max(0, entry.lead - drift / this.rate));
+      }
+      const check = entry.nudgeCheck;
+      if (entry.nudge !== 0 && check && now - check.at >= NUDGE_CHECK_MS) {
+        const leaderMoved = lead - check.leader;
+        if (leaderMoved > 0.2 && self - check.self < leaderMoved * 0.5) entry.seekOnly = true;
+        entry.nudgeCheck = { at: now, self, leader: lead };
+      }
+      if (size > (entry.seekOnly ? SEEK_ONLY_ABOVE : seekAbove)) {
         entry.nudge = 0;
+        entry.nudgeCheck = null;
         this.setEntryRate(entry, this.rate);
         entry.catchingUp = true;
-        entry.catchUpStartedAt = now;
-        this.seekEntry(entry, lead + this.catchUpLead * this.rate);
+        entry.landedAt = null;
+        this.seekEntry(entry, lead + entry.lead * this.rate);
         continue;
       }
       const direction = drift < 0 ? 1 : -1;
-      if (size > nudgeAbove || (entry.nudge === direction && size > settleBelow)) {
+      if (
+        !entry.seekOnly &&
+        (size > nudgeAbove || (entry.nudge === direction && size > settleBelow))
+      ) {
         const strength = Math.min(maxNudge, Math.max(minNudge, (size / seekAbove) * maxNudge));
+        if (entry.nudge !== direction) entry.nudgeCheck = { at: now, self, leader: lead };
         entry.nudge = direction;
         this.setEntryRate(entry, this.rate * (1 + direction * strength));
       } else if (entry.nudge !== 0) {
         entry.nudge = 0;
+        entry.nudgeCheck = null;
         this.setEntryRate(entry, this.rate);
       }
     }

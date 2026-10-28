@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { createFileRoute, Link, notFound, useParams, useRouter } from "@tanstack/react-router";
-import { IconArrowLeft, IconMovie } from "@tabler/icons-react";
+import { IconAlertTriangle, IconArrowLeft, IconMovie, IconRefresh } from "@tabler/icons-react";
 import { WatchPage } from "@/components/replays/watch-page";
 import { Button } from "@/components/ui/button";
 import {
@@ -54,6 +54,7 @@ export const Route = createFileRoute("/m/$runId")({
     });
   },
   notFoundComponent: RunNotFound,
+  errorComponent: RunError,
   component: WatchRoute,
 });
 
@@ -124,6 +125,27 @@ function RunNotFound() {
             </Link>
           }
         />
+      </Empty>
+    </div>
+  );
+}
+
+function RunError() {
+  return (
+    <div className="flex min-h-dvh items-center justify-center px-6">
+      <Empty>
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <IconAlertTriangle />
+          </EmptyMedia>
+          <EmptyTitle>The replay stopped</EmptyTitle>
+          <EmptyDescription>
+            Something went wrong on this page. Reloading usually fixes it.
+          </EmptyDescription>
+        </EmptyHeader>
+        <Button size="sm" variant="outline" onClick={() => window.location.reload()}>
+          <IconRefresh /> Reload
+        </Button>
       </Empty>
     </div>
   );

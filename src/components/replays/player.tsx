@@ -1,10 +1,8 @@
 import { useEffect, useLayoutEffect, useRef, type ReactNode } from "react";
-import MuxVideo from "@mux/mux-video-react";
-import { addChapters } from "@mux/playback-core";
-// Mux's playback-core lists hls.js renditions on `video.videoRenditions` (the quality menu) via
-// this polyfill, which mux-video bundles and the React <video> doesn't. Without it, Safari, which
-// has native `videoTracks` but no `addVideoTrack`, breaks hls.js mid-setup and never plays.
-import "media-tracks/polyfill";
+import type MuxVideoElement from "@mux/mux-video";
+// The <mux-video> element, not @mux/mux-video-react: only the element lists hls.js's renditions
+// on `videoRenditions`, which the player's quality menu reads.
+import MuxVideo from "@mux/mux-video/react";
 import { IconLoader2, IconPlayerPlayFilled } from "@tabler/icons-react";
 import {
   MediaPlayer,
@@ -88,14 +86,14 @@ export function PlayerView({
 
   useEffect(() => group.setAvailableUntil(player.name, until), [group, player.name, until]);
 
-  // Chapters go into the src-less chapters track playback-core keeps on the video: a <track src>
-  // would hold Safari's readyState at HAVE_CURRENT_DATA until it loads, and from a blob it never
-  // does. Flipping the mode makes the TextTrackList fire `change`, which media-chrome re-reads.
+  // Chapters go into the src-less chapters track mux-video keeps: a <track src> would hold
+  // Safari's readyState at HAVE_CURRENT_DATA until it loads, and from a blob it never does.
+  // Flipping the mode makes the TextTrackList fire `change`, which media-chrome re-reads.
   useEffect(() => {
-    const media = videoRef.current;
+    const media = videoRef.current as unknown as MuxVideoElement | null;
     if (!media || chapters.length === 0) return;
     let live = true;
-    void addChapters(media, chapters).then((track) => {
+    void media.addChapters(chapters).then((track) => {
       if (!live) return;
       track.mode = "disabled";
       track.mode = "hidden";
@@ -121,7 +119,7 @@ export function PlayerView({
         playsInline
         render={
           <MuxVideo
-            src={src}
+            className="block size-full"
             startTime={startAt}
             preload="auto"
             // hls.js wherever it runs (Safari too): one behaviour to keep in sync, the quality
@@ -132,6 +130,7 @@ export function PlayerView({
             capRenditionToPlayerSize
             disableTracking
             disableCookies
+            src={src}
           />
         }
       />
