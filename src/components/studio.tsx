@@ -121,7 +121,7 @@ function Hero() {
         <div className="mt-8 flex flex-col items-center gap-4">
           <BookCall />
           <p className="flex items-center gap-3 text-sm font-medium text-neutral-600">
-            {PRODUCTS_SHIPPED} products shipped
+            {PRODUCTS_SHIPPED}+ products shipped
             <span role="img" aria-label="Rated 5.0 on Upwork" className="flex gap-0.5 text-neutral-900">
               {[0, 1, 2, 3, 4].map((i) => (
                 <svg key={i} viewBox="0 0 20 20" className="size-4" fill="currentColor" aria-hidden="true">
