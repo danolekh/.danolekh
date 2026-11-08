@@ -1,26 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Studio } from "@/components/studio";
 import { createMeta } from "@/lib/seo";
 import { siteConfig } from "@/lib/config";
-import Hero from "./_components/-hero";
-import Projects from "./_components/-projects";
-import Skills from "./_components/-skills";
 
 export const Route = createFileRoute("/")({
-  component: App,
+  component: Studio,
+  staticData: { bare: true },
   head: () =>
     createMeta({
+      title: "Websites and web apps, designed and built",
       description:
-        "Dan Olekh — software engineer building fast, user-loved web platforms in TypeScript. Case studies from Consolline, SportMagaz and Oasi Kadir, plus writing and a reading feed.",
+        "I'm Dan, an engineer in Vienna. I design and build websites, online stores, booking systems and web apps, usually live in weeks.",
       url: siteConfig.url,
     }),
 });
-
-function App() {
-  return (
-    <>
-      <Hero />
-      <Projects />
-      <Skills />
-    </>
-  );
-}

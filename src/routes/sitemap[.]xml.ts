@@ -29,6 +29,7 @@ export const Route = createFileRoute("/sitemap.xml")({
       GET: () => {
         const entries: Entry[] = [
           { path: "/" },
+          { path: "/about" },
           { path: "/b" },
           { path: "/resume" },
           { path: "/feed" },

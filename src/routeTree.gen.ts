@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ResumeRouteImport } from './routes/resume'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as NewRouteImport } from './routes/new'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as FeedRouteRouteImport } from './routes/feed/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MIndexRouteImport } from './routes/m.index'
@@ -42,6 +44,16 @@ const ResumeRoute = ResumeRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewRoute = NewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FeedRouteRoute = FeedRouteRouteImport.update({
@@ -128,6 +140,8 @@ const FeedBBookIdModalRoute = FeedBBookIdModalRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/feed': typeof FeedRouteRouteWithChildren
+  '/about': typeof AboutRoute
+  '/new': typeof NewRoute
   '/privacy': typeof PrivacyRoute
   '/resume': typeof ResumeRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -149,6 +163,8 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/feed': typeof FeedRouteRouteWithChildren
+  '/about': typeof AboutRoute
+  '/new': typeof NewRoute
   '/privacy': typeof PrivacyRoute
   '/resume': typeof ResumeRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -170,6 +186,8 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/feed': typeof FeedRouteRouteWithChildren
+  '/about': typeof AboutRoute
+  '/new': typeof NewRoute
   '/privacy': typeof PrivacyRoute
   '/resume': typeof ResumeRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -193,6 +211,8 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/feed'
+    | '/about'
+    | '/new'
     | '/privacy'
     | '/resume'
     | '/sitemap.xml'
@@ -214,6 +234,8 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/feed'
+    | '/about'
+    | '/new'
     | '/privacy'
     | '/resume'
     | '/sitemap.xml'
@@ -234,6 +256,8 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/feed'
+    | '/about'
+    | '/new'
     | '/privacy'
     | '/resume'
     | '/sitemap.xml'
@@ -256,6 +280,8 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   FeedRouteRoute: typeof FeedRouteRouteWithChildren
+  AboutRoute: typeof AboutRoute
+  NewRoute: typeof NewRoute
   PrivacyRoute: typeof PrivacyRoute
   ResumeRoute: typeof ResumeRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -293,6 +319,20 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/new': {
+      id: '/new'
+      path: '/new'
+      fullPath: '/new'
+      preLoaderRoute: typeof NewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/feed': {
@@ -438,6 +478,8 @@ const MRunIdRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   FeedRouteRoute: FeedRouteRouteWithChildren,
+  AboutRoute: AboutRoute,
+  NewRoute: NewRoute,
   PrivacyRoute: PrivacyRoute,
   ResumeRoute: ResumeRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,

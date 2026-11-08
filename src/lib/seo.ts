@@ -184,7 +184,6 @@ export function siteJsonLd(): JsonLd {
           "WebGL",
           "Web performance",
         ],
-        email: `mailto:${siteConfig.email}`,
         sameAs: [
           siteConfig.links.twitter,
           siteConfig.links.github,
