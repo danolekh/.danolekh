@@ -137,18 +137,19 @@ function Hero() {
   );
 }
 
-const LOGOS = [
+const LOGOS: { name: string; src: string; photo?: boolean }[] = [
   { name: "Oasi Kadir", src: "/clients/logos/oasi-kadir.webp" },
   { name: "Consolline", src: "/clients/logos/consolline.webp" },
   { name: "SportMagaz", src: "/clients/logos/sportmagaz.webp" },
   { name: "Lean Travel Management", src: "/clients/logos/lean-travel.webp" },
   { name: "U-Dak Dakdekkers", src: "/clients/logos/u-dak.webp" },
+  { name: "Micrologus Studio", src: "/clients/logos/micrologus.webp", photo: true },
 ];
 
 /** Who I've built for, in one grey, drifting past. The second copy is what makes the loop seamless. */
 function ClientLogos() {
   return (
-    <section aria-label="Clients" className="logo-rail mx-auto max-w-6xl overflow-hidden pb-16 [mask-image:linear-gradient(90deg,transparent,#000_12%,#000_88%,transparent)]">
+    <section aria-label="Clients" className="logo-rail mx-auto max-w-6xl overflow-hidden pt-12 pb-8 min-[700px]:pt-0 [mask-image:linear-gradient(90deg,transparent,#000_12%,#000_88%,transparent)]">
       <style>{`
         @keyframes logo-rail { to { transform: translateX(-50%) } }
         .logo-rail ul { animation: logo-rail 36s linear infinite; }
@@ -159,34 +160,11 @@ function ClientLogos() {
         {[0, 1, 2, 3].map((copy) =>
           LOGOS.map((logo) => (
             <li key={`${copy}-${logo.name}`} aria-hidden={copy > 0 || undefined} className="shrink-0 px-10">
-              <img src={logo.src} alt={copy > 0 ? "" : logo.name} loading="lazy" className="h-8 w-auto max-w-[190px] object-contain opacity-50 brightness-0" />
+              <img src={logo.src} alt={copy > 0 ? "" : logo.name} loading="lazy" className={`h-8 w-auto max-w-[190px] object-contain opacity-50 ${logo.photo ? "grayscale" : "brightness-0"}`} />
             </li>
           )),
         )}
       </ul>
-    </section>
-  );
-}
-
-const PROOF = [
-  { value: "69 → 99", label: "Mobile PageSpeed score", who: "Oasi Kadir", project: "oasi-kadir" },
-  { value: "16 s → under 2 s", label: "Page load on a phone", who: "Oasi Kadir", project: "oasi-kadir" },
-  { value: "2,000+", label: "Products in a custom admin panel", who: "SportMagaz", project: "sportmagaz" },
-  { value: "4 languages", label: "148 pages, built on my own", who: "Consolline", project: "consolline" },
-] as const;
-
-function Proof() {
-  return (
-    <section aria-label="Results" className="mx-auto max-w-6xl px-6 pt-12 pb-24 min-[700px]:pt-0">
-      <Reveal id="proof" className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-4">
-        {PROOF.map((p) => (
-          <Link key={p.label} to="/p/$project" params={{ project: p.project }} className="group block">
-            <p className="text-3xl font-semibold tracking-tight">{p.value}</p>
-            <p className="mt-2 text-sm text-neutral-600">{p.label}</p>
-            <p className="mt-1 text-sm text-neutral-500 transition-colors duration-300 group-hover:text-neutral-900">{p.who}</p>
-          </Link>
-        ))}
-      </Reveal>
     </section>
   );
 }
@@ -693,7 +671,6 @@ export function Studio() {
       <main className="relative z-10">
         <Hero />
         <ClientLogos />
-        <Proof />
         <Tagline />
         <Services />
         <How />

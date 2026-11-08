@@ -51,7 +51,8 @@ const COMMENT = "Love the globe.";
 // ------------------------------------------------------------------ the design step
 
 const PIN = toStage(1090, 720);
-const SWATCH: [number, number] = [STAGE_W - RIGHT_W + 42, 318];
+// Where the cursor's tip lands on the gradient swatch in the Fill panel.
+const SWATCH: [number, number] = [STAGE_W - RIGHT_W + 51, 242];
 const CURSOR_START: [number, number] = [STAGE_W - 60, STAGE_H - 50];
 const OFFSTAGE: [number, number] = [STAGE_W + 40, 90];
 // In board pixels, measured from the text it selects.
