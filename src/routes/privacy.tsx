@@ -45,32 +45,28 @@ function PrivacyPage() {
         <div className="space-y-8">
           <Section id="website" title="Visitors to this website">
             <p>
-              I use PostHog, hosted in the EU, to understand how this site is used. It runs in two
-              modes, and you choose between them in the note the site shows you.
+              I use PostHog, hosted in the EU, to understand how this site is used. It stores an
+              identifier in a first-party cookie and local storage for up to a year, so a return
+              visit counts as the same visitor, and records your session as a replay of the page.
+              Anything typed into a field is masked.
             </p>
             <p>
-              <strong className="font-medium text-foreground">If you say no or don't answer:</strong>{" "}
-              nothing is stored in your browser. I see the pages you open, what you click, how long
-              you read each section, your device and browser, the site you came from, and your
-              country, region, city and network provider or company as Cloudflare derives them from
-              your IP address. Your IP address itself is not kept, and you can't be recognised on a
-              later day.
-            </p>
-            <p>
-              <strong className="font-medium text-foreground">If you say yes:</strong> PostHog also
-              stores an identifier in a first-party cookie and local storage for up to a year, so a
-              return visit counts as the same visitor, and it records your session as a replay of
-              the page. Anything typed into a field is masked. The legal basis is your consent, and
-              you can withdraw it by clearing this site's data in your browser.
+              I see the pages you open, what you click, how long you read each section, your device
+              and browser, the site you came from, and your country, region, city and network
+              provider or company as Cloudflare derives them from your IP address. Your IP address
+              itself is not kept.
             </p>
             <p>
               <strong className="font-medium text-foreground">If you book a call:</strong> Cal.com
-              takes your booking and passes your name, email and timezone to my analytics. If you
-              said yes above, the booking is linked to your visit. If not, it stays separate.
+              takes your booking and passes your name, email and timezone to my analytics, linked to
+              your visit.
             </p>
             <p>
-              Analytics data is kept for as long as my PostHog plan retains it, and I'll delete yours
-              if you write to me. You can also ask what I hold about you, or complain to the Austrian
+              To opt out, block cookies for this site or use a tracker blocker, or write to me and I
+              will delete what I hold about you.
+            </p>
+            <p>
+              Analytics data is kept for as long as my PostHog plan retains it. You can also ask what I hold about you, or complain to the Austrian
               data protection authority (dsb.gv.at). Nothing here is sold or used for advertising.
             </p>
           </Section>

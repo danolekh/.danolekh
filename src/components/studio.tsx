@@ -8,7 +8,7 @@ import { ClientGlobe } from "@/components/client-globe";
 import { HowStage, STEP_ENDS, type Step } from "@/components/how-stage";
 import { ServiceTiles } from "@/components/service-tiles";
 import { WorkGallery } from "@/components/work-gallery";
-import { consentedVisitorId, track } from "@/lib/analytics";
+import { track, visitorId } from "@/lib/analytics";
 import { useSectionTracking } from "@/lib/analytics/sections";
 
 // The page buyers see: what I build, the proof, how it runs, what it costs. One action everywhere.
@@ -61,7 +61,7 @@ function BookCall({ where, label = "Book a call", size = "lg", invert }: { where
     track("book_call_click", { where, label });
     const url = new URL(CAL);
     url.searchParams.set("metadata[where]", where);
-    const visitor = consentedVisitorId();
+    const visitor = visitorId();
     if (visitor) url.searchParams.set("metadata[ph_id]", visitor);
     e.currentTarget.href = url.href;
   };

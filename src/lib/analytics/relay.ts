@@ -1,8 +1,7 @@
 import { POSTHOG_API, POSTHOG_ASSETS, POSTHOG_KEY, RELAY_PATH } from "./config";
 
 // The Worker side of analytics, ahead of the app router so trailing slashes reach PostHog untouched.
-//   /rly/geo     what Cloudflare knows about this request: PostHog gets no IP in cookieless mode, so
-//                this is where country, city and network come from for visitors who didn't consent
+//   /rly/geo     what Cloudflare knows about this request: country, city and the network or company
 //   /rly/cal     Cal.com's booking webhook, which turns "clicked Book a call" into a name and email
 //   /rly/*       everything else goes to PostHog, with the visitor's IP for its GeoIP step
 
@@ -98,8 +97,8 @@ async function cal(request: Request, env: { CAL_WEBHOOK_SECRET?: string }, ctx: 
   const attendee = payload?.attendees?.[0];
   if (!event || !attendee?.email) return new Response(null, { status: 204 });
 
-  // A visitor who agreed to tracking arrives with their PostHog id, so the booking lands on the same
-  // person as their visit and its replay. Anyone else stays separate from their browsing.
+  // The visitor's PostHog id rides along from the click, so the booking lands on the same person as
+  // their visit and its replay. Without it (opted out, or booked from elsewhere) it stands alone.
   const visitor = payload?.metadata?.ph_id;
   const distinct_id = typeof visitor === "string" && visitor ? visitor : attendee.email;
   const properties = {

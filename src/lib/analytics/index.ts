@@ -1,10 +1,8 @@
 import type { PostHogInterface as PostHog } from "posthog-js";
 import { POSTHOG_KEY, POSTHOG_UI, RELAY_PATH } from "./config";
 
-// Two levels of tracking, both through PostHog:
-//   no answer or declined: cookieless. Nothing is stored in the browser and visitors are counted by a
-//     daily hash on PostHog's side. Pages, clicks, sections and heatmaps still arrive.
-//   accepted: a persistent id, which adds returning visitors, session replay and a person profile.
+// Every visitor gets a persistent id, session replay and a person profile. Visitors who answered
+// "No thanks" to the old consent note keep their opt-out (PostHog stored it in localStorage).
 
 type Props = Record<string, unknown>;
 
@@ -28,7 +26,7 @@ function allowed() {
     if (new URLSearchParams(location.search).has("me")) localStorage.setItem(ME, "1");
     if (localStorage.getItem(ME)) return false;
   } catch {
-    // Storage blocked: carry on, cookieless needs none of it.
+    // Storage blocked: carry on, PostHog falls back to memory.
   }
   return true;
 }
@@ -49,9 +47,6 @@ async function fetchVisitor(): Promise<Props> {
   return found;
 }
 
-function setPerson(ph: PostHog) {
-  if (ph.get_explicit_consent_status() === "granted") ph.setPersonProperties(visitor);
-}
 
 /** Loads PostHog after the page has settled. Safe to call more than once. */
 export function startAnalytics(): Promise<PostHog | undefined> {
@@ -71,9 +66,6 @@ export function startAnalytics(): Promise<PostHog | undefined> {
           api_host: `${location.origin}${RELAY_PATH}`,
           ui_host: POSTHOG_UI,
           defaults: "2026-08-30",
-          cookieless_mode: "on_reject",
-          // With no answer, count the visit cookieless instead of dropping it.
-          opt_out_capturing_by_default: true,
           cross_subdomain_cookie: false,
           person_profiles: "identified_only",
           autocapture: true,
@@ -96,7 +88,7 @@ export function startAnalytics(): Promise<PostHog | undefined> {
             posthog = client;
             for (const [event, props] of queue) client.capture(event, props);
             queue = [];
-            setPerson(client);
+            if (!client.has_opted_out_capturing()) client.setPersonProperties(visitor);
             resolve(client);
           },
         });
@@ -119,23 +111,7 @@ export function trackNow(event: string, props?: Props) {
   if (posthog) posthog.capture(event, props, { transport: "sendBeacon", send_instantly: true });
 }
 
-/** The visitor's PostHog id, only when they agreed to be recognised. */
-export function consentedVisitorId(): string | undefined {
-  return posthog?.get_explicit_consent_status() === "granted" ? posthog.get_distinct_id() : undefined;
-}
-
-export type Consent = "pending" | "granted" | "denied";
-
-export function consentStatus(): Consent | undefined {
-  return posthog?.get_explicit_consent_status();
-}
-
-export function setConsent(granted: boolean) {
-  if (!posthog) return;
-  if (granted) {
-    posthog.opt_in_capturing();
-    setPerson(posthog);
-  } else {
-    posthog.opt_out_capturing();
-  }
+/** The visitor's PostHog id, so a Cal.com booking lands on the same person as the visit. */
+export function visitorId(): string | undefined {
+  return posthog && !posthog.has_opted_out_capturing() ? posthog.get_distinct_id() : undefined;
 }
