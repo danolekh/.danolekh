@@ -8,6 +8,8 @@ import { ClientGlobe } from "@/components/client-globe";
 import { HowStage, STEP_ENDS, type Step } from "@/components/how-stage";
 import { ServiceTiles } from "@/components/service-tiles";
 import { WorkGallery } from "@/components/work-gallery";
+import { consentedVisitorId, track } from "@/lib/analytics";
+import { useSectionTracking } from "@/lib/analytics/sections";
 
 // The page buyers see: what I build, the proof, how it runs, what it costs. One action everywhere.
 
@@ -52,13 +54,23 @@ function Reveal({ id, children, className }: { id: string; children: ReactNode; 
   );
 }
 
-function BookCall({ label = "Book a call", size = "lg", invert }: { label?: string; size?: "sm" | "lg"; invert?: boolean }) {
+function BookCall({ where, label = "Book a call", size = "lg", invert }: { where: string; label?: string; size?: "sm" | "lg"; invert?: boolean }) {
   const big = size === "lg";
+  // The webhook behind Cal.com reads these back, which ties the booking to the click (see relay.ts).
+  const onClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    track("book_call_click", { where, label });
+    const url = new URL(CAL);
+    url.searchParams.set("metadata[where]", where);
+    const visitor = consentedVisitorId();
+    if (visitor) url.searchParams.set("metadata[ph_id]", visitor);
+    e.currentTarget.href = url.href;
+  };
   return (
     <a
       href={CAL}
       target="_blank"
       rel="noopener"
+      onClick={onClick}
       className={`pointer-events-auto inline-flex items-center rounded-full font-semibold transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900 active:translate-y-px ${
         big ? "h-14 gap-3 pr-6 pl-2 text-base" : "h-10 gap-2 pr-4 pl-1 text-sm"
       } ${invert ? "bg-white text-neutral-900 hover:bg-neutral-200" : "bg-neutral-900 text-white hover:bg-neutral-700"}`}
@@ -96,7 +108,7 @@ function Nav() {
           </a>
         ))}
         <span className="ml-2">
-          <BookCall size="sm" />
+          <BookCall where="nav" size="sm" />
         </span>
       </div>
     </nav>
@@ -109,7 +121,7 @@ const PRODUCTS_SHIPPED = 10;
 
 function Hero() {
   return (
-    <div className="relative min-[700px]:has-[canvas]:h-(--gallery-height)" id="top">
+    <div className="relative min-[700px]:has-[canvas]:h-(--gallery-height)" id="top" data-section="hero">
       <header className="pointer-events-none relative z-10 mx-auto max-w-170 px-6 pt-24 text-center">
         <h1 className="text-4xl font-semibold tracking-tight text-balance min-[700px]:text-5xl">
           Your website or web app, designed, built and live in weeks.
@@ -119,7 +131,7 @@ function Hero() {
           version of your site before you pay.
         </p>
         <div className="mt-8 flex flex-col items-center gap-4">
-          <BookCall />
+          <BookCall where="hero" />
           <p className="flex items-center gap-3 text-sm font-medium text-neutral-600">
             {PRODUCTS_SHIPPED}+ products shipped
             <span role="img" aria-label="Rated 5.0 on Upwork" className="flex gap-0.5 text-neutral-900">
@@ -149,7 +161,7 @@ const LOGOS: { name: string; src: string; photo?: boolean }[] = [
 /** Who I've built for, in one grey, drifting past. The second copy is what makes the loop seamless. */
 function ClientLogos() {
   return (
-    <section aria-label="Clients" className="logo-rail mx-auto max-w-6xl overflow-hidden pt-12 pb-8 min-[700px]:pt-0 [mask-image:linear-gradient(90deg,transparent,#000_12%,#000_88%,transparent)]">
+    <section data-section="logos" aria-label="Clients" className="logo-rail mx-auto max-w-6xl overflow-hidden pt-12 pb-8 min-[700px]:pt-0 [mask-image:linear-gradient(90deg,transparent,#000_12%,#000_88%,transparent)]">
       <style>{`
         @keyframes logo-rail { to { transform: translateX(-50%) } }
         .logo-rail ul { animation: logo-rail 36s linear infinite; }
@@ -214,7 +226,7 @@ function Tagline() {
     };
   }, [words.length]);
   return (
-    <section className="mx-auto max-w-4xl px-6 py-24">
+    <section data-section="tagline" className="mx-auto max-w-4xl px-6 py-24">
       <p ref={ref} className="text-4xl font-semibold tracking-tight text-balance min-[700px]:text-6xl">
         {words.map((w, i) => (
           <span
@@ -232,7 +244,7 @@ function Tagline() {
 
 function Services() {
   return (
-    <section aria-labelledby="services" className="mx-auto max-w-6xl scroll-mt-24 px-6 py-24">
+    <section data-section="services" aria-labelledby="services" className="mx-auto max-w-6xl scroll-mt-24 px-6 py-24">
       <Reveal id="services">
         <h2 id="services" className="max-w-2xl text-4xl font-semibold tracking-tight text-balance">
           If it runs on the web, I can build it.
@@ -329,7 +341,7 @@ function How() {
     setActive(p < STEP_ENDS[0] ? 0 : p < STEP_ENDS[1] ? 1 : 2);
   });
   return (
-    <section ref={section} id="how" className="scroll-mt-16 py-24">
+    <section ref={section} data-section="how" id="how" className="scroll-mt-16 py-24">
       <div className="mx-auto grid max-w-[1320px] gap-x-12 px-6 min-[900px]:grid-cols-[1fr_2fr]">
         <div className="min-[900px]:col-start-1">
           <h2 className="max-w-md text-4xl font-semibold tracking-tight text-balance">From a conversation to working software.</h2>
@@ -410,6 +422,13 @@ const CLIENTS = [
 function Clients() {
   const [active, setActive] = useState<number | null>(null);
   const list = useRef<HTMLUListElement>(null);
+  const read = useRef(new Set<number>());
+  const markRead = (i: number) => {
+    const client = CLIENTS[i];
+    if (!client || read.current.has(i)) return;
+    read.current.add(i);
+    track("testimonial_read", { client: client.name });
+  };
 
   // Phones get one comment at a time under the globe; swiping to the next one turns it.
   useEffect(() => {
@@ -419,7 +438,11 @@ function Clients() {
     const io = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
-          if (entry.isIntersecting) setActive(Number((entry.target as HTMLElement).dataset.client));
+          if (!entry.isIntersecting) continue;
+          const i = Number((entry.target as HTMLElement).dataset.client);
+          setActive(i);
+          // The first comment is there on arrival, so only a swipe says anything.
+          if (i > 0) markRead(i);
         }
       },
       { root: el, threshold: 0.7 },
@@ -429,7 +452,7 @@ function Clients() {
   }, []);
 
   return (
-    <section aria-labelledby="clients" className="mx-auto max-w-6xl scroll-mt-24 px-6 py-24">
+    <section data-section="clients" aria-labelledby="clients" className="mx-auto max-w-6xl scroll-mt-24 px-6 py-24">
       <Reveal id="clients">
         <div className="grid gap-x-12 min-[900px]:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] min-[900px]:items-center">
           <div>
@@ -448,7 +471,11 @@ function Clients() {
               <li
                 key={c.name}
                 data-client={i}
-                onPointerEnter={(e) => e.pointerType === "mouse" && setActive(i)}
+                onPointerEnter={(e) => {
+                  if (e.pointerType !== "mouse") return;
+                  setActive(i);
+                  markRead(i);
+                }}
                 onPointerLeave={(e) => e.pointerType === "mouse" && setActive(null)}
                 className={`w-[86%] shrink-0 snap-center rounded-2xl p-6 transition-[background-color,box-shadow,opacity] duration-300 min-[900px]:w-auto ${
                   active === i ? "bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.08),0_16px_40px_rgba(0,0,0,0.08)]" : "bg-neutral-100/70"
@@ -469,7 +496,10 @@ function Clients() {
                     type="button"
                     onFocus={() => setActive(i)}
                     onBlur={() => setActive(null)}
-                    onClick={() => setActive(i)}
+                    onClick={() => {
+                      setActive(i);
+                      markRead(i);
+                    }}
                     className="inline-flex items-center gap-1.5 rounded transition-colors duration-300 hover:text-neutral-900"
                   >
                     <svg viewBox="0 0 16 16" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
@@ -493,7 +523,7 @@ function Clients() {
           </ul>
         </div>
         <div className="mt-12 text-center">
-          <BookCall />
+          <BookCall where="clients" />
         </div>
       </Reveal>
     </section>
@@ -533,7 +563,7 @@ const PLANS = [
 
 function Pricing() {
   return (
-    <section id="pricing" className="mx-auto max-w-6xl scroll-mt-24 px-6 py-24">
+    <section data-section="pricing" id="pricing" className="mx-auto max-w-6xl scroll-mt-24 px-6 py-24">
       <Reveal id="pricing">
         <h2 className="text-4xl font-semibold tracking-tight text-balance">Two ways to work together.</h2>
         <div className="mt-12 grid gap-6 min-[900px]:grid-cols-2">
@@ -556,7 +586,7 @@ function Pricing() {
                 ))}
               </ul>
               <div className="mt-auto">
-                <BookCall label={p.cta} invert={i === 0} />
+                <BookCall where={`pricing_${p.name.toLowerCase()}`} label={p.cta} invert={i === 0} />
               </div>
             </article>
           ))}
@@ -594,14 +624,14 @@ const FAQ = [
 
 function Questions() {
   return (
-    <section aria-labelledby="faq" className="mx-auto max-w-3xl px-6 py-24">
+    <section data-section="faq" aria-labelledby="faq" className="mx-auto max-w-3xl px-6 py-24">
       <Reveal id="faq">
         <h2 id="faq" className="text-4xl font-semibold tracking-tight">
           Questions
         </h2>
         <Accordion.Root className="mt-12 border-t border-neutral-300">
           {FAQ.map(([q, a]) => (
-            <Accordion.Item key={q} className="border-b border-neutral-300">
+            <Accordion.Item key={q} onOpenChange={(open) => open && track("faq_open", { question: q })} className="border-b border-neutral-300">
               <Accordion.Header>
                 <Accordion.Trigger className="group flex w-full items-center justify-between gap-6 py-4 text-left text-lg font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900">
                   {q}
@@ -623,14 +653,14 @@ function Questions() {
 
 function Closing() {
   return (
-    <section className="mx-auto max-w-2xl px-6 py-24 text-center">
+    <section data-section="closing" className="mx-auto max-w-2xl px-6 py-24 text-center">
       <Reveal id="closing">
         <h2 className="text-5xl font-semibold tracking-tight text-balance">Have something to build?</h2>
         <p className="mt-6 text-lg text-pretty text-neutral-600">
           Bring the problem, the idea or the stalled build. I'll help you find the clearest way to working software.
         </p>
         <div className="mt-8">
-          <BookCall />
+          <BookCall where="closing" />
         </div>
       </Reveal>
     </section>
@@ -650,6 +680,7 @@ function Footer() {
         <Link to="/about" className="transition-colors duration-300 hover:text-neutral-900">About</Link>
         <Link to="/b" className="transition-colors duration-300 hover:text-neutral-900">Writing</Link>
         <Link to="/lab" className="transition-colors duration-300 hover:text-neutral-900">Lab</Link>
+        <Link to="/privacy" className="transition-colors duration-300 hover:text-neutral-900">Privacy</Link>
         {links.map(([label, href]) => (
           <a key={label} href={href} target="_blank" rel="noopener" className="transition-colors duration-300 hover:text-neutral-900">
             {label}
@@ -661,8 +692,11 @@ function Footer() {
 }
 
 export function Studio() {
+  const page = useRef<HTMLDivElement>(null);
+  useSectionTracking(page);
   return (
     <div
+      ref={page}
       className="studio relative min-h-dvh overflow-x-clip bg-white text-neutral-900 [--gallery-height:300px] min-[700px]:[--gallery-height:1152px] min-[700px]:[--gallery-mask:linear-gradient(to_bottom,black_calc(100%-90px),transparent)]"
       style={{ colorScheme: "light" }}
     >

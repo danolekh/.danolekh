@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { pageCover, startFlight, takeReturn, type Flight, type Rect } from "./flight";
 import { createRenderer, type Hit, type Renderer } from "./renderer";
+import { track } from "@/lib/analytics";
 import { work, type WorkItem } from "./projects";
 
 /** Rows on a wide screen. */
@@ -207,6 +208,8 @@ export function WorkGallery({ topRowCenter, narrowHeight }: { topRowCenter: numb
         };
 
         const open = (hit: Hit) => {
+          // Canvas: autocapture sees a click on nothing, so the card has to say what it was.
+          track("work_open", { slug: hit.item.slug, title: hit.item.title, external: !!hit.item.external });
           if (hit.item.external) {
             window.open(hit.item.href, "_blank", "noopener");
             return;

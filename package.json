@@ -62,6 +62,7 @@
     "motion-panels": "^0.6.1",
     "next-themes": "^0.4.6",
     "nitro": "latest",
+    "posthog-js": "^1.447.4",
     "postprocessing": "^6.38.3",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",

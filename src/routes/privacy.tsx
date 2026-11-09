@@ -5,21 +5,21 @@ import { Button } from "@/components/ui/button";
 import { createMeta } from "@/lib/seo";
 import { siteConfig } from "@/lib/config";
 
-// The privacy policy Google's OAuth consent screen links to. It covers Dan's own tools
-// (Executor + Claude reading his mailbox), not visitors of this site.
+// The privacy policy Google's OAuth consent screen links to, covering Dan's own tools (Executor +
+// Claude reading his mailbox), and what this site records about its visitors.
 export const Route = createFileRoute("/privacy")({
   component: PrivacyPage,
   head: () =>
     createMeta({
       title: "Privacy",
-      description: "Privacy policy for Dan Olekh's personal tools",
+      description: "What this site records about visitors, and how Dan Olekh's personal tools use Google data",
       url: `${siteConfig.url}/privacy`,
     }),
 });
 
-function Section({ title, children }: { title: string; children: ReactNode }) {
+function Section({ id, title, children }: { id?: string; title: string; children: ReactNode }) {
   return (
-    <section className="border-t border-dashed pt-6">
+    <section id={id} className="scroll-mt-6 border-t border-dashed pt-6">
       <h2 className="text-xl font-semibold tracking-tight text-foreground">{title}</h2>
       <div className="mt-3 space-y-3 leading-relaxed text-muted-foreground">{children}</div>
     </section>
@@ -39,15 +39,47 @@ function PrivacyPage() {
           <h1 className="text-3xl font-semibold tracking-tight text-foreground lg:text-4xl">
             Privacy
           </h1>
-          <p className="mt-2 text-sm text-muted-foreground">Last updated September 25, 2026</p>
+          <p className="mt-2 text-sm text-muted-foreground">Last updated November 9, 2026</p>
         </header>
 
         <div className="space-y-8">
-          <Section title="What this covers">
+          <Section id="website" title="Visitors to this website">
             <p>
-              This policy covers the personal tools I, Dan Olekh, run on my own computer, including
-              the "Executor app" Google OAuth client. They are for my own use only and are not
-              offered to anyone else.
+              I use PostHog, hosted in the EU, to understand how this site is used. It runs in two
+              modes, and you choose between them in the note the site shows you.
+            </p>
+            <p>
+              <strong className="font-medium text-foreground">If you say no or don't answer:</strong>{" "}
+              nothing is stored in your browser. I see the pages you open, what you click, how long
+              you read each section, your device and browser, the site you came from, and your
+              country, region, city and network provider or company as Cloudflare derives them from
+              your IP address. Your IP address itself is not kept, and you can't be recognised on a
+              later day.
+            </p>
+            <p>
+              <strong className="font-medium text-foreground">If you say yes:</strong> PostHog also
+              stores an identifier in a first-party cookie and local storage for up to a year, so a
+              return visit counts as the same visitor, and it records your session as a replay of
+              the page. Anything typed into a field is masked. The legal basis is your consent, and
+              you can withdraw it by clearing this site's data in your browser.
+            </p>
+            <p>
+              <strong className="font-medium text-foreground">If you book a call:</strong> Cal.com
+              takes your booking and passes your name, email and timezone to my analytics. If you
+              said yes above, the booking is linked to your visit. If not, it stays separate.
+            </p>
+            <p>
+              Analytics data is kept for as long as my PostHog plan retains it, and I'll delete yours
+              if you write to me. You can also ask what I hold about you, or complain to the Austrian
+              data protection authority (dsb.gv.at). Nothing here is sold or used for advertising.
+            </p>
+          </Section>
+
+          <Section title="My personal tools">
+            <p>
+              The rest of this page covers the personal tools I, Dan Olekh, run on my own computer,
+              including the "Executor app" Google OAuth client. They are for my own use only and are
+              not offered to anyone else.
             </p>
           </Section>
 

@@ -8,6 +8,7 @@ import { ThemeProvider, useTheme } from "next-themes";
 import { CustomCursor } from "@/components/custom-cursor";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { SiteBackground } from "@/components/site-background";
+import { Analytics } from "@/components/analytics";
 
 declare module "@tanstack/react-router" {
   interface StaticDataRouteOption {
@@ -88,6 +89,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <ThemeProvider attribute={"class"} enableSystem disableTransitionOnChange>
           <CustomCursor />
           {children}
+          <Analytics />
         </ThemeProvider>
         {import.meta.env.DEV && !bare && (
           <TanStackDevtools
