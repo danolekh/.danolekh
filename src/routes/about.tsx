@@ -10,9 +10,9 @@ export const Route = createFileRoute("/about")({
   component: About,
   head: () =>
     createMeta({
-      title: "About Dan Olekh",
+      title: "About Daniil (Dan) Olekh",
       description:
-        "Dan Olekh, a software engineer in Vienna building fast web platforms in TypeScript. Projects, case studies and skills.",
+        "Daniil (Dan) Olekh, a software engineer in Vienna building fast web platforms in TypeScript. Projects, case studies and skills.",
       url: `${siteConfig.url}/about`,
     }),
 });

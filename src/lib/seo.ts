@@ -162,6 +162,7 @@ export function siteJsonLd(): JsonLd {
         "@id": WEBSITE_ID,
         url: siteConfig.url,
         name: siteConfig.name,
+        alternateName: ["Daniil Olekh", "danolekh.com"],
         description: siteConfig.description,
         inLanguage: "en",
         publisher: { "@id": PERSON_ID },
@@ -169,8 +170,14 @@ export function siteJsonLd(): JsonLd {
       {
         "@type": "Person",
         "@id": PERSON_ID,
-        name: siteConfig.name,
+        // Legal first name first: people search "Daniil Olekh" (as on LinkedIn), the site says "Dan".
+        name: "Daniil Olekh",
+        alternateName: ["Dan Olekh", "Daniil (Dan) Olekh"],
+        givenName: "Daniil",
+        familyName: "Olekh",
+        address: { "@type": "PostalAddress", addressLocality: "Vienna", addressCountry: "AT" },
         url: siteConfig.url,
+        mainEntityOfPage: siteConfig.url,
         image: `${siteConfig.url}/images/me.jpeg`,
         jobTitle: "Software Engineer",
         description:

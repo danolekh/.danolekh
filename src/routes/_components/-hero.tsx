@@ -20,16 +20,16 @@ export default function Hero() {
             <div className="relative w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 shrink-0">
               <img
                 src="/images/me.jpeg"
-                alt="Dan Olekh"
+                alt="Daniil (Dan) Olekh"
                 className="object-cover rounded-2xl shadow-lg"
               />
             </div>
 
             <div className="flex min-w-0 flex-col justify-between py-1">
               <div>
-                <div className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight">
-                  Dan Olekh
-                </div>
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight">
+                  Daniil (Dan) Olekh
+                </h1>
                 <p className="text-base sm:text-lg text-muted-foreground">
                   {WEB3_LIVE ? "Software engineer · TypeScript · EVM" : "Software engineer"}
                 </p>

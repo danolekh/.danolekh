@@ -8,9 +8,9 @@ export const Route = createFileRoute("/")({
   staticData: { bare: true },
   head: () =>
     createMeta({
-      title: "Websites and web apps, designed and built",
+      title: "Daniil Olekh: websites and web apps, designed and built",
       description:
-        "I'm Dan, an engineer in Vienna. I design and build websites, online stores, booking systems and web apps, usually live in weeks.",
+        "I'm Daniil (Dan) Olekh, an engineer in Vienna. I design and build websites, online stores, booking systems and web apps, usually live in weeks.",
       url: siteConfig.url,
     }),
 });

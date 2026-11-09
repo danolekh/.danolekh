@@ -675,7 +675,7 @@ function Footer() {
   ];
   return (
     <footer className="relative z-10 mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 border-t border-neutral-300 px-6 py-8 text-sm text-neutral-500">
-      <p>© 2026 Dan Olekh, Vienna</p>
+      <p>© 2026 Daniil (Dan) Olekh, Vienna</p>
       <div className="flex flex-wrap gap-4">
         <Link to="/about" className="transition-colors duration-300 hover:text-neutral-900">About</Link>
         <Link to="/b" className="transition-colors duration-300 hover:text-neutral-900">Writing</Link>
