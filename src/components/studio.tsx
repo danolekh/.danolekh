@@ -430,26 +430,105 @@ function Clients() {
     track("testimonial_read", { client: client.name });
   };
 
-  // Phones get one comment at a time under the globe; swiping to the next one turns it.
+  // Phones get one comment at a time under the globe, and the row drifts on its own as an endless
+  // loop (the comments are rendered twice) until someone touches it. From then on it is theirs to swipe.
+  const [loop, setLoop] = useState(false);
+  const [drift, setDrift] = useState(false);
+  const touched = useRef(false);
+  /** How far the row travels before the second copy sits exactly where the first one was. */
+  const period = () => {
+    const cards = list.current?.querySelectorAll<HTMLElement>("[data-client]");
+    return cards && cards.length > CLIENTS.length
+      ? cards[CLIENTS.length].offsetLeft - cards[0].offsetLeft
+      : 0;
+  };
+
+  useEffect(() => {
+    if (matchMedia("(min-width: 900px)").matches) return;
+    setActive(0);
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    setLoop(true);
+    setDrift(true);
+  }, []);
+
+  // Whichever comment is in the middle turns the globe. It counts as read only once the visitor has
+  // touched the row: a comment that drifted past was not chosen by anyone.
   useEffect(() => {
     const el = list.current;
     if (!el || matchMedia("(min-width: 900px)").matches) return;
-    setActive(0);
     const io = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (!entry.isIntersecting) continue;
           const i = Number((entry.target as HTMLElement).dataset.client);
           setActive(i);
-          // The first comment is there on arrival, so only a swipe says anything.
-          if (i > 0) markRead(i);
+          if (touched.current) markRead(i);
         }
       },
       { root: el, threshold: 0.7 },
     );
     el.querySelectorAll("[data-client]").forEach((card) => io.observe(card));
-    return () => io.disconnect();
-  }, []);
+    const stop = () => {
+      touched.current = true;
+      setDrift(false);
+    };
+    el.addEventListener("pointerdown", stop);
+    el.addEventListener("wheel", stop, { passive: true });
+    el.addEventListener("keydown", stop);
+    // Swiped into the second copy: once the row rests, step back to the same comment in the first.
+    let rest = 0;
+    const wrap = () => {
+      clearTimeout(rest);
+      rest = window.setTimeout(() => {
+        const p = period();
+        if (touched.current && p && el.scrollLeft >= p) el.scrollLeft -= p;
+      }, 180);
+    };
+    el.addEventListener("scroll", wrap, { passive: true });
+    return () => {
+      io.disconnect();
+      clearTimeout(rest);
+      el.removeEventListener("pointerdown", stop);
+      el.removeEventListener("wheel", stop);
+      el.removeEventListener("keydown", stop);
+      el.removeEventListener("scroll", wrap);
+    };
+  }, [loop]);
+
+  // The drift itself, only while the row is on screen.
+  useEffect(() => {
+    const el = list.current;
+    if (!el || !drift) return;
+    const SPEED = 30; // px a second
+    let raf = 0;
+    let last = 0;
+    let x = el.scrollLeft;
+    let p = 0;
+    const tick = (t: number) => {
+      x += SPEED * Math.min(0.1, (t - last) / 1000);
+      last = t;
+      if (p && x >= p) x -= p;
+      el.scrollLeft = x;
+      raf = requestAnimationFrame(tick);
+    };
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        cancelAnimationFrame(raf);
+        if (!entry?.isIntersecting) return;
+        p = period();
+        last = performance.now();
+        raf = requestAnimationFrame(tick);
+      },
+      { threshold: 0.3 },
+    );
+    io.observe(el);
+    return () => {
+      io.disconnect();
+      cancelAnimationFrame(raf);
+    };
+  }, [drift]);
+
+  const cards = (loop ? [...CLIENTS, ...CLIENTS] : CLIENTS).map((c, n) => ({ c, i: n % CLIENTS.length, copy: n >= CLIENTS.length }));
 
   return (
     <section data-section="clients" aria-labelledby="clients" className="mx-auto max-w-6xl scroll-mt-24 px-6 py-24">
@@ -465,12 +544,14 @@ function Clients() {
           </div>
           <ul
             ref={list}
-            className="-mx-6 mt-4 flex snap-x snap-mandatory items-start gap-3 overflow-x-auto px-6 pb-2 [scrollbar-width:none] min-[900px]:mx-0 min-[900px]:mt-0 min-[900px]:grid min-[900px]:overflow-visible min-[900px]:px-0 min-[900px]:pb-0"
+            className={`-mx-6 mt-4 flex items-start gap-3 overflow-x-auto px-6 pb-2 [scrollbar-width:none] min-[900px]:mx-0 min-[900px]:mt-0 min-[900px]:grid min-[900px]:overflow-visible min-[900px]:px-0 min-[900px]:pb-0 ${drift ? "" : "snap-x snap-mandatory"}`}
           >
-            {CLIENTS.map((c, i) => (
+            {cards.map(({ c, i, copy }) => (
               <li
-                key={c.name}
+                key={copy ? `${c.name} again` : c.name}
                 data-client={i}
+                aria-hidden={copy || undefined}
+                inert={copy && drift}
                 onPointerEnter={(e) => {
                   if (e.pointerType !== "mouse") return;
                   setActive(i);
@@ -479,7 +560,7 @@ function Clients() {
                 onPointerLeave={(e) => e.pointerType === "mouse" && setActive(null)}
                 className={`w-[86%] shrink-0 snap-center rounded-2xl p-6 transition-[background-color,box-shadow,opacity] duration-300 min-[900px]:w-auto ${
                   active === i ? "bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.08),0_16px_40px_rgba(0,0,0,0.08)]" : "bg-neutral-100/70"
-                } ${active !== null && active !== i ? "min-[900px]:opacity-50" : ""}`}
+                } ${copy ? "min-[900px]:hidden" : ""} ${active !== null && active !== i ? "min-[900px]:opacity-50" : ""}`}
               >
                 <figure>
                   <figcaption className="flex items-center gap-3">
