@@ -34,6 +34,17 @@ export const projects: Project[] = [
       heroLight: "/videos/cardstock-shaders-1600.mp4",
     },
   },
+  // Keeb: Cycles renders of the same boards the page draws live (~/code/keeb/renders), Night and Olive.
+  {
+    slug: "keeb",
+    title: "Keeb",
+    subtitle:
+      "A mechanical keyboard built in the browser — three.js, real switch sounds, type on it and take it apart",
+    cover: "/images/covers/keeb-dark.webp",
+    coverLight: "/images/covers/keeb.webp",
+    internal: false,
+    href: "https://keeb.danolekh.com",
+  },
   {
     slug: "milestone-escrow",
     title: "Milestone Escrow",

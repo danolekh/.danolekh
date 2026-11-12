@@ -51,6 +51,14 @@ export const work: WorkItem[] = [
     external: true,
   },
   {
+    slug: "keeb",
+    title: "Keeb, a keyboard in 3D",
+    tag: "Experiment",
+    poster: "/work/keeb.jpg",
+    href: "https://keeb.danolekh.com",
+    external: true,
+  },
+  {
     slug: "micrologus",
     title: "Micrologus Studio",
     tag: "Concept, not a client",
