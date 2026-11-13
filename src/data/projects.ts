@@ -45,6 +45,18 @@ export const projects: Project[] = [
     internal: false,
     href: "https://keeb.danolekh.com",
   },
+  // Zoom64: a concept for Meletrix on the keeb engine. The card opens the live page; there is no case study.
+  {
+    slug: "zoom64",
+    title: "Zoom64, in 3D",
+    subtitle:
+      "A concept product page for the Meletrix Zoom64 — type on it, switch colourways, take it apart. Not a client",
+    cover: "/images/covers/zoom64-dark.webp",
+    coverLight: "/images/covers/zoom64.webp",
+    video: { src: "/videos/zoom64-dark-800.mp4", srcLight: "/videos/zoom64-800.mp4" },
+    internal: false,
+    href: "https://zoom64.danolekh.com",
+  },
   {
     slug: "milestone-escrow",
     title: "Milestone Escrow",

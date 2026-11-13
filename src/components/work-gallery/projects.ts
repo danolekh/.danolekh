@@ -59,6 +59,16 @@ export const work: WorkItem[] = [
     external: true,
   },
   {
+    slug: "zoom64",
+    title: "Zoom64, a keyboard page in 3D",
+    tag: "Concept, not a client",
+    concept: true,
+    poster: "/work/zoom64.jpg",
+    video: "/work/zoom64.mp4",
+    href: "https://zoom64.danolekh.com",
+    external: true,
+  },
+  {
     slug: "micrologus",
     title: "Micrologus Studio",
     tag: "Concept, not a client",

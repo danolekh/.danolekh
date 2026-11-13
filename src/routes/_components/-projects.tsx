@@ -36,7 +36,7 @@ function ProjectCard({ project, priority }: { project: Project; priority: boolea
   const inner = (
     <Card
       size="sm"
-      className={cn("h-full hover:ring-foreground/20 transition-all cursor-pointer", project.video && "pt-0")}
+      className={cn("h-full hover:ring-foreground/20 transition-all cursor-pointer", project.video && "pt-0 data-[size=sm]:pt-0")}
     >
       {/* A project with a clip plays it over the cover while hovered, or while in view on touch. */}
       {project.video ? (
